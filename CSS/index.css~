@@ -1,0 +1,8 @@
+
+#canvasContainer{
+	text-align:center;
+}
+
+#editor{
+	border:1px solid #000;
+}

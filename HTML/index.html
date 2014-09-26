@@ -3,12 +3,17 @@
 <html>
 
 <head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js" ></script>
+	<script src="../Javascript/bogui.js"></script>
 	<link rel="stylesheet" type="text/css" href="../CSS/index.css">
 </head>
-<body>
-	<div id="canvasContainer">
-		<canvas id="editor" width="800" height="600"></canvas>
-	</div>
+<body onload="init()">
 
+	<div id="canvasContainer">
+		<canvas id="canvas" width="800" height="600"></canvas>
+	</div>
+	<div id="stripMenu">
+		<input type='file' id="selectorFichero" accept="image/*"/>
+	</div>
 </body>
 </html>
