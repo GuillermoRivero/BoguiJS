@@ -1,4 +1,15 @@
 
+#menuSuperior{
+	height:40px;
+}
+
+#panelIzquierda{
+	width:40px;
+}
+
+#panelDerecha{
+	text-align:center;
+}
 #canvasContainer{
 	text-align:center;
 }
