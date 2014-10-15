@@ -8,11 +8,12 @@ var img;
 var canvas;
 var context;
 
-function init() {
+$(document).ready(function() {
 	canvas = document.getElementById("canvas");
 	context = canvas.getContext("2d");
-	document.getElementById("selectorFichero").addEventListener("change", readImage, false);
-}
+	document.getElementById("fileSelector").addEventListener("change", readImage, false);
+});
+
 
 function readImage() {
     if ( this.files && this.files[0] ) {
