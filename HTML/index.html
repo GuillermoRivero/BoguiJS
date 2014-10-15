@@ -9,20 +9,28 @@
 	</head>
 	<body>		
 		<header>
-		
+			<div id="logo">
+				<img src="../images/logo.png" alt="BoguiJS">
+			</div>
 		</header>
 		
 		<nav role="navigation">
-			<ul id="navigationMenu"></ul>
+			<ul id="navigationMenu">
+				<li>HOME</li>
+			</ul>
 		</nav>
 		
 		<section role="main">
 			<header id="bars">
-				<ul id="menu"></ul>
-				<ul id="tools"></ul>
+				<ul id="menu">
+					<li>Option 1</li>
+				</ul>
+				<ul id="tools">
+					<li><input type='file' id="fileSelector" accept="image/*"/></li>
+				</ul>
 			</header>
 			<div id="workspace">
-				<input type='file' id="fileSelector" accept="image/*"/>
+
 				<canvas id="canvas" width="800" height="600"></canvas>
 			</div>		
 			<footer>

@@ -1,19 +1,24 @@
-
-#menuSuperior{
-	height:40px;
+img{
+	height:100%;
 }
 
-#panelIzquierda{
-	width:40px;
-}
-
-#panelDerecha{
-	text-align:center;
-}
-#canvasContainer{
+#logo{
+	height: 80px;
 	text-align:center;
 }
 
-#canvas{
-	border:1px solid #000;
+header{
+	background-color: blue;
+}
+
+nav{
+	background-color: red;
+}
+
+#bars{
+	background-color: gray;
+}
+
+#workspace{
+	background-color: green;	
 }
