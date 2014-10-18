@@ -36,16 +36,20 @@ function Bogui(img, id) {
 	this.imagen = img;
 	this.imgCanvas;
 	this.ctx;
-	
+	this.histograma = new Array(256);
+	this.histogramaAcumulativo = new Array(256);
 	var dialogoAux; 
-
+	this.dialogoHistograma;
 	//METODOS
 	this.reducirImagen = reducirImagen;
 	this.RGBA2BW = RGBA2BW;
+	this.crearHistograma = crearHistograma;
+	this.mostrarHistograma = mostrarHistograma;
+	/*TODO: Crear funciones para mostrar y ocultar el div de los histogramas*/
 
 	//Crear ventana con el canvas
 	dialogoAux = document.createElement("div");
-	dialogoAux.setAttribute("id", "dialogo"+this.ident);
+	dialogoAux.setAttribute("id", "dialogo"+ this.ident);
 	dialogoAux.setAttribute("height", maxHeight);
 	dialogoAux.setAttribute("width", maxWidth);
 	document.getElementById('workspace').appendChild(dialogoAux);
@@ -72,7 +76,104 @@ function Bogui(img, id) {
 	//Ajustar tamaño de la ventana
 	this.dialogo.dialog("option", "width", this.imgCanvas.width+80);
 	this.dialogo.dialog("option", "height", this.imgCanvas.height+70);
+	this.crearHistograma();
+	console.log(this.histograma.length);
+	this.mostrarHistograma();
 }
+
+function crearHistograma(){
+
+	var imageData = this.ctx.getImageData(0, 0, this.imagen.width, this.imagen.height);
+   	var pixelData = imageData.data;
+
+	for(i = 0; i < this.histograma.length; i++) {
+		this.histograma[i] = 0;
+		this.histogramaAcumulativo[i] = 0; 
+	}
+	//TODO: Los histogramas se estan creando de manera incorrecta, hay que arreglarlo
+	/*
+   	for(j = 0; j < pixelData.length; j += 4) {
+		if(pixelData[j] != 0)
+		this.histograma[pixelData[j]]++; 
+	}
+
+	for(k = 1; k < this.histograma.length; k++) {
+		this.histogramaAcumulativo[k] = this.histograma[k] + this.histograma[k-1]; 
+	}*/
+}
+
+function mostrarHistograma(){
+
+	var dialogoAux;
+	dialogoAux = document.createElement("div");
+	dialogoAux.setAttribute("id", "dialogo"+ this.ident);
+	dialogoAux.setAttribute("height", maxHeight);
+	dialogoAux.setAttribute("width", maxWidth);
+	document.getElementById('workspace').appendChild(dialogoAux);
+	this.dialogoHistograma = jQuery(dialogoAux);
+	
+	var contenedorAux = document.createElement('div');
+	contenedorAux.setAttribute("height", maxHeight);
+	contenedorAux.setAttribute("width", maxWidth);
+	var contenedor = jQuery(contenedorAux);
+	
+
+
+	//this.dialogoHistograma.append(
+
+	contenedor.highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Histograma'
+        },
+        xAxis: {
+            min: 0,
+            title: {
+                text: 'Intensidad'
+            }
+        },
+        yAxis: {
+            min: 0,
+	    max: Math.max.apply(Math, this.histograma),
+            title: {
+                text: 'Cantidad de Pixeles'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color}; padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y} </b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.1,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Histograma Simple',
+            data: this.histograma
+
+        },
+	{
+            name: 'Histograma Acumulativo',
+            data: this.histogramaAcumulativo
+
+        }]
+    });
+	 //APPEND
+	this.dialogoHistograma.dialog();
+	this.dialogoHistograma.dialog("option", "title", "Histograma: " + this.ident);
+	this.dialogoHistograma.append(contenedor);
+	
+
+}
+
 
 function borrarObjetoBogui(id){
 	var i = 0;
