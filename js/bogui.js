@@ -50,7 +50,6 @@ function Bogui(img, id) {
 	this.contenedorHistogramaAcumulativo;
 	//METODOS
 	this.calcularBrillo = calcularBrillo;
-	this.cambiarBrillo = cambiarBrillo;
 	this.reducirImagen = reducirImagen;
 	this.RGBA2BW = RGBA2BW;
 	this.crearHistograma = crearHistograma;
@@ -106,10 +105,6 @@ function Bogui(img, id) {
 	//Ajustar tamaño de la ventana
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 55); 
 	this.dialogo.dialog("option", "height", this.imgCanvas.height + 80);
-	this.crearHistograma();
-	
-	
-	
 		
 }
 
@@ -380,13 +375,10 @@ function RGBA2BW(){
 };
 
 function cambiarBrillo(nivel){
-
 	//Obtener la matriz de datos.
-	var imageData = this.ctx.getImageData(0, 0, this.imagen.width, this.imagen.height);
+	var imageData = objetosBogui[objetoActual].ctx.getImageData(0, 0, objetosBogui[objetoActual].imagen.width, objetosBogui[objetoActual].imagen.height);
    	var pixelData = imageData.data;
    	var bytesPerPixel = 4;
-
-	//TODO: Exportar la imagen a otro objeto en vez de aplicar los cambios en el mismo.
 
 	var funcionTransferencia = new Array(256);
 	var i = 0;
@@ -401,9 +393,9 @@ function cambiarBrillo(nivel){
 			}
 	}
 
-   	for(var y = 0; y < this.imagen.height; y++) {
-      		for(var x = 0; x < this.imagen.width; x++) {
-			 var startIdx = (y * bytesPerPixel * this.imagen.width) + (x * bytesPerPixel);
+   	for(var y = 0; y < objetosBogui[objetoActual].imagen.height; y++) {
+      		for(var x = 0; x < objetosBogui[objetoActual].imagen.width; x++) {
+			 var startIdx = (y * bytesPerPixel * objetosBogui[objetoActual].imagen.width) + (x * bytesPerPixel);
 			
 			 //RED
 			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
@@ -413,13 +405,17 @@ function cambiarBrillo(nivel){
 	      	}
 	   }
 	//Cargar la matriz de datos en el canvas
-	this.ctx.putImageData(imageData, 0, 0);
-	
 
+	objetosBogui.push(new Bogui(objetosBogui[objetoActual].imagen, numeroObjetos));
+	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetosBogui[objetoActual].imgCanvas;
+	objetosBogui[obtenerPosArray(numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+	cambiarFoco(numeroObjetos);
 };
 
 
 function calcularBrillo(nivel){
+
+	this.crearHistograma();
 
 	var brillo = 0;
 	var sumatorio = 0;
@@ -433,8 +429,6 @@ function calcularBrillo(nivel){
 	brillo = sumatorio/total;
 	console.log(brillo);
 	return brillo;
-	
-
 };
 
 
@@ -443,10 +437,12 @@ function calcularBrillo(nivel){
 /////BOTONES INTERFAZ
 
 function abrirHistograma(){
+	objetosBogui[objetoActual].crearHistograma();
 	objetosBogui[objetoActual].dialogoHistograma.dialog("open");
 }
 
 function abrirHistogramaAcumulativo(){
+	objetosBogui[objetoActual].crearHistograma();
 	objetosBogui[objetoActual].dialogoHistogramaAcumulativo.dialog("open");
 }
 
