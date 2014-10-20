@@ -6,6 +6,7 @@ Autores: Guillermo Rivero Rodríguez y Boris Ballester Hernández"
 
 var imagen;
 var objetosBogui = [];
+var objetoActual = 0;
 var maxWidth = 600;
 var maxHeight = 600;
 var altoHistograma = 470;
@@ -182,7 +183,8 @@ function crearHistograma(){
         },
         series: [{
             name: 'Histograma Acumulativo',
-            data: this.histogramaAcumulativo
+            data: this.histogramaAcumulativo,
+	    color: "#39b1cc"
 
         }]
     });
@@ -196,12 +198,10 @@ function crearHistograma(){
 
 
 	//Histograma Simple
-
 	this.dialogoHistograma = jQuery('<div/>', {
 	    	id: "dialogo" + this.ident
 	}).appendTo('#workspace');
 
-	
 	this.contenedorHistograma = jQuery('<div/>').appendTo(this.dialogoHistograma);
 	
 	this.contenedorHistograma.highcharts({
@@ -242,11 +242,12 @@ function crearHistograma(){
         },
         series: [{
             name: 'Histograma Simple',
-            data: this.histograma
+            data: this.histograma,
+	    color: "#39b1cc"
 
         }]
     });
-	 //APPEND
+	//APPEND
 	this.dialogoHistograma.dialog();
 	this.dialogoHistograma.dialog("option", "title", "Histograma: " + this.ident);
 	this.dialogoHistograma.dialog("option", "resizable", false);
@@ -254,8 +255,8 @@ function crearHistograma(){
 	this.dialogoHistograma.dialog("option", "height", altoHistograma);
 
 	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	//this.dialogoHistograma.dialog( "close" );
-	//this.dialogoHistogramaAcumulativo.dialog( "close" );
+	this.dialogoHistograma.dialog( "close" );
+	this.dialogoHistogramaAcumulativo.dialog( "close" );
 }
 
 function borrarObjetoBogui(id){
