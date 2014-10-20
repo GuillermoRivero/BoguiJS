@@ -20,6 +20,7 @@ function readImage() {
         FR.onload = function(e) {
 		imagen = new Image();   
 	    	imagen.src = e.target.result;
+		console.log(e.target.result);
 		imagen.onload = function() {
 		     objetosBogui.push(new Bogui(imagen, 0));
 		   };
@@ -32,22 +33,24 @@ function Bogui(img, id) {
 
 	//ATRIBUTOS
 	this.ident = id;
-	this.modo = "PAL";
+	this.modo = "NTSC";
 	this.imagen = img;
 	this.imgCanvas;
 	this.ctx;
 	this.histograma = new Array(256);
 	this.histogramaAcumulativo = new Array(256);
-	var dialogoAux; 
 	this.dialogoHistograma;
+	this.contenedorHistograma;
+	this.dialogoHistogramaAcumulativo;
+	this.contenedorHistogramaAcumulativo;
 	//METODOS
 	this.reducirImagen = reducirImagen;
 	this.RGBA2BW = RGBA2BW;
 	this.crearHistograma = crearHistograma;
-	this.mostrarHistograma = mostrarHistograma;
-	/*TODO: Crear funciones para mostrar y ocultar el div de los histogramas*/
+	this.descargarImagen = descargarImagen;
 
 	//Crear ventana con el canvas
+	var dialogoAux; 
 	dialogoAux = document.createElement("div");
 	dialogoAux.setAttribute("id", "dialogo"+ this.ident);
 	dialogoAux.setAttribute("height", maxHeight);
@@ -77,32 +80,114 @@ function Bogui(img, id) {
 	this.dialogo.dialog("option", "width", this.imgCanvas.width+80);
 	this.dialogo.dialog("option", "height", this.imgCanvas.height+70);
 	this.crearHistograma();
-	console.log(this.histograma.length);
-	this.mostrarHistograma();
+		
+}
+
+function descargarImagen(formato){
+
+	var dataUrl;
+
+	switch(formato){
+	case "png":
+		dataUrl = this.imgCanvas.toDataURL('image/png', 1); // obtenemos la imagen como png
+		dataUrl=dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
+		break;
+	case "jpeg":
+		dataUrl = this.imgCanvas.toDataURL('image/jpeg', 1);
+		//dataUrl=dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
+		break;
+	case "webp":
+		dataUrl = this.imgCanvas.toDataURL('image/webp', 1);
+		break;
+	default:
+		dataUrl = this.imgCanvas.toDataURL();
+		dataUrl=dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
+	}
+
+	document.location.href = dataUrl; // para forzar al navegador a descargarlo
 }
 
 function crearHistograma(){
 
-	var imageData = this.ctx.getImageData(0, 0, this.imagen.width, this.imagen.height);
+	var imageData = this.ctx.getImageData(0, 0, this.imgCanvas.width, this.imgCanvas.height);
    	var pixelData = imageData.data;
 
+	//Inicializar Variables
 	for(i = 0; i < this.histograma.length; i++) {
 		this.histograma[i] = 0;
 		this.histogramaAcumulativo[i] = 0; 
 	}
-	//TODO: Los histogramas se estan creando de manera incorrecta, hay que arreglarlo
-	/*
+	
+	//Rellenar histograma Simple
    	for(j = 0; j < pixelData.length; j += 4) {
-		if(pixelData[j] != 0)
 		this.histograma[pixelData[j]]++; 
 	}
-
+	//Rellenar histograma Acumulativo
+	this.histogramaAcumulativo[0] = this.histograma[0]; 
 	for(k = 1; k < this.histograma.length; k++) {
-		this.histogramaAcumulativo[k] = this.histograma[k] + this.histograma[k-1]; 
-	}*/
-}
+		this.histogramaAcumulativo[k] = this.histograma[k] + this.histogramaAcumulativo[k-1]; 
+	}
 
-function mostrarHistograma(){
+	//Histograma Acumulativo
+	var dialogoAuxAcu;
+	dialogoAuxAcu = document.createElement("div");
+	dialogoAuxAcu.setAttribute("id", "dialogo"+ this.ident);
+	dialogoAuxAcu.setAttribute("height", maxHeight);
+	dialogoAuxAcu.setAttribute("width", maxWidth);
+	document.getElementById('workspace').appendChild(dialogoAuxAcu);
+	this.dialogoHistogramaAcumulativo = jQuery(dialogoAuxAcu);
+	
+	var contenedorAuxAcu = document.createElement('div');
+	contenedorAuxAcu.setAttribute("height", maxHeight);
+	contenedorAuxAcu.setAttribute("width", maxWidth);
+	this.contenedorHistogramaAcumulativo = jQuery(contenedorAuxAcu);
+	
+	this.contenedorHistogramaAcumulativo.highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Histograma Acumulativo'
+        },
+        xAxis: {
+            min: 0,
+            title: {
+                text: 'Intensidad'
+            }
+        },
+        yAxis: {
+            min: 0,
+	    max: Math.max.apply(Math, this.histogramaAcumulativo),
+            title: {
+                text: 'Cantidad de Pixeles'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color}; padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y} </b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Histograma Acumulativo',
+            data: this.histogramaAcumulativo
+
+        }]
+    });
+	 //APPEND
+	this.dialogoHistogramaAcumulativo.dialog();
+	this.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + this.ident);
+	this.dialogoHistogramaAcumulativo.append(this.contenedorHistogramaAcumulativo);
+
+	//Histograma Simple
 
 	var dialogoAux;
 	dialogoAux = document.createElement("div");
@@ -115,13 +200,9 @@ function mostrarHistograma(){
 	var contenedorAux = document.createElement('div');
 	contenedorAux.setAttribute("height", maxHeight);
 	contenedorAux.setAttribute("width", maxWidth);
-	var contenedor = jQuery(contenedorAux);
+	this.contenedorHistograma = jQuery(contenedorAux);
 	
-
-
-	//this.dialogoHistograma.append(
-
-	contenedor.highcharts({
+	this.contenedorHistograma.highcharts({
         chart: {
             type: 'column'
         },
@@ -151,7 +232,7 @@ function mostrarHistograma(){
         },
         plotOptions: {
             column: {
-                pointPadding: 0.1,
+                pointPadding: 0,
                 borderWidth: 0
             }
         },
@@ -159,21 +240,29 @@ function mostrarHistograma(){
             name: 'Histograma Simple',
             data: this.histograma
 
-        },
-	{
-            name: 'Histograma Acumulativo',
-            data: this.histogramaAcumulativo
-
         }]
     });
 	 //APPEND
 	this.dialogoHistograma.dialog();
 	this.dialogoHistograma.dialog("option", "title", "Histograma: " + this.ident);
-	this.dialogoHistograma.append(contenedor);
-	
+	this.dialogoHistograma.append(this.contenedorHistograma);
 
+	/*
+	this.dialogoHistograma.bind( "dialogresizestop", function( event, ui ) {
+									console.log("CAMBIAR TAMAÑO");
+									this.contenedorHistograma.setOptions({
+														    chart: {
+															width: this.dialogoHistograma.width,
+															height: this.dialogoHistograma.height
+														    }
+														});
+									} );
+	*/
+
+	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
+	this.dialogoHistograma.dialog( "close" );
+	this.dialogoHistogramaAcumulativo.dialog( "close" );
 }
-
 
 function borrarObjetoBogui(id){
 	var i = 0;
@@ -183,7 +272,6 @@ function borrarObjetoBogui(id){
 		}
 	}
 }
-
 
 function reducirImagen(){
 
