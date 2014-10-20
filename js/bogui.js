@@ -39,7 +39,11 @@ $(document).ready(function() {
 	});	
 
 	$("#instaDownloadButton").click(function() {
-		descargarImagen(window.formatoDescarga);
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
+		}else{
+			objetosBogui[objetoActual].descargarImagen(window.formatoDescarga);
+		}	
 	});		
 });
 
