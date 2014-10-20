@@ -4,7 +4,7 @@
 		<meta charset="utf-8"/>
 		<script src="../js/jquery.min.js" type="text/javascript"></script>
 		<script src="../js/jquery-ui.min.js" type="text/javascript"></script>
-		<script src="../js/bogui.js"></script>
+		<script src="../js/bogui.js" type="text/javascript" ></script>
 		<script src="../js/highcharts/highcharts.js"></script>
 		<script src="../js/highcharts/modules/exporting.js"></script>
 		<link rel="stylesheet" type="text/css" href="../css/index.css">
@@ -25,13 +25,19 @@
 			   <li class="has-sub"><span>Archivo</span>
 				  <ul>
 					 <li><a href="#">Abrir Imagen</a></li>
-					 <li><a href="#">Guardar Imagen</a></li>
+					 <li class="has-sub"><span>GuardarImagen</span>
+						<ul>
+						   <li><a href='javascript:descargar("jpeg")'>JPEG</a></li>
+						   <li><a href='javascript:descargar("webp")'>WEBP</a></li>
+						   <li><a href='javascript:descargar("png")'>PNG</a></li>
+						</ul>
+					 </li>
 				  </ul>
 			   </li>
 			   <li class="has-sub"><span>Ver</span>
 				  <ul>
-					 <li><a href="#">Histograma</a></li>
-					 <li><a href="#">Histograma Acumulativo</a></li>
+					 <li><a href="javascript:abrirHistograma()">Histograma</a></li>
+					 <li><a href="javascript:abrirHistogramaAcumulativo()">Histograma Acumulativo</a></li>
 					 <li><a href="#">Tipo/Tama&ntilde;o</a></li>
 					 <li><a href="#">Brillo</a></li>
 					 <li><a href="#">Contraste</a></li>
@@ -42,15 +48,8 @@
 				  <ul>
 					 <li class="has-sub"><span>Modo Imagen</span>
 						<ul>
-						   <li><a href="#">PAL</a></li>
-						   <li><a href="#">NTSC</a></li>
-						</ul>
-					 </li>
-					 <li class="has-sub"><span>Formato Descarga</span>
-						<ul>
-						   <li><a href="#">JPEG</a></li>
-						   <li><a href="#">WEBP</a></li>
-						   <li><a href="#">PNG</a></li>
+						   <li><a href='javascript:setModoImagen("PAL")'>PAL</a></li>
+						   <li><a href='javascript:setModoImagen("NTSC")'>NTSC</a></li>
 						</ul>
 					 </li>
 				  </ul>

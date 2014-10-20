@@ -73,14 +73,24 @@ function Bogui(img, id) {
 
 	//LLamar a la funcion que destruye el objeto al cerrar la ventana
 	this.dialogo.bind("dialogclose",function(e){
-		e.dialogoHistograma.dialog( "close" );
-		e.dialogoHistogramaAcumulativo.dialog( "close" );
-		borrarObjetoBogui(id); //TODO: Arreglar para usar el atributo de la clase
+		var exp = /dialogo(\d+)/i
+		var res = exp.exec(e.target.id);
+		var idActual = res[1];
+
+		objetosBogui[obtenerPosArray(idActual)].dialogoHistograma.dialog( "close" );
+		objetosBogui[obtenerPosArray(idActual)].dialogoHistogramaAcumulativo.dialog( "close" );
+		borrarObjetoBogui(idActual); 
  	});
+
+	
 	
 
-	this.dialogo.on( "dialogfocus", function( event, ui ) {
-						cambiarFoco(id); //TODO: Arreglar para usar el atributo de la clase
+	this.dialogo.on( "dialogfocus", function( e, ui ) {
+						var exp = /dialogo(\d+)/i
+						var res = exp.exec(e.target.id);
+						var idActual = res[1];
+
+						cambiarFoco(idActual);
 						} );
 
 	//Dibujar imagen en el canvas
@@ -98,6 +108,16 @@ function Bogui(img, id) {
 		
 }
 
+function obtenerPosArray(id){
+
+	var i = 0;
+	for(i = 0; i < objetosBogui.length; i++){
+		if(objetosBogui[i].ident == id ){
+			return i;	
+		}
+	}
+
+}
 
 
 function cambiarFoco(foco){
@@ -121,9 +141,11 @@ function descargarImagen(formato){
 		break;
 	case "jpeg":
 		dataUrl = this.imgCanvas.toDataURL('image/jpeg', 1);
+		dataUrl=dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
 		break;
 	case "webp":
 		dataUrl = this.imgCanvas.toDataURL('image/webp', 1);
+		dataUrl=dataUrl.replace("image/webp",'image/octet-stream'); // sustituimos el tipo por octet
 		break;
 	default:
 		dataUrl = this.imgCanvas.toDataURL();
@@ -273,8 +295,8 @@ function crearHistograma(){
 	this.dialogoHistograma.dialog("option", "height", altoHistograma);
 
 	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	//this.dialogoHistograma.dialog( "close" );
-	//this.dialogoHistogramaAcumulativo.dialog( "close" );
+	this.dialogoHistograma.dialog( "close" );
+	this.dialogoHistogramaAcumulativo.dialog( "close" );
 }
 
 function borrarObjetoBogui(id){
@@ -352,5 +374,22 @@ function RGBA2BW(){
 
 };
 
+/////BOTONES INTERFAZ
 
+function abrirHistograma(){
+	objetosBogui[objetoActual].dialogoHistograma.dialog("open");
+}
+
+function abrirHistogramaAcumulativo(){
+	objetosBogui[objetoActual].dialogoHistogramaAcumulativo.dialog("open");
+}
+
+function descargar(formato){
+	objetosBogui[objetoActual].descargarImagen(formato);
+}
+
+function setModoImagen(modo){
+	//TODO: Mostrar un mensaje al usuario de que se ha actualizado el modo
+	objetosBogui[objetoActual].modo = modo;
+}
 
