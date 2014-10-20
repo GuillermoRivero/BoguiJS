@@ -50,7 +50,7 @@ $(function() {
 		$("#"+formatoDescarga).toggleClass('checked');
 	});			
 
-	$("#saveConfig").click(function() {
+	$("#saveConfig,  #saveButton").click(function() {
 		if (window.localStorage) { //Si el navegador soporta localStorage
 			localStorage.setItem("modoImagen",modoImagen);
 			localStorage.setItem("formatoDescarga",formatoDescarga);
@@ -100,26 +100,8 @@ $(function() {
 		}
 	);	
 	
-	$("#fileButton").click(function() {
+	$("#fileButton, #fileMenu").click(function() {
 		$("#fileSelector").click();
 	});	
 	
-	$("#saveButton").click(function() {
-		$("#saveConfig").click();
-	});		
 });
-
-/*
-
-<script type="text/javascript">
-function performClick(elemId) {
-   var elem = document.getElementById(elemId);
-   if(elem && document.createEvent) { // sanity check
-      var evt = document.createEvent("MouseEvents");
-      evt.initEvent("click", true, false);
-      node.dispatchEvent(evt);
-   }
-}
-</script>
-<a href="#" onclick="performClick('theFile');">Open file dialog</a>
-<input type="file" id="theFile" />*/

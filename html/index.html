@@ -4,12 +4,8 @@
 		<meta charset="utf-8"/>
 		<script src="../js/jquery.min.js" type="text/javascript"></script>
 		<script src="../js/jquery-ui.min.js" type="text/javascript"></script>
-<<<<<<< HEAD
 		<script src="../js/configuracion.js"></script>
 		<script src="../js/bogui.js"></script>
-=======
-		<script src="../js/bogui.js" type="text/javascript" ></script>
->>>>>>> origin/master
 		<script src="../js/highcharts/highcharts.js"></script>
 		<script src="../js/highcharts/modules/exporting.js"></script>
 		<link rel="stylesheet" type="text/css" href="../css/index.css">
@@ -27,61 +23,6 @@
 		<nav role="navigation" class="noselect cssmenu">
 			<ul>
 			   <li><a href="index.html">Home</a></li>
-<<<<<<< HEAD
-=======
-			   <li class="has-sub"><span>Archivo</span>
-				  <ul>
-					 <li><a href="#">Abrir Imagen</a></li>
-					 <li class="has-sub"><span>GuardarImagen</span>
-						<ul>
-						   <li><a href='javascript:descargar("jpeg")'>JPEG</a></li>
-						   <li><a href='javascript:descargar("webp")'>WEBP</a></li>
-						   <li><a href='javascript:descargar("png")'>PNG</a></li>
-						</ul>
-					 </li>
-				  </ul>
-			   </li>
-			   <li class="has-sub"><span>Ver</span>
-				  <ul>
-					 <li><a href="javascript:abrirHistograma()">Histograma</a></li>
-					 <li><a href="javascript:abrirHistogramaAcumulativo()">Histograma Acumulativo</a></li>
-					 <li><a href="#">Tipo/Tama&ntilde;o</a></li>
-					 <li><a href="#">Brillo</a></li>
-					 <li><a href="#">Contraste</a></li>
-					 <li><a href="#">Entropia</a></li>
-				  </ul>
-			   </li>
-			   <li class="has-sub"><span>Configuracion</span>
-				  <ul>
-					 <li class="has-sub"><span>Modo Imagen</span>
-						<ul>
-						   <li><a href='javascript:setModoImagen("PAL")'>PAL</a></li>
-						   <li><a href='javascript:setModoImagen("NTSC")'>NTSC</a></li>
-						</ul>
-					 </li>
-				  </ul>
-			   </li>
-			   <li class="has-sub"><span>Operaciones Lineales</span>
-				  <ul>
-					 <li><a href="#">Transformacion lineal por tramos</a></li>
-					 <li><a href="#">Ajuste lineal de brillo y contraste</a></li>
-				  </ul>
-			   </li>
-			   <li class="has-sub"><span>Operaciones No Lineales</span>
-				  <ul>
-					 <li><a href="#">Correccion Gamma</a></li>
-					 <li class="has-sub"><span>Histograma</span>
-						<ul>
-						   <li><a href="#">Ecualizacion</a></li>
-						   <li><a href="#">Especificacion</a></li>
-						</ul>
-					 </li>
-					 <li><a href="#">Perfil (Image-Cross Section)</a></li>
-					 <li><a href="#">Diferencia entre dos imagenes</a></li>
-					 <li><a href="#">Simulacion digitalizacion</a></li>
-				  </ul>
-			   </li>
->>>>>>> origin/master
 			</ul>
 		</nav>
 		
@@ -91,7 +32,7 @@
 					<ul>
 					   <li class="has-sub"><span>Archivo</span>
 						  <ul>
-							 <li><a href="#">Abrir Imagen</a></li>
+							 <li><span id="fileMenu">Abrir Imagen</span></li>
 							 <li><a href="#">Guardar Imagen</a></li>
 						  </ul>
 					   </li>
