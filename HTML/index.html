@@ -8,6 +8,7 @@
 		<script src="../js/highcharts/highcharts.js"></script>
 		<script src="../js/highcharts/modules/exporting.js"></script>
 		<link rel="stylesheet" type="text/css" href="../css/index.css">
+		<link rel="stylesheet" type="text/css" href="../css/menu.css">
 		<link rel="stylesheet" href="../css/jquery-ui.css">
 
 	</head>
@@ -18,9 +19,62 @@
 			</div>
 		</header>
 		
-		<nav role="navigation">
-			<ul id="navigationMenu">
-				<li>HOME</li>
+		<nav role="navigation" id="cssmenu">
+			<ul>
+			   <li><a href="index.html">Home</a></li>
+			   <li class="has-sub"><span>Archivo</span>
+				  <ul>
+					 <li><a href="#">Abrir Imagen</a></li>
+					 <li><a href="#">Guardar Imagen</a></li>
+				  </ul>
+			   </li>
+			   <li class="has-sub"><span>Ver</span>
+				  <ul>
+					 <li><a href="#">Histograma</a></li>
+					 <li><a href="#">Histograma Acumulativo</a></li>
+					 <li><a href="#">Tipo/Tama&ntilde;o</a></li>
+					 <li><a href="#">Brillo</a></li>
+					 <li><a href="#">Contraste</a></li>
+					 <li><a href="#">Entropia</a></li>
+				  </ul>
+			   </li>
+			   <li class="has-sub"><span>Configuracion</span>
+				  <ul>
+					 <li class="has-sub"><span>Modo Imagen</span>
+						<ul>
+						   <li><a href="#">PAL</a></li>
+						   <li><a href="#">NTSC</a></li>
+						</ul>
+					 </li>
+					 <li class="has-sub"><span>Formato Descarga</span>
+						<ul>
+						   <li><a href="#">JPEG</a></li>
+						   <li><a href="#">WEBP</a></li>
+						   <li><a href="#">PNG</a></li>
+						</ul>
+					 </li>
+				  </ul>
+			   </li>
+			   <li class="has-sub"><span>Operaciones Lineales</span>
+				  <ul>
+					 <li><a href="#">Transformacion lineal por tramos</a></li>
+					 <li><a href="#">Ajuste lineal de brillo y contraste</a></li>
+				  </ul>
+			   </li>
+			   <li class="has-sub"><span>Operaciones No Lineales</span>
+				  <ul>
+					 <li><a href="#">Correccion Gamma</a></li>
+					 <li class="has-sub"><span>Histograma</span>
+						<ul>
+						   <li><a href="#">Ecualizacion</a></li>
+						   <li><a href="#">Especificacion</a></li>
+						</ul>
+					 </li>
+					 <li><a href="#">Perfil (Image-Cross Section)</a></li>
+					 <li><a href="#">Diferencia entre dos imagenes</a></li>
+					 <li><a href="#">Simulacion digitalizacion</a></li>
+				  </ul>
+			   </li>
 			</ul>
 		</nav>
 		
