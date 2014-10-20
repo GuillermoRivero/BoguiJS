@@ -7,6 +7,7 @@ Autores: Guillermo Rivero Rodríguez y Boris Ballester Hernández"
 var imagen;
 var objetosBogui = [];
 var objetoActual = 0;
+var numeroObjetos = 0;
 var maxWidth = 600;
 var maxHeight = 600;
 var altoHistograma = 470;
@@ -23,12 +24,13 @@ function readImage() {
         FR.onload = function(e) {
 		imagen = new Image();   
 	    	imagen.src = e.target.result;
-		console.log(e.target.result);
 		imagen.onload = function() {
-		     objetosBogui.push(new Bogui(imagen, 0));
+		     objetosBogui.push(new Bogui(imagen, numeroObjetos-1));
+		     cambiarFoco(numeroObjetos-1);
 		   };
         };       
         FR.readAsDataURL( this.files[0] );
+	numeroObjetos++;
     }
 }
 
@@ -71,11 +73,15 @@ function Bogui(img, id) {
 
 	//LLamar a la funcion que destruye el objeto al cerrar la ventana
 	this.dialogo.bind("dialogclose",function(e){
-		if (typeof this.dialogoHistograma != 'undefined')
-		this.dialogoHistograma.dialog( "close" );
-		//this.dialogoHistogramaAcumulativo.dialog( "close" );
-		borrarObjetoBogui(id);
+		e.dialogoHistograma.dialog( "close" );
+		e.dialogoHistogramaAcumulativo.dialog( "close" );
+		borrarObjetoBogui(id); //TODO: Arreglar para usar el atributo de la clase
  	});
+	
+
+	this.dialogo.on( "dialogfocus", function( event, ui ) {
+						cambiarFoco(id); //TODO: Arreglar para usar el atributo de la clase
+						} );
 
 	//Dibujar imagen en el canvas
 	this.ctx = this.imgCanvas.getContext('2d');
@@ -90,6 +96,18 @@ function Bogui(img, id) {
 	this.dialogo.dialog("option", "height", this.imgCanvas.height + 80);
 	this.crearHistograma();
 		
+}
+
+
+
+function cambiarFoco(foco){
+	
+	var i = 0;
+	for(i = 0; i < objetosBogui.length; i++){
+		if(objetosBogui[i].ident == foco ){
+			objetoActual = i;	
+		}
+	}
 }
 
 function descargarImagen(formato){
@@ -255,8 +273,8 @@ function crearHistograma(){
 	this.dialogoHistograma.dialog("option", "height", altoHistograma);
 
 	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	this.dialogoHistograma.dialog( "close" );
-	this.dialogoHistogramaAcumulativo.dialog( "close" );
+	//this.dialogoHistograma.dialog( "close" );
+	//this.dialogoHistogramaAcumulativo.dialog( "close" );
 }
 
 function borrarObjetoBogui(id){
@@ -266,6 +284,10 @@ function borrarObjetoBogui(id){
 			objetosBogui.splice(i, 1);
 		}
 	}
+	if(objetosBogui.length > 0){
+		objetosBogui[0].dialogo.dialog( "moveToTop" );
+	}
+	objetoActual = 0;
 }
 
 function reducirImagen(){
