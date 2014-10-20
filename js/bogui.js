@@ -8,6 +8,8 @@ var imagen;
 var objetosBogui = [];
 var maxWidth = 600;
 var maxHeight = 600;
+var altoHistograma = 470;
+var anchoHistograma = 500;
 
 $(document).ready(function() {
 	document.getElementById("fileSelector").addEventListener("change", readImage, false);
@@ -50,22 +52,27 @@ function Bogui(img, id) {
 	this.descargarImagen = descargarImagen;
 
 	//Crear ventana con el canvas
-	var dialogoAux; 
-	dialogoAux = document.createElement("div");
-	dialogoAux.setAttribute("id", "dialogo"+ this.ident);
-	dialogoAux.setAttribute("height", maxHeight);
-	dialogoAux.setAttribute("width", maxWidth);
-	document.getElementById('workspace').appendChild(dialogoAux);
-	this.dialogo = jQuery(dialogoAux);
+
+	this.dialogo = jQuery('<div/>', {
+	    	id: "dialogo" + this.ident,
+	   	height: maxHeight,
+		width: maxWidth
+	}).appendTo('#workspace');
+
 	this.imgCanvas = document.createElement("canvas");
 	this.imgCanvas.setAttribute("id", "canvasID");
 	this.imgCanvas.setAttribute("height", this.imagen.height);
 	this.imgCanvas.setAttribute("width", this.imagen.width);
+
 	this.dialogo.append(this.imgCanvas);
 	this.dialogo.dialog();
 	this.dialogo.dialog("option", "title", "Imagen: " + this.ident);
+
 	//LLamar a la funcion que destruye el objeto al cerrar la ventana
 	this.dialogo.bind("dialogclose",function(e){
+		if (typeof this.dialogoHistograma != 'undefined')
+		this.dialogoHistograma.dialog( "close" );
+		//this.dialogoHistogramaAcumulativo.dialog( "close" );
 		borrarObjetoBogui(id);
  	});
 
@@ -76,9 +83,10 @@ function Bogui(img, id) {
 	//Reducir imagen y ponerla en blanco y negro
 	this.reducirImagen();
 	this.RGBA2BW();
+
 	//Ajustar tamaño de la ventana
-	this.dialogo.dialog("option", "width", this.imgCanvas.width+80);
-	this.dialogo.dialog("option", "height", this.imgCanvas.height+70);
+	this.dialogo.dialog("option", "width", this.imgCanvas.width + 55); 
+	this.dialogo.dialog("option", "height", this.imgCanvas.height + 80);
 	this.crearHistograma();
 		
 }
@@ -94,7 +102,6 @@ function descargarImagen(formato){
 		break;
 	case "jpeg":
 		dataUrl = this.imgCanvas.toDataURL('image/jpeg', 1);
-		//dataUrl=dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
 		break;
 	case "webp":
 		dataUrl = this.imgCanvas.toDataURL('image/webp', 1);
@@ -129,22 +136,19 @@ function crearHistograma(){
 	}
 
 	//Histograma Acumulativo
-	var dialogoAuxAcu;
-	dialogoAuxAcu = document.createElement("div");
-	dialogoAuxAcu.setAttribute("id", "dialogo"+ this.ident);
-	dialogoAuxAcu.setAttribute("height", maxHeight);
-	dialogoAuxAcu.setAttribute("width", maxWidth);
-	document.getElementById('workspace').appendChild(dialogoAuxAcu);
-	this.dialogoHistogramaAcumulativo = jQuery(dialogoAuxAcu);
 	
-	var contenedorAuxAcu = document.createElement('div');
-	contenedorAuxAcu.setAttribute("height", maxHeight);
-	contenedorAuxAcu.setAttribute("width", maxWidth);
-	this.contenedorHistogramaAcumulativo = jQuery(contenedorAuxAcu);
+	this.dialogoHistogramaAcumulativo = jQuery('<div/>', {
+	    	id: "dialogo" + this.ident
+	}).appendTo('#workspace');
+
+	
+	this.contenedorHistogramaAcumulativo = jQuery('<div/>').appendTo(this.dialogoHistogramaAcumulativo);
 	
 	this.contenedorHistogramaAcumulativo.highcharts({
         chart: {
-            type: 'column'
+            type: 'column',
+	    width: anchoHistograma - 50,
+	    height: altoHistograma - 70
         },
         title: {
             text: 'Histograma Acumulativo'
@@ -185,26 +189,26 @@ function crearHistograma(){
 	 //APPEND
 	this.dialogoHistogramaAcumulativo.dialog();
 	this.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + this.ident);
-	this.dialogoHistogramaAcumulativo.append(this.contenedorHistogramaAcumulativo);
+	this.dialogoHistogramaAcumulativo.dialog("option", "resizable", false);
+	
+	this.dialogoHistogramaAcumulativo.dialog("option", "width", anchoHistograma); 
+	this.dialogoHistogramaAcumulativo.dialog("option", "height", altoHistograma);
+
 
 	//Histograma Simple
 
-	var dialogoAux;
-	dialogoAux = document.createElement("div");
-	dialogoAux.setAttribute("id", "dialogo"+ this.ident);
-	dialogoAux.setAttribute("height", maxHeight);
-	dialogoAux.setAttribute("width", maxWidth);
-	document.getElementById('workspace').appendChild(dialogoAux);
-	this.dialogoHistograma = jQuery(dialogoAux);
+	this.dialogoHistograma = jQuery('<div/>', {
+	    	id: "dialogo" + this.ident
+	}).appendTo('#workspace');
+
 	
-	var contenedorAux = document.createElement('div');
-	contenedorAux.setAttribute("height", maxHeight);
-	contenedorAux.setAttribute("width", maxWidth);
-	this.contenedorHistograma = jQuery(contenedorAux);
+	this.contenedorHistograma = jQuery('<div/>').appendTo(this.dialogoHistograma);
 	
 	this.contenedorHistograma.highcharts({
         chart: {
-            type: 'column'
+            type: 'column',
+	    width: anchoHistograma - 50,
+	    height: altoHistograma - 70
         },
         title: {
             text: 'Histograma'
@@ -245,23 +249,13 @@ function crearHistograma(){
 	 //APPEND
 	this.dialogoHistograma.dialog();
 	this.dialogoHistograma.dialog("option", "title", "Histograma: " + this.ident);
-	this.dialogoHistograma.append(this.contenedorHistograma);
-
-	/*
-	this.dialogoHistograma.bind( "dialogresizestop", function( event, ui ) {
-									console.log("CAMBIAR TAMAÑO");
-									this.contenedorHistograma.setOptions({
-														    chart: {
-															width: this.dialogoHistograma.width,
-															height: this.dialogoHistograma.height
-														    }
-														});
-									} );
-	*/
+	this.dialogoHistograma.dialog("option", "resizable", false);
+	this.dialogoHistograma.dialog("option", "width", anchoHistograma); 
+	this.dialogoHistograma.dialog("option", "height", altoHistograma);
 
 	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	this.dialogoHistograma.dialog( "close" );
-	this.dialogoHistogramaAcumulativo.dialog( "close" );
+	//this.dialogoHistograma.dialog( "close" );
+	//this.dialogoHistogramaAcumulativo.dialog( "close" );
 }
 
 function borrarObjetoBogui(id){
