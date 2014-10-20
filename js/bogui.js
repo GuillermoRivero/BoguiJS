@@ -49,6 +49,8 @@ function Bogui(img, id) {
 	this.dialogoHistogramaAcumulativo;
 	this.contenedorHistogramaAcumulativo;
 	//METODOS
+	this.calcularBrillo = calcularBrillo;
+	this.cambiarBrillo = cambiarBrillo;
 	this.reducirImagen = reducirImagen;
 	this.RGBA2BW = RGBA2BW;
 	this.crearHistograma = crearHistograma;
@@ -105,6 +107,9 @@ function Bogui(img, id) {
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 55); 
 	this.dialogo.dialog("option", "height", this.imgCanvas.height + 80);
 	this.crearHistograma();
+	
+	
+	
 		
 }
 
@@ -373,6 +378,67 @@ function RGBA2BW(){
 	this.ctx.putImageData(imageData, 0, 0);
 
 };
+
+function cambiarBrillo(nivel){
+
+	//Obtener la matriz de datos.
+	var imageData = this.ctx.getImageData(0, 0, this.imagen.width, this.imagen.height);
+   	var pixelData = imageData.data;
+   	var bytesPerPixel = 4;
+
+	//TODO: Exportar la imagen a otro objeto en vez de aplicar los cambios en el mismo.
+
+	var funcionTransferencia = new Array(256);
+	var i = 0;
+	for(i = 0; i < funcionTransferencia.length; i++){
+	
+			if(i + nivel < 0){
+				funcionTransferencia[i] = 0;
+			}else if(i + nivel > 255){
+				funcionTransferencia[i] = 255;
+			}else{
+				funcionTransferencia[i] = i + + nivel;
+			}
+	}
+
+   	for(var y = 0; y < this.imagen.height; y++) {
+      		for(var x = 0; x < this.imagen.width; x++) {
+			 var startIdx = (y * bytesPerPixel * this.imagen.width) + (x * bytesPerPixel);
+			
+			 //RED
+			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
+			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
+			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+			
+	      	}
+	   }
+	//Cargar la matriz de datos en el canvas
+	this.ctx.putImageData(imageData, 0, 0);
+	
+
+};
+
+
+function calcularBrillo(nivel){
+
+	var brillo = 0;
+	var sumatorio = 0;
+	var total = 0;
+
+	for(i = 0; i < this.histograma.length; i++){
+		sumatorio = sumatorio + this.histograma[i] * i;
+		total = total + this.histograma[i];
+	}
+
+	brillo = sumatorio/total;
+	console.log(brillo);
+	return brillo;
+	
+
+};
+
+
+
 
 /////BOTONES INTERFAZ
 
