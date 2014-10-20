@@ -1,11 +1,15 @@
 //CONFIGURACION POR DEFECTO
 var modoImagen = "PAL";
 var formatoDescarga = "PNG";
+var maxWidth = 600;
+var maxHeight = 600;
 /*
 TO DO:
 	AÑADIR VARIABLES DE TAMAÑO DE TRABAJO
 	COLORES PARA EL CSS??? 
 */
+
+
 
 // Atajo para $( document ).ready()
 $(function() {
@@ -14,6 +18,8 @@ $(function() {
 			//Actualizamos las variables
 			modoImagen = localStorage.getItem("modoImagen");
 		    formatoDescarga = localStorage.getItem("formatoDescarga");
+			maxWidth = localStorage.getItem("maxWidth");
+			maxHeight = localStorage.getItem("maxHeight");
 		}
 	}
 
@@ -54,6 +60,8 @@ $(function() {
 		if (window.localStorage) { //Si el navegador soporta localStorage
 			localStorage.setItem("modoImagen",modoImagen);
 			localStorage.setItem("formatoDescarga",formatoDescarga);
+			localStorage.setItem("maxWidth",maxWidth);
+			localStorage.setItem("maxHeight",maxHeight);					
 			$("body").append("<div id=\"dialog-message\">Your configuration has been saved</div>");
 			$( "#dialog-message" ).dialog({
 			  title: "Message",
@@ -89,19 +97,6 @@ $(function() {
 		formatoDescarga = "PNG";		
 	});				
 	
-	$(document).tooltip();
-	// Hover states on the static widgets
-	$( "#tools li" ).hover(
-		function() {
-			$( this ).addClass( "ui-state-hover" );
-		},
-		function() {
-			$( this ).removeClass( "ui-state-hover" );
-		}
-	);	
 	
-	$("#fileButton, #fileMenu").click(function() {
-		$("#fileSelector").click();
-	});	
 	
 });

@@ -2,19 +2,45 @@
 
 Autores: Guillermo Rivero Rodríguez y Boris Ballester Hernández"
 
+IMPORTANTEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!!!
+EL TAMAÑO DE TRABAJO DE IMAGEN, FORMATO DE DESCARGA Y MODO DE IMAGEN VIENEN DADOS POR EL FICHERO DE CONFIGURACION, PARA USARLOS
+	-window.maxHeight
+	-window.maxWidth
+	-window.modoImagen
+	-window.formatoDescarga
 */
 
 var imagen;
 var objetosBogui = [];
 var objetoActual = 0;
 var numeroObjetos = 0;
-var maxWidth = 600;
-var maxHeight = 600;
 var altoHistograma = 470;
 var anchoHistograma = 500;
 
 $(document).ready(function() {
-	document.getElementById("fileSelector").addEventListener("change", readImage, false);
+	//Añadimos el evento para las imagenes
+	$("#fileSelector").on("change", readImage);
+	
+	// Hover para los botones de la barra
+	$( "#tools li" ).hover(
+		function() {
+			$( this ).addClass( "ui-state-hover" );
+		},
+		function() {
+			$( this ).removeClass( "ui-state-hover" );
+		}
+	);	
+	//Habilitamos tooltips del menu
+	$( "#bars" ).tooltip();	
+	
+	//Añadimos la opciones del menu
+	$("#fileButton, #fileMenu").click(function() {
+		$("#fileSelector").click();
+	});	
+
+	$("#instaDownloadButton").click(function() {
+		descargarImagen(window.formatoDescarga);
+	});		
 });
 
 
@@ -38,7 +64,7 @@ function Bogui(img, id) {
 
 	//ATRIBUTOS
 	this.ident = id;
-	this.modo = "NTSC";
+	this.modo = window.modoImagen;
 	this.imagen = img;
 	this.imgCanvas;
 	this.ctx;
@@ -56,38 +82,33 @@ function Bogui(img, id) {
 	this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
 	this.descargarImagen = descargarImagen;
 
-	//Crear ventana con el canvas
-
-	this.dialogo = jQuery('<div/>', {
-	    	id: "dialogo" + this.ident,
-	   	height: maxHeight,
-		width: maxWidth
-	}).appendTo('#workspace');
-
 	this.imgCanvas = document.createElement("canvas");
-	this.imgCanvas.setAttribute("id", "canvasID");
+	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
 	this.imgCanvas.setAttribute("height", this.imagen.height);
 	this.imgCanvas.setAttribute("width", this.imagen.width);
+	this.imgCanvas.setAttribute("autofocus", "autofocus"); //Si no se especifica el foco, se asigna al primer elemento del dialog (boton cerrar)
 
+	//Crear ventana con el canvas
+	this.dialogo = $('<div/>', {
+	    id: "dialogo" + this.ident,
+		title: "Imagen: " + this.ident,
+	   	height: maxHeight,
+		width: maxWidth	
+	}).appendTo('#workspace');
+		
 	this.dialogo.append(this.imgCanvas);
 	this.dialogo.dialog();
-	this.dialogo.dialog("option", "title", "Imagen: " + this.ident);
-
-	//LLamar a la funcion que destruye el objeto al cerrar la ventana
-	this.dialogo.bind("dialogclose",function(e){
+	
+	this.dialogo.on("dialogclose",function(e){			
+		
 		var exp = /dialogo(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
-
-		objetosBogui[obtenerPosArray(idActual)].dialogoHistograma.dialog("close");
-		objetosBogui[obtenerPosArray(idActual)].dialogoHistogramaAcumulativo.dialog("close");
-
-		borrarObjetoBogui(idActual); 
+		
+		borrarObjetoBogui(idActual);
+		
  	});
-
 	
-	
-
 	this.dialogo.on( "dialogfocus", function( e, ui ) {
 						var exp = /dialogo(\d+)/i
 						var res = exp.exec(e.target.id);
@@ -137,15 +158,15 @@ function descargarImagen(formato){
 	var dataUrl;
 
 	switch(formato){
-	case "png":
+	case "PNG":
 		dataUrl = this.imgCanvas.toDataURL('image/png', 1); // obtenemos la imagen como png
 		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
 		break;
-	case "jpeg":
+	case "JPEG":
 		dataUrl = this.imgCanvas.toDataURL('image/jpeg', 1);
 		dataUrl = dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
 		break;
-	case "webp":
+	case "WEBP":
 		dataUrl = this.imgCanvas.toDataURL('image/webp', 1);
 		dataUrl = dataUrl.replace("image/webp",'image/octet-stream'); // sustituimos el tipo por octet
 		break;
@@ -334,10 +355,10 @@ function reducirImagen(){
 
 	// Determinar el ratio de conversion de la imagen
 	var ratio = 1;
-	if(this.imagen.width > maxWidth)
-		ratio = maxWidth / this.imagen.width;
-	else if(this.imagen.height > maxHeight)
-		ratio = maxHeight / this.imagen.height;
+	if(this.imagen.width > window.maxWidth)
+		ratio = window.maxWidth / this.imagen.width;
+	else if(this.imagen.height > window.maxHeight)
+		ratio = window.maxHeight / this.imagen.height;
 
 	//Dibujar la imagen original en el segundo canvas
 	canvasCopy.width = this.imagen.width;
@@ -483,4 +504,3 @@ function setModoImagen(modo){
 		objetosBogui[objetoActual].modo = modo;
 	}
 }
-
