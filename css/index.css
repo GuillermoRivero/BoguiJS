@@ -7,18 +7,55 @@ img{
 	text-align:center;
 }
 
+body{
+	min-width: 1024px;
+}
+
 header{
 	padding: 10px;
+	margin: 0 auto;
 }
 
-nav{
-	background-color: red;
-}
 
 #bars{
-	background-color: gray;
+	background-color: #e6e6e6;
+	border: #d3d3d3 1px solid;
+	-moz-border-radius-bottomright: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	border-bottom-left-radius: 10px;	
 }
 
-#workspace{
-	background-color: green;	
+
+#tools {
+	margin: 0;
+	margin-top: 5px;
+	padding: 0;
+}
+#tools li {
+	margin: 2px;
+	position: relative;
+	padding: 4px 0;
+	cursor: pointer;
+	float: left;
+	list-style: none;
+}
+#tools span.ui-icon {
+	float: left;
+	margin: 0 4px;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#fileSelector{
+	display:none;
 }

@@ -1,11 +1,12 @@
+﻿@charset "UTF-8";
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
 
-#cssmenu,
-#cssmenu ul,
-#cssmenu ul li,
-#cssmenu ul li a,
-#cssmenu ul li span,
-#cssmenu #menu-button {
+.cssmenu,
+.cssmenu ul,
+.cssmenu ul li,
+.cssmenu ul li a,
+.cssmenu ul li span,
+.cssmenu #menu-button {
   margin: 0;
   padding: 0;
   border: 0;
@@ -17,8 +18,8 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-#cssmenu:after,
-#cssmenu > ul:after {
+.cssmenu:after,
+.cssmenu > ul:after {
   content: ".";
   display: block;
   clear: both;
@@ -26,10 +27,10 @@
   line-height: 0;
   height: 0;
 }
-#cssmenu #menu-button {
+.cssmenu #menu-button {
   display: none;
 }
-#cssmenu {
+.cssmenu {
   width: auto;
   font-family: 'Open Sans', Helvetica, sans-serif;
   background: #39b1cc;
@@ -40,29 +41,29 @@
   background: -ms-linear-gradient(top, #51bbd2 0%, #2d97af 100%);
   background: linear-gradient(to bottom, #51bbd2 0%, #2d97af 100%);
 }
-#cssmenu > ul {
-  background: url('images/bg.png');
+.cssmenu > ul {
+  background: url('images/menu-bg.png');
   box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.05);
 }
-#cssmenu.align-right > ul > li {
+.cssmenu.align-right > ul > li {
   float: right;
 }
-#cssmenu > ul > li {
+.cssmenu > ul > li {
   float: left;
   display: inline-block;
 }
-#cssmenu.align-center > ul {
+.cssmenu.align-center > ul {
   float: none;
   text-align: center;
 }
-#cssmenu.align-center > ul > li {
+.cssmenu.align-center > ul > li {
   float: none;
 }
-#cssmenu.align-center ul ul {
+.cssmenu.align-center ul ul {
   text-align: left;
 }
-#cssmenu > ul > li > span,
-#cssmenu > ul > li > a {
+.cssmenu > ul > li > span,
+.cssmenu > ul > li > a {
   padding: 10px;
   border-right: 1px solid rgba(80, 80, 80, 0.12);
   text-decoration: none;
@@ -74,22 +75,22 @@
   cursor: pointer;
 }
 
-#cssmenu > ul > li:hover > span,
-#cssmenu > ul > li > span:hover,
-#cssmenu > ul > li.active > span,
-#cssmenu > ul > li:hover > a,
-#cssmenu > ul > li > a:hover,
-#cssmenu > ul > li.active > a {
+.cssmenu > ul > li:hover > span,
+.cssmenu > ul > li > span:hover,
+.cssmenu > ul > li.active > span,
+.cssmenu > ul > li:hover > a,
+.cssmenu > ul > li > a:hover,
+.cssmenu > ul > li.active > a {
   color: #ffffff;
-  background: #32a9c3;
+  background: #39b1cc;
   background: rgba(0, 0, 0, 0.1);
 }
-#cssmenu > ul > li.has-sub > span,
-#cssmenu > ul > li.has-sub > a {
+.cssmenu > ul > li.has-sub > span,
+.cssmenu > ul > li.has-sub > a {
   padding-right: 20px;
 }
-#cssmenu > ul > li.has-sub > span::after,
-#cssmenu > ul > li.has-sub > a::after {
+.cssmenu > ul > li.has-sub > span::after,
+.cssmenu > ul > li.has-sub > a::after {
   content: "";
   position: absolute;
   width: 0;
@@ -99,13 +100,13 @@
   right: 5px;
   top: 15px;
 }
-#cssmenu > ul > li.has-sub.active > span::after,
-#cssmenu > ul > li.has-sub:hover > span,
-#cssmenu > ul > li.has-sub.active > a::after,
-#cssmenu > ul > li.has-sub:hover > a {
+.cssmenu > ul > li.has-sub.active > span::after,
+.cssmenu > ul > li.has-sub:hover > span,
+.cssmenu > ul > li.has-sub.active > a::after,
+.cssmenu > ul > li.has-sub:hover > a {
   border-top-color: #ffffff;
 }
-#cssmenu ul ul {
+.cssmenu ul ul {
   position: absolute;
   left: -9999px;
  /* top: 60px;*/
@@ -117,11 +118,12 @@
   -ms-transition: top 0.2s ease, opacity 0.2s ease-in;
   -o-transition: top 0.2s ease, opacity 0.2s ease-in;
   transition: top 0.2s ease, opacity 0.2s ease-in;
+  z-index: 1;
 }
-#cssmenu.align-right ul ul {
+.cssmenu.align-right ul ul {
   text-align: right;
 }
-#cssmenu > ul > li > ul::after {
+.cssmenu > ul > li > ul::after {
   content: "";
   position: absolute;
   width: 0;
@@ -131,11 +133,11 @@
   top: -4px;
   left: 20px;
 }
-#cssmenu.align-right > ul > li > ul::after {
+.cssmenu.align-right > ul > li > ul::after {
   left: auto;
   right: 20px;
 }
-#cssmenu ul ul ul::after {
+.cssmenu ul ul ul::after {
   content: "";
   position: absolute;
   width: 0;
@@ -145,44 +147,45 @@
   top: 11px;
   left: -4px;
 }
-#cssmenu.align-right ul ul ul::after {
+.cssmenu.align-right ul ul ul::after {
   border-right-color: transparent;
   border-left-color: #ffffff;
   left: auto;
   right: -4px;
 }
-#cssmenu > ul > li > ul {
+.cssmenu > ul > li > ul {
   top: 50px;
 }
-#cssmenu > ul > li:hover > ul {
+.cssmenu > ul > li:hover > ul {
   top: 32px;
   left: 0;
   opacity: 1;
 }
-#cssmenu.align-right > ul > li:hover > ul {
+.cssmenu.align-right > ul > li:hover > ul {
   left: auto;
   right: 0;
 }
-#cssmenu ul ul ul {
+.cssmenu ul ul ul {
   padding-top: 0;
   padding-left: 6px;
 }
-#cssmenu.align-right ul ul ul {
+.cssmenu.align-right ul ul ul {
   padding-right: 6px;
+  z-index: 1;
 }
-#cssmenu ul ul > li:hover > ul {
+.cssmenu ul ul > li:hover > ul {
   left: 180px;
   top: 0;
   opacity: 1;
 }
-#cssmenu.align-right ul ul > li:hover > ul {
+.cssmenu.align-right ul ul > li:hover > ul {
   left: auto;
   right: 100%;
   opacity: 1;
 }
 
-#cssmenu ul ul li span,
-#cssmenu ul ul li a {
+.cssmenu ul ul li span,
+.cssmenu ul ul li a {
   text-decoration: none;
   font-weight: 400;
   padding: 11px 25px;
@@ -192,28 +195,28 @@
   cursor: pointer;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1), 1px 1px 1px rgba(0, 0, 0, 0.1), -1px 1px 1px rgba(0, 0, 0, 0.1);
 }
-#cssmenu ul ul li:hover > span,
-#cssmenu ul ul li.active > span ,
-#cssmenu ul ul li:hover > a,
-#cssmenu ul ul li.active > a {
+.cssmenu ul ul li:hover > span,
+.cssmenu ul ul li.active > span ,
+.cssmenu ul ul li:hover > a,
+.cssmenu ul ul li.active > a {
   color: #333333;
 }
-#cssmenu ul ul li:first-child > span,
-#cssmenu ul ul li:first-child > a {
+.cssmenu ul ul li:first-child > span,
+.cssmenu ul ul li:first-child > a {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
-#cssmenu ul ul li:last-child > span,
-#cssmenu ul ul li:last-child > a {
+.cssmenu ul ul li:last-child > span,
+.cssmenu ul ul li:last-child > a {
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
 }
-#cssmenu > ul > li > ul::after {
+.cssmenu > ul > li > ul::after {
   position: absolute;
   display: block;
 }
-#cssmenu ul ul li.has-sub > span::after ,
-#cssmenu ul ul li.has-sub > a::after {
+.cssmenu ul ul li.has-sub > span::after ,
+.cssmenu ul ul li.has-sub > a::after {
   content: "";
   position: absolute;
   width: 0;
@@ -223,23 +226,47 @@
   right: 17px;
   top: 14px;
 }
-#cssmenu.align-right ul ul li.has-sub > span::after,
-#cssmenu.align-right ul ul li.has-sub > a::after {
+.cssmenu.align-right ul ul li.has-sub > span::after,
+.cssmenu.align-right ul ul li.has-sub > a::after {
   border-left-color: transparent;
   border-right-color: #777777;
   right: auto;
   left: 17px;
 }
-#cssmenu ul ul li.has-sub.active > span::after,
-#cssmenu ul ul li.has-sub:hover > a::after {
+.cssmenu ul ul li.has-sub.active > span::after,
+.cssmenu ul ul li.has-sub:hover > a::after {
   border-left-color: #333333;
 }
-#cssmenu.align-right ul ul li.has-sub.active > span::after,
-#cssmenu.align-right ul ul li.has-sub:hover > span::after,
-#cssmenu.align-right ul ul li.has-sub.active > a::after,
-#cssmenu.align-right ul ul li.has-sub:hover > a::after {
+.cssmenu.align-right ul ul li.has-sub.active > span::after,
+.cssmenu.align-right ul ul li.has-sub:hover > span::after,
+.cssmenu.align-right ul ul li.has-sub.active > a::after,
+.cssmenu.align-right ul ul li.has-sub:hover > a::after {
   border-right-color: #333333;
   border-left-color: transparent;
 }
 
+/*
+LIGHT: ✓
+BOLD: ✔
+*/
+.cssmenu ul ul li:first-child > span.checked::after,
+.cssmenu ul ul li:first-child > a.checked::after {
+	content: "✔";
+	position: absolute;
+	right: 35px;
+}
+
+.cssmenu ul ul li:last-child > span.checked::after,
+.cssmenu ul ul li:last-child > a.checked::after {
+	content: "✔";
+	position: absolute;
+	right: 35px;
+}
+
+.cssmenu ul ul li > span.checked::after,
+.cssmenu ul ul li > a.checked::after {
+	content: "✔";
+	position: absolute;
+	right: 35px;
+}
 
