@@ -47,6 +47,16 @@ header{
 	margin: 0 4px;
 }
 
+.capaCanvas {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.relative {
+	position: relative;
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

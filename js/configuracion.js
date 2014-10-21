@@ -9,15 +9,13 @@ TO DO:
 	COLORES PARA EL CSS??? 
 */
 
-
-
 // Atajo para $( document ).ready()
 $(function() {
 	if (window.localStorage) { //Si el navegador soporta localStorage
 		if(localStorage.getItem("modoImagen") !== null ){ //Comprobamos si hemos guardado la configuracion personalizada
 			//Actualizamos las variables
 			modoImagen = localStorage.getItem("modoImagen");
-		    formatoDescarga = localStorage.getItem("formatoDescarga");
+		    	formatoDescarga = localStorage.getItem("formatoDescarga");
 			maxWidth = localStorage.getItem("maxWidth");
 			maxHeight = localStorage.getItem("maxHeight");
 		}
