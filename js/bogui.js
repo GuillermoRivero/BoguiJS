@@ -11,6 +11,7 @@ EL TAMAÑO DE TRABAJO DE IMAGEN, FORMATO DE DESCARGA Y MODO DE IMAGEN VIENEN DAD
 */
 
 var imagen;
+var output = [];
 var objetosBogui = [];
 var objetoActual = 0;
 var numeroObjetos = 0;
@@ -37,7 +38,62 @@ $(document).ready(function() {
 	$("#fileButton, #fileMenu").click(function() {
 		$("#fileSelector").click();
 	});	
+	
+	$("#brilloMenu").click(function() {
+		var dialog, form;
+		
+		$("body").append("<div id=\"dialog\"></div>");
+		dialog = $( "#dialog" ).dialog({
+		  title: "Brillo:",
+		  height: 200,
+		  width: 350,
+		  modal: true,
+		  buttons: {
+			Ok:function() {
+			  //EJECUTAR BRILLO
+			  dialog.dialog( "close" );
+			  dialog.remove();
+			},
+			Cancel: function() {
+			  dialog.dialog( "close" );
+			  dialog.remove();
+			}
+		  }
+		});
+		
+		dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brightValue\" type=\"text\"></p><div id=\"sliderBrillo\"></div></fieldset></form>");;
 
+		form = dialog.find( "form" ).on( "submit", function( event ) {
+		  event.preventDefault();
+		});		
+		
+		var spinner = $( "#brilloSpinner" ).spinner({
+		  min: -255,
+		  max: 255,
+		  step: 1,
+		  start: 0,
+		  spin: (function(event, ui ){
+			$( "#sliderBrillo" ).slider( "value", ui.value );
+			})
+		});
+			
+		$( "#sliderBrillo" ).slider({
+		  range: "min",
+		  value: 0,
+		  min: -255,
+		  autofocus: "autofocus",
+		  max: 255,
+		  slide: function( event, ui ) {
+			spinner.spinner( "value", ui.value );
+		  }
+		});
+		spinner.spinner( "value", $( "#sliderBrillo" ).slider( "value" ));
+
+		dialog.dialog();
+	});	
+    
+
+	
 	$("#instaDownloadButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
@@ -85,13 +141,14 @@ function Bogui(img, id) {
 	this.crearHistogramaSimple = crearHistogramaSimple;
 	this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
 	this.descargarImagen = descargarImagen;
-
-	this.imgCanvas = document.createElement("canvas");
-	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
-	this.imgCanvas.setAttribute("height", this.imagen.height);
-	this.imgCanvas.setAttribute("width", this.imagen.width);
-	this.imgCanvas.setAttribute("autofocus", "autofocus"); //Si no se especifica el foco, se asigna al primer elemento del dialog (boton cerrar)
-
+	
+	this.imgCanvas =  $("<canvas/>", {
+            autofocus: "autofocus",
+			id: "canvas"+this.ident,
+			witdh: this.imagen.height,
+			height: this.imagen.width
+        })[0];
+	
 	//Crear ventana con el canvas
 	this.dialogo = $('<div/>', {
 	    id: "dialogo" + this.ident,
@@ -101,6 +158,7 @@ function Bogui(img, id) {
 	}).appendTo('#workspace');
 		
 	this.dialogo.append(this.imgCanvas);
+	this.dialogo.append("<div id=\"position"+this.ident+"\"><span id=\"coordinates"+this.ident+"\"></span></div>");
 	this.dialogo.dialog();
 	
 	this.dialogo.on("dialogclose",function(e){			
@@ -134,6 +192,30 @@ function Bogui(img, id) {
 	this.dialogo.dialog("option", "height", this.imgCanvas.height + 80);
 		
 }
+
+function getObjetoBoguiActual(){
+	return objetosBogui[objetoActual];
+}
+
+
+function findPos(obj) {
+    var curleft = 0, curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return { x: curleft, y: curtop };
+    }
+    return undefined;
+}
+
+function rgbToHex(r, g, b){
+	if (r > 255 || g > 255 || b > 255)
+		throw "Invalid color component";
+	return ((r << 16) | (g << 8) | b).toString(16);
+}
+
 
 function obtenerPosArray(id){
 
