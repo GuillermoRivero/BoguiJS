@@ -98,7 +98,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
 		}else{
-			objetosBogui[objetoActual].descargarImagen(window.formatoDescarga);
+			objetosBogui[objetoActual].descargarImagen("foto" + objetosBogui[objetoActual].ident, window.formatoDescarga);
 		}	
 	});		
 });
@@ -127,14 +127,22 @@ function Bogui(img, id) {
 	this.modo = window.modoImagen;
 	this.imagen = img;
 	this.imgCanvas;
+	this.regCanvas;
 	this.ctx;
+	this.regctx;
 	this.histograma = new Array(256);
 	this.histogramaAcumulativo = new Array(256);
 	this.dialogoHistograma;
 	this.contenedorHistograma;
 	this.dialogoHistogramaAcumulativo;
 	this.contenedorHistogramaAcumulativo;
+	this.mouseXini = 0; //Variables para funciones que requieras capturar posiciones de raton
+	this.mouseYini = 0;
+	this.mouseXfin = 0; //Variables para funciones que requieras capturar posiciones de raton
+	this.mouseYfin = 0;
+	
 	//METODOS
+	this.dibujarRegionInteres = dibujarRegionInteres;
 	this.calcularBrillo = calcularBrillo;
 	this.reducirImagen = reducirImagen;
 	this.RGBA2BW = RGBA2BW;
@@ -142,31 +150,42 @@ function Bogui(img, id) {
 	this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
 	this.descargarImagen = descargarImagen;
 	
+<<<<<<< HEAD
 	this.imgCanvas =  $("<canvas/>", {
             autofocus: "autofocus",
 			id: "canvas"+this.ident,
 			witdh: this.imagen.height,
 			height: this.imagen.width
         })[0];
+=======
+	this.imgCanvas = document.createElement("canvas");
+	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
+	this.imgCanvas.setAttribute("height", this.imagen.height);
+	this.imgCanvas.setAttribute("width", this.imagen.width);
+	this.imgCanvas.setAttribute("class", "capaCanvas");
+	this.imgCanvas.setAttribute("autofocus", "autofocus"); //Si no se especifica el foco, se asigna al primer elemento del dialog (boton cerrar)
+
+>>>>>>> origin/master
 	
 	//Crear ventana con el canvas
 	this.dialogo = $('<div/>', {
 	    id: "dialogo" + this.ident,
 		title: "Imagen: " + this.ident,
 	   	height: maxHeight,
-		width: maxWidth	
+		width: maxWidth,
+		class: "relative"
 	}).appendTo('#workspace');
+
 		
 	this.dialogo.append(this.imgCanvas);
 	this.dialogo.append("<div id=\"position"+this.ident+"\"><span id=\"coordinates"+this.ident+"\"></span></div>");
 	this.dialogo.dialog();
+	this.dialogo.draggable({containment: "parent"});
 	
 	this.dialogo.on("dialogclose",function(e){			
-		
 		var exp = /dialogo(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
-		
 		borrarObjetoBogui(idActual);
 		
  	});
@@ -190,8 +209,80 @@ function Bogui(img, id) {
 	//Ajustar tamaño de la ventana
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 55); 
 	this.dialogo.dialog("option", "height", this.imgCanvas.height + 80);
-		
+
+	this.regCanvas = document.createElement("canvas");
+	this.regCanvas.setAttribute("id", "canvasreg"+this.ident);
+	this.regCanvas.setAttribute("height", this.imgCanvas.height);
+	this.regCanvas.setAttribute("width", this.imgCanvas.width);
+	this.regCanvas.setAttribute("z-index", 1);
+	this.regCanvas.setAttribute("class", "capaCanvas");
+	this.dialogo.append(this.regCanvas);
+
+	//Listeners del canvas
+	$(this.regCanvas).mousedown(function(e){
+		var exp = /canvasreg(\d+)/i
+		var res = exp.exec(e.target.id);
+		var idActual = res[1];
+		var pos = findPos(this);
+                objetosBogui[obtenerPosArray(idActual)].mouseXini = e.pageX - pos.x;
+                objetosBogui[obtenerPosArray(idActual)].mouseYini = e.pageY - pos.y;
+	});
+
+	$(this.regCanvas).mouseup(function(e){
+		var exp = /canvasreg(\d+)/i
+		var res = exp.exec(e.target.id);
+		var idActual = res[1];
+
+		var pos = findPos(this);
+                objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+                objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+		objetosBogui[obtenerPosArray(idActual)].dibujarRegionInteres();
+	});
+
+	$(this.regCanvas).mousemove(function(e) {
+                var pos = findPos(this);
+                var x = e.pageX - pos.x;
+                var y = e.pageY - pos.y;
+
+		var exp = /canvasreg(\d+)/i
+		var res = exp.exec(e.target.id);
+		var idActual = res[1];
+
+                var p = objetosBogui[obtenerPosArray(idActual)].ctx.getImageData(x, y, 1, 1).data;
+                var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+                $("#coordinates"+ objetosBogui[obtenerPosArray(idActual)].ident).html("x=" + x + ", y=" + y + " value=" + hex);
+
+        });		
 }
+
+function dibujarRegionInteres(){
+
+	this.regCanvas.width = this.regCanvas.width;
+	this.regctx = this.regCanvas.getContext("2d");
+
+	this.regctx.rect(this.mouseXini, this.mouseYini, this.mouseXfin - this.mouseXini , this.mouseYfin - this.mouseYini);
+	this.regctx.stroke();
+}
+
+function findPos(obj) {
+    var curleft = 0, curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return { x: curleft, y: curtop };
+    }
+    return undefined;
+}
+ 
+function rgbToHex(r, g, b){
+        if (r > 255 || g > 255 || b > 255)
+                throw "Invalid color component";
+        return ((r << 16) | (g << 8) | b).toString(16);
+}
+
+
 
 function getObjetoBoguiActual(){
 	return objetosBogui[objetoActual];
@@ -239,29 +330,34 @@ function cambiarFoco(foco){
 	}
 }
 
-function descargarImagen(formato){
+function descargarImagen(nombreArchivo, formato){
 
 	var dataUrl;
-
+	var link = document.createElement('a');
+   	
 	switch(formato){
-	case "PNG":
+	case "png":
 		dataUrl = this.imgCanvas.toDataURL('image/png', 1); // obtenemos la imagen como png
 		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
+		link.download = nombreArchivo + ".png";
 		break;
-	case "JPEG":
+	case "jpeg":
 		dataUrl = this.imgCanvas.toDataURL('image/jpeg', 1);
 		dataUrl = dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
+		link.download = nombreArchivo + ".jpeg";
 		break;
-	case "WEBP":
+	case "webp":
 		dataUrl = this.imgCanvas.toDataURL('image/webp', 1);
 		dataUrl = dataUrl.replace("image/webp",'image/octet-stream'); // sustituimos el tipo por octet
+		link.download = nombreArchivo + ".webp";
 		break;
 	default:
 		dataUrl = this.imgCanvas.toDataURL();
 		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
+		link.download = nombreArchivo + ".png";
 	}
-
-	document.location.href = dataUrl; // para forzar al navegador a descargarlo
+	link.href = dataUrl;
+   	link.click();
 }
 
 function crearHistogramaSimple(){
@@ -285,6 +381,7 @@ function crearHistogramaSimple(){
 	}).appendTo('#workspace');
 
 	this.contenedorHistograma = jQuery('<div/>').appendTo(this.dialogoHistograma);
+	this.contenedorHistograma.attr("autofocus", "autofocus");
 	
 	this.contenedorHistograma.highcharts({
         chart: {
@@ -363,6 +460,7 @@ function crearHistogramaAcumulativo(){
 
 	
 	this.contenedorHistogramaAcumulativo = jQuery('<div/>').appendTo(this.dialogoHistogramaAcumulativo);
+	this.contenedorHistogramaAcumulativo.attr("autofocus", "autofocus");
 	
 	this.contenedorHistogramaAcumulativo.highcharts({
         chart: {
@@ -429,8 +527,10 @@ function borrarObjetoBogui(id){
 	}
 	if(objetosBogui.length > 0){
 		objetosBogui[0].dialogo.dialog( "moveToTop" );
+		objetoActual = 0;
+	}else{
+		objetoActual = null;
 	}
-	objetoActual = 0;
 }
 
 function reducirImagen(){
@@ -493,7 +593,9 @@ function RGBA2BW(){
 	//Cargar la matriz de datos en el canvas
 	this.ctx.putImageData(imageData, 0, 0);
 
-};
+}
+
+
 
 function cambiarBrillo(nivel){
 	//Obtener la matriz de datos.
@@ -530,7 +632,31 @@ function cambiarBrillo(nivel){
 	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetosBogui[objetoActual].imgCanvas;
 	objetosBogui[obtenerPosArray(numeroObjetos)].ctx.putImageData(imageData, 0, 0);
 	cambiarFoco(numeroObjetos);
+	numeroObjetos++;
 };
+
+
+function recortar(){
+
+	var canvasCopy = document.createElement("canvas");
+	var copyContext = canvasCopy.getContext("2d");
+
+	var imageData = objetosBogui[obtenerPosArray(objetoActual)].ctx.getImageData( objetosBogui[obtenerPosArray(objetoActual)].mouseXini,  objetosBogui[obtenerPosArray(objetoActual)].mouseYini,  objetosBogui[obtenerPosArray(objetoActual)].mouseXfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseXini ,  objetosBogui[obtenerPosArray(objetoActual)].mouseYfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseYini);
+
+	canvasCopy.width = objetosBogui[obtenerPosArray(objetoActual)].mouseXfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseXini;
+	canvasCopy.height = objetosBogui[obtenerPosArray(objetoActual)].mouseYfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseYini;
+
+	copyContext.putImageData(imageData, 0,0);
+
+	var savedData = new Image();
+	savedData.src = canvasCopy.toDataURL("image/png", 1);
+	//Cargar la matriz de datos en el canvas
+	objetosBogui.push(new Bogui(savedData, numeroObjetos));
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++;
+}
+
+
 
 
 function calcularBrillo(nivel){
@@ -578,9 +704,10 @@ function descargar(formato){
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
 		console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
 	}else{
-		objetosBogui[objetoActual].descargarImagen(formato);
+		objetosBogui[objetoActual].descargarImagen("foto" + objetosBogui[objetoActual].ident, formato);
 	}
 }
+
 
 function setModoImagen(modo){
 	//TODO: Mostrar un mensaje al usuario de que se ha actualizado el modo
