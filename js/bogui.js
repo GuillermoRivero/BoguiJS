@@ -38,8 +38,8 @@ $(document).ready(function() {
 	$("#fileButton, #fileMenu").click(function() {
 		$("#fileSelector").click();
 	});	
-	
-	$("#brilloMenu").click(function() {
+
+$("#brilloMenu").click(function() {
 		var dialog, form;
 		
 		$("body").append("<div id=\"dialog\"></div>");
@@ -90,9 +90,7 @@ $(document).ready(function() {
 		spinner.spinner( "value", $( "#sliderBrillo" ).slider( "value" ));
 
 		dialog.dialog();
-	});	
-    
-
+	});		
 	
 	$("#instaDownloadButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
@@ -150,14 +148,6 @@ function Bogui(img, id) {
 	this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
 	this.descargarImagen = descargarImagen;
 	
-<<<<<<< HEAD
-	this.imgCanvas =  $("<canvas/>", {
-            autofocus: "autofocus",
-			id: "canvas"+this.ident,
-			witdh: this.imagen.height,
-			height: this.imagen.width
-        })[0];
-=======
 	this.imgCanvas = document.createElement("canvas");
 	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
 	this.imgCanvas.setAttribute("height", this.imagen.height);
@@ -165,7 +155,6 @@ function Bogui(img, id) {
 	this.imgCanvas.setAttribute("class", "capaCanvas");
 	this.imgCanvas.setAttribute("autofocus", "autofocus"); //Si no se especifica el foco, se asigna al primer elemento del dialog (boton cerrar)
 
->>>>>>> origin/master
 	
 	//Crear ventana con el canvas
 	this.dialogo = $('<div/>', {
@@ -282,30 +271,6 @@ function rgbToHex(r, g, b){
         return ((r << 16) | (g << 8) | b).toString(16);
 }
 
-
-
-function getObjetoBoguiActual(){
-	return objetosBogui[objetoActual];
-}
-
-
-function findPos(obj) {
-    var curleft = 0, curtop = 0;
-    if (obj.offsetParent) {
-        do {
-            curleft += obj.offsetLeft;
-            curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-        return { x: curleft, y: curtop };
-    }
-    return undefined;
-}
-
-function rgbToHex(r, g, b){
-	if (r > 255 || g > 255 || b > 255)
-		throw "Invalid color component";
-	return ((r << 16) | (g << 8) | b).toString(16);
-}
 
 
 function obtenerPosArray(id){
