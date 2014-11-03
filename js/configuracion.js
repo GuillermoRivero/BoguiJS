@@ -1,8 +1,8 @@
 //CONFIGURACION POR DEFECTO
 var modoImagen = "PAL";
 var formatoDescarga = "PNG";
-var maxWidth = 600;
-var maxHeight = 600;
+var maxWidth = 400;
+var maxHeight = 400;
 /*
 TO DO:
 	AÑADIR VARIABLES DE TAMAÑO DE TRABAJO

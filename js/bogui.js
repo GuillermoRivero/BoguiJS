@@ -153,7 +153,6 @@ function Bogui(img, id) {
 	this.imgCanvas.setAttribute("height", this.imagen.height);
 	this.imgCanvas.setAttribute("width", this.imagen.width);
 	this.imgCanvas.setAttribute("class", "capaCanvas");
-	this.imgCanvas.setAttribute("autofocus", "autofocus"); //Si no se especifica el foco, se asigna al primer elemento del dialog (boton cerrar)
 
 	
 	//Crear ventana con el canvas
@@ -161,15 +160,13 @@ function Bogui(img, id) {
 	    id: "dialogo" + this.ident,
 		title: "Imagen: " + this.ident,
 	   	height: maxHeight,
-		width: maxWidth,
-		class: "relative"
+		width: maxWidth
 	}).appendTo('#workspace');
 
-		
-	this.dialogo.append(this.imgCanvas);
-	this.dialogo.append("<div id=\"position"+this.ident+"\"><span id=\"coordinates"+this.ident+"\"></span></div>");
-	this.dialogo.dialog();
-	this.dialogo.draggable({containment: "parent"});
+	var canvasContainer = $("<div id=\"canvasContainer"+this.ident+"\" class=\"canvasContainer\"></div>");
+	canvasContainer.append(this.imgCanvas);
+
+	this.dialogo.dialog({ resizable: false });
 	
 	this.dialogo.on("dialogclose",function(e){			
 		var exp = /dialogo(\d+)/i
@@ -195,9 +192,7 @@ function Bogui(img, id) {
 	this.reducirImagen();
 	this.RGBA2BW();
 
-	//Ajustar tamaño de la ventana
-	this.dialogo.dialog("option", "width", this.imgCanvas.width + 55); 
-	this.dialogo.dialog("option", "height", this.imgCanvas.height + 80);
+
 
 	this.regCanvas = document.createElement("canvas");
 	this.regCanvas.setAttribute("id", "canvasreg"+this.ident);
@@ -205,8 +200,22 @@ function Bogui(img, id) {
 	this.regCanvas.setAttribute("width", this.imgCanvas.width);
 	this.regCanvas.setAttribute("z-index", 1);
 	this.regCanvas.setAttribute("class", "capaCanvas");
-	this.dialogo.append(this.regCanvas);
 
+	
+	canvasContainer.append(this.regCanvas);
+	canvasContainer.append("<div style=\"clear:both\"></div>");
+	canvasContainer.css("height",this.imgCanvas.height+"px");
+	canvasContainer.css("width",this.imgCanvas.width+"px");
+	
+	$('.ui-dialog :button').blur();//REMOVE FOCUS
+	
+	this.dialogo.append(canvasContainer);
+	this.dialogo.append("<div id=\"position"+this.ident+"\"><span id=\"coordinates"+this.ident+"\">x= - y= - value= - </span></div>");
+	//Ajustar tamaño de la ventana
+	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
+	this.dialogo.css("overflow","hidden");
+
+	
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
 		var exp = /canvasreg(\d+)/i
@@ -239,7 +248,10 @@ function Bogui(img, id) {
 
                 var p = objetosBogui[obtenerPosArray(idActual)].ctx.getImageData(x, y, 1, 1).data;
                 var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
-                $("#coordinates"+ objetosBogui[obtenerPosArray(idActual)].ident).html("x=" + x + ", y=" + y + " value=" + hex);
+				if(x >= 0 && y >= 0){
+					$("#coordinates"+ objetosBogui[obtenerPosArray(idActual)].ident).html("x=" + x + " y=" + y + " value=" + hex);
+				}
+                
 
         });		
 }
