@@ -51,6 +51,7 @@ $("#ajusteBrilloContraste").click(function() {
 		  buttons: {
 			Ok:function() {
 			  //EJECUTAR BRILLO Y CONTRASTE
+			  console.log(objetosBogui[objetoActual].calcularBrilloContraste());
 			  dialog.dialog( "close" );
 			  dialog.remove();
 			},
@@ -163,7 +164,7 @@ function Bogui(img, id) {
 	
 	//METODOS
 	this.dibujarRegionInteres = dibujarRegionInteres;
-	this.calcularBrillo = calcularBrillo;
+	this.calcularBrilloContraste = calcularBrilloContraste;
 	this.reducirImagen = reducirImagen;
 	this.RGBA2BW = RGBA2BW;
 	this.crearHistogramaSimple = crearHistogramaSimple;
@@ -595,46 +596,6 @@ function RGBA2BW(){
 }
 
 
-
-function cambiarBrillo(nivel){
-	//Obtener la matriz de datos.
-	var imageData = objetosBogui[objetoActual].ctx.getImageData(0, 0, objetosBogui[objetoActual].imagen.width, objetosBogui[objetoActual].imagen.height);
-   	var pixelData = imageData.data;
-   	var bytesPerPixel = 4;
-
-	var funcionTransferencia = new Array(256);
-	var i = 0;
-	for(i = 0; i < funcionTransferencia.length; i++){
-	
-			if(i + nivel < 0){
-				funcionTransferencia[i] = 0;
-			}else if(i + nivel > 255){
-				funcionTransferencia[i] = 255;
-			}else{
-				funcionTransferencia[i] = i + + nivel;
-			}
-	}
-
-   	for(var y = 0; y < objetosBogui[objetoActual].imagen.height; y++) {
-      		for(var x = 0; x < objetosBogui[objetoActual].imagen.width; x++) {
-			 var startIdx = (y * bytesPerPixel * objetosBogui[objetoActual].imagen.width) + (x * bytesPerPixel);
-			
-			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
-			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
-			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
-			
-	      	}
-	   }
-	//Cargar la matriz de datos en el canvas
-
-	objetosBogui.push(new Bogui(objetosBogui[objetoActual].imagen, numeroObjetos));
-	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetosBogui[objetoActual].imgCanvas;
-	objetosBogui[obtenerPosArray(numeroObjetos)].ctx.putImageData(imageData, 0, 0);
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;
-};
-
-
 function recortar(){
 
 	var canvasCopy = document.createElement("canvas");
@@ -658,23 +619,68 @@ function recortar(){
 
 
 
-function calcularBrillo(nivel){
-
+function calcularBrilloContraste(){
 	this.crearHistogramaSimple();
-
 	var brillo = 0;
-	var sumatorio = 0;
+	var contraste = 0;
 	var total = 0;
-
-	for(i = 0; i < this.histograma.length; i++){
-		sumatorio = sumatorio + this.histograma[i] * i;
+	
+	//BRILLO
+	for (i = 0; i < this.histograma.length; i++) {
+		brillo += this.histograma[i] * i;
 		total = total + this.histograma[i];
 	}
 
-	brillo = sumatorio/total;
-	console.log(brillo);
-	return brillo;
-};
+	brillo = brillo/total;
+
+	//CONTRASTE
+	for (i = 0; i < this.histograma.length; i++){
+		contraste += this.histograma[i] * Math.pow( (brillo-i) ,2 );
+	}
+
+	contraste = Math.sqrt(contraste/total);
+
+	return [brillo, contraste];
+}
+
+function cambiarBrilloContraste(nuevoBrillo, nuevoContraste){
+
+	var imageData = objetosBogui[objetoActual].ctx.getImageData(0, 0, objetosBogui[objetoActual].imagen.width, objetosBogui[objetoActual].imagen.height);
+	var pixelData = imageData.data;
+	var bytesPerPixel = 4;
+
+	var brillo, contraste = objetosBogui[objetoActual].calcularBrilloContraste();
+		   // Int32[] byc = brightnessAndContrast(Image);
+		   // Bitmap result = new Bitmap(Image.Width, Image.Height);
+	var a, b;
+	var funcionTransferencia = new Array(256);
+
+	a = nuevoContraste / contraste; 
+	b = nuevoBrillo-a * brillo; 
+	for (i = 0; i < funcionTransferencia.length; i++) {
+		funcionTransferencia[i] = (a * i + b);
+		if (funcionTransferencia[i] > 255)
+		    funcionTransferencia[i] = 255;
+		if (funcionTransferencia[i] < 0)
+		    funcionTransferencia[i] = 0;
+	}
+
+	for(var y = 0; y < objetosBogui[objetoActual].imagen.height; y++) {
+		for(var x = 0; x < objetosBogui[objetoActual].imagen.width; x++) {
+			var startIdx = (y * bytesPerPixel * objetosBogui[objetoActual].imagen.width) + (x * bytesPerPixel);
+
+			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
+			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
+			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+		}
+	}
+
+	objetosBogui.push(new Bogui(objetosBogui[objetoActual].imagen, numeroObjetos));
+	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetosBogui[objetoActual].imgCanvas;
+	objetosBogui[obtenerPosArray(numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++;          
+}
 
 
 /////BOTONES INTERFAZ
