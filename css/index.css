@@ -69,6 +69,30 @@ header{
     user-select: none;
 }
 
+.no-close .ui-dialog-titlebar-close {display: none }
+
+table tbody tr{
+	margin: 5px auto;
+}
+
+.izq{
+	width:25%;
+	float:left;
+}
+.izq img{
+	width:80%;
+}
+.dcha{
+	width:75%;
+	float:left;
+}
+
+
+table tbody tr td input{
+	width: 35px;
+	margin: 0 5px;
+}
+
 #fileSelector{
 	display:none;
 }

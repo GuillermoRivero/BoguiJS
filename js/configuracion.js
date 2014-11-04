@@ -62,26 +62,46 @@ $(function() {
 			localStorage.setItem("maxHeight",maxHeight);					
 			$("body").append("<div id=\"dialog-message\">Your configuration has been saved</div>");
 			$( "#dialog-message" ).dialog({
-			  title: "Message",
-			  modal: true,
-			  buttons: {
+				title: "Message",
+				modal: true,
+				buttons: {
 				Ok: function() {
 				  $(this).dialog( "close" );
 				  $(this).remove();
 				}
-			  }
+				},
+				dialogClass: 'no-close' 		
+				/*
+				1 FORMA JQUERY
+				open: function(event, ui) { 
+					// Hide close button 
+					$(this).parent().children().children(".ui-dialog-titlebar-close").hide(); 
+				}
+				2 JQUERY Y CSS, MAS LIMPIA
+				dialogClass: 'no-close' 	 CSS: .no-close .ui-dialog-titlebar-close {display: none }
+				3 JQUERY OPTIMA
+					open: function(event, ui) {
+					  $(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').hide();
+					}			
+
+				open: function(event, ui) { 
+					// Hide close button 
+					$(".ui-dialog-titlebar-close", ui).hide()
+				}					
+				*/
 			});
 		}else{
-			$("body").append("<div id=\"dialog-message\">Your browser doesn't support LocalStorage</div>");
+			$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>Tu navegador no soporta localStorage</p></div></div>");
 			$("#dialog-message").dialog({
-			  title: "Error",
-			  modal: true,
-			  buttons: {
+				title: "Error",
+				modal: true,
+				buttons: {
 				Ok: function() {
 				  $(this).dialog( "close" );
 				  $(this).remove();
 				}
-			  }
+				},
+				dialogClass: 'no-close' 
 			});
 
 		}
