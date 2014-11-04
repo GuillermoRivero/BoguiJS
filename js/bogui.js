@@ -39,18 +39,18 @@ $(document).ready(function() {
 		$("#fileSelector").click();
 	});	
 
-$("#brilloMenu").click(function() {
+$("#ajusteBrilloContraste").click(function() {
 		var dialog, form;
 		
 		$("body").append("<div id=\"dialog\"></div>");
 		dialog = $( "#dialog" ).dialog({
 		  title: "Brillo:",
-		  height: 200,
+		  height: 250,
 		  width: 350,
 		  modal: true,
 		  buttons: {
 			Ok:function() {
-			  //EJECUTAR BRILLO
+			  //EJECUTAR BRILLO Y CONTRASTE
 			  dialog.dialog( "close" );
 			  dialog.remove();
 			},
@@ -61,13 +61,13 @@ $("#brilloMenu").click(function() {
 		  }
 		});
 		
-		dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brightValue\" type=\"text\"></p><div id=\"sliderBrillo\"></div></fieldset></form>");;
+		dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brightValue\" type=\"text\"></p><div id=\"sliderBrillo\"></div><p><label for=\"contrasteSpinner\">Contraste:</label><input id=\"contrasteSpinner\" name=\"contrastValue\" type=\"text\"></p><div id=\"sliderContraste\"></div></fieldset></form>");;
 
 		form = dialog.find( "form" ).on( "submit", function( event ) {
 		  event.preventDefault();
 		});		
 		
-		var spinner = $( "#brilloSpinner" ).spinner({
+		var brilloSpinner = $( "#brilloSpinner" ).spinner({
 		  min: -255,
 		  max: 255,
 		  step: 1,
@@ -84,11 +84,33 @@ $("#brilloMenu").click(function() {
 		  autofocus: "autofocus",
 		  max: 255,
 		  slide: function( event, ui ) {
-			spinner.spinner( "value", ui.value );
+			brilloSpinner.spinner( "value", ui.value );
 		  }
 		});
-		spinner.spinner( "value", $( "#sliderBrillo" ).slider( "value" ));
+		brilloSpinner.spinner( "value", $( "#sliderBrillo" ).slider( "value" ));
 
+		var contrasteSpinner = $( "#contrasteSpinner" ).spinner({
+		  min: -255,
+		  max: 255,
+		  step: 1,
+		  start: 0,
+		  spin: (function(event, ui ){
+			$( "#sliderContraste" ).slider( "value", ui.value );
+			})
+		});
+			
+		$( "#sliderContraste" ).slider({
+		  range: "min",
+		  value: 0,
+		  min: -255,
+		  autofocus: "autofocus",
+		  max: 255,
+		  slide: function( event, ui ) {
+			contrasteSpinner.spinner( "value", ui.value );
+		  }
+		});
+		contrasteSpinner.spinner( "value", $( "#sliderContraste" ).slider( "value" ));
+		
 		dialog.dialog();
 	});		
 	
