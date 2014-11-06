@@ -33,14 +33,16 @@
 					<ul>
 					   <li class="has-sub"><span>Archivo</span>
 						  <ul>
-							 <li><span id="fileMenu">Abrir Imagen</span></li>
-							 <li><a href="#">Guardar Imagen</a></li>
+							<li><span id="fileMenu">Abrir Imagen</span></li>
+							<li><span id="openImageAs">Abrir Imagen Como</span></li>
+							<li><span id="saveImage">Guardar Imagen</span></li>
+							<li><span id="saveImageAs">Abrir Imagen Como</span></li>
 						  </ul>
 					   </li>
 					   <li class="has-sub"><span>Ver</span>
 						  <ul>
 
-							 <li><span id="histrograma">Histograma</span></li>
+							 <li><span id="histograma">Histograma</span></li>
 							 <li><span id="histogramaAcumulativo">Histograma Acumulativo</span></li>
 							 <li><span id="informacionImagen">Informacion imagen</span></li>
 						  </ul>
@@ -61,8 +63,9 @@
 								   
 								</ul>
 							 </li>
-							 <li><span id="saveConfig">Guardar configuracion</span></li>
-							 <li><span id="defaultConfig">Configuracion por defecto</span></li>
+							 <li><span id="saveConfig">Tamaño Imagen</span></li>
+							 <li><span id="saveConfig">Guardar Configuracion</span></li>
+							 <li><span id="defaultConfig">Configuracion Por Defecto</span></li>
 						  </ul>
 					   </li>
 					   <li class="has-sub"><span>Operaciones Lineales</span>
@@ -88,20 +91,16 @@
 					</ul>
 				</div>
 				<ul id="tools" class="ui-widget ui-helper-clearfix">
-					<li class="ui-state-default ui-corner-all" title="Abrir imagen"><span id="fileButton" class="ui-icon ui-icon-folder-open"></span> <input type='file' id="fileSelector" accept="image/*"/></li>
-					<li class="ui-state-default ui-corner-all" title="Descargar imagen"><span id="downloadButton" class="ui-icon ui-icon-image"></span></li>					
-					<li class="ui-state-default ui-corner-all" title="Descargar imagen directamente"><span id="instaDownloadButton" class="ui-icon ui-icon-arrowthick-1-s"></span></li>
+					<li class="ui-state-default ui-corner-all" title="Abrir Imagen"><span id="fileButton" class="ui-icon ui-icon-document"></span> <input type='file' id="fileSelector" accept="image/*"/></li>
+					<li class="ui-state-default ui-corner-all" title="Abrir Imagen Como"><span id="openImageAs" class="ui-icon ui-icon-folder-open"></span></li>								
+					<li class="ui-state-default ui-corner-all" title="Guardar Imagen "><span id="instaDownloadButton" class="ui-icon ui-icon-arrowthick-1-s"></span></li>
+					<li class="ui-state-default ui-corner-all" title="Guardar Imagen Como"><span id="downloadButton" class="ui-icon ui-icon-image"></span></li>							
 					<li class="ui-state-default ui-corner-all" title="Guardar configuración"><span id="saveButton" class="ui-icon ui-icon-disk"></span></li>
+					<li class="ui-state-default ui-corner-all" title="Región de interés"><span id="roi" class="ui-icon ui-icon-arrow-2-ne-sw"></span></li>
+					<li class="ui-state-default ui-corner-all" title="Recortar"><span id="roi" class="ui-icon ui-icon-scissors"></span></li>
 				</ul>
 
 			</header>
-			<div id="workspace">
-
-				
-			</div>		
-			<footer>
-				<div id="footerInfo"></div>
-			</footer>
 		</section>
 	</body>
 </html>

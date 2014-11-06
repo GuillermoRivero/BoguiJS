@@ -5,7 +5,7 @@ var maxWidth = 400;
 var maxHeight = 400;
 /*
 TO DO:
-	AÑADIR VARIABLES DE TAMAÑO DE TRABAJO
+	<li><span id="saveConfig">Tamaño por defecto</span></li> --> DIALOGO
 	COLORES PARA EL CSS??? 
 */
 
@@ -15,7 +15,7 @@ $(function() {
 		if(localStorage.getItem("modoImagen") !== null ){ //Comprobamos si hemos guardado la configuracion personalizada
 			//Actualizamos las variables
 			modoImagen = localStorage.getItem("modoImagen");
-		    	formatoDescarga = localStorage.getItem("formatoDescarga");
+		    formatoDescarga = localStorage.getItem("formatoDescarga");
 			maxWidth = localStorage.getItem("maxWidth");
 			maxHeight = localStorage.getItem("maxHeight");
 		}

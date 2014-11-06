@@ -2,7 +2,6 @@
 
 Autores: Guillermo Rivero Rodríguez y Boris Ballester Hernández"
 
-IMPORTANTEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!!!!
 EL TAMAÑO DE TRABAJO DE IMAGEN, FORMATO DE DESCARGA Y MODO DE IMAGEN VIENEN DADOS POR EL FICHERO DE CONFIGURACION, PARA USARLOS
 	-window.maxHeight
 	-window.maxWidth
@@ -224,6 +223,22 @@ $(document).ready(function() {
 			descargarImagen(objetosBogui[objetoActual], "foto" + objetosBogui[objetoActual].ident, formato);
 		}
 	});		
+
+	$("#roi").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			//TODO: aplicar ROI
+		}
+	});	
+
+	$("#recortar").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			//TODO: aplicar ROI
+		}
+	});	
 	
 	$("#histograma").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
@@ -304,7 +319,9 @@ $(document).ready(function() {
 			dialog.dialog();
 			
 		}	
-	});				
+	});			
+    
+	//TODO: Guardar Imagen, Guardar Imagen Como, Abrir Imagen Como
 });
 
 function transformacionLinealTramosDialog(numTramos){
@@ -411,7 +428,6 @@ function transformacionLinealTramosDialog(numTramos){
 		dialog.dialog();
 }
 
-
 function readImage() {
     if ( this.files && this.files[0] ) {
         var FR = new FileReader();
@@ -432,7 +448,15 @@ function readImage() {
 function quitarFormato(cadena){
 	var exp = /(.*)(\..*)/g
 	var res = exp.exec(cadena);
-	return res[1];
+	if(res == null)
+	{
+		return cadena;
+	}
+	else
+	{
+		return res[1];	
+	}
+
 
 }
 
@@ -474,9 +498,9 @@ function Bogui(img, id, name) {
 	this.dialogo = $('<div/>', {
 	    id: "dialogo" + this.ident,
 		title: this.nombre,
-	   	height: maxHeight,
-		width: maxWidth
-	}).appendTo('#workspace');
+	   	height: window.maxHeight,
+		width: window.maxWidth	
+	}).appendTo('body');
 
 	var canvasContainer = $("<div id=\"canvasContainer"+this.ident+"\" class=\"canvasContainer\"></div>");
 	canvasContainer.append(this.imgCanvas);
@@ -488,14 +512,14 @@ function Bogui(img, id, name) {
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 		borrarObjetoBogui(idActual);
-		
+		$(this).dialog( "close" );
+		$(this).remove();	
  	});
 	
 	this.dialogo.on( "dialogfocus", function( e, ui ) {
 						var exp = /dialogo(\d+)/i
 						var res = exp.exec(e.target.id);
 						var idActual = res[1];
-
 						cambiarFoco(idActual);
 						} );
 
@@ -617,8 +641,6 @@ function rgbToHex(r, g, b){
         return ((r << 16) | (g << 8) | b).toString(16);
 }
 
-
-
 function obtenerPosArray(id){
 
 	var i = 0;
@@ -645,7 +667,6 @@ function mostrarError(mensaje){
 	});
 
 }
-
 
 function cambiarFoco(foco){
 	
@@ -711,11 +732,12 @@ function crearHistogramaSimple(objetoBoguiActual){
 	}
 
 	//Histograma Simple
-	objetoBoguiActual.dialogoHistograma = jQuery('<div/>', {
-	    	id: "dialogo" + objetoBoguiActual.ident
-	}).appendTo('#workspace');
+	objetoBoguiActual.dialogoHistograma = $('<div/>', {
+	    	id: "dialogo" + objetoBoguiActual.ident,
 
-	objetoBoguiActual.contenedorHistograma = jQuery('<div/>').appendTo(objetoBoguiActual.dialogoHistograma);
+	}).appendTo('body');
+
+	objetoBoguiActual.contenedorHistograma = $('<div/>').appendTo(objetoBoguiActual.dialogoHistograma);
 	objetoBoguiActual.contenedorHistograma.attr("autofocus", "autofocus");
 	
 	objetoBoguiActual.contenedorHistograma.highcharts({
@@ -772,7 +794,6 @@ function crearHistogramaSimple(objetoBoguiActual){
 	objetoBoguiActual.dialogoHistograma.dialog( "close" );
 }
 
-
 function crearHistogramaAcumulativo(objetoBoguiActual){
 
 	crearHistogramaSimple(objetoBoguiActual);
@@ -791,7 +812,7 @@ function crearHistogramaAcumulativo(objetoBoguiActual){
 	
 	objetoBoguiActual.dialogoHistogramaAcumulativo = jQuery('<div/>', {
 	    	id: "dialogo" + objetoBoguiActual.ident
-	}).appendTo('#workspace');
+	}).appendTo('body');
 
 	
 	objetoBoguiActual.contenedorHistogramaAcumulativo = jQuery('<div/>').appendTo(objetoBoguiActual.dialogoHistogramaAcumulativo);
@@ -851,7 +872,6 @@ function crearHistogramaAcumulativo(objetoBoguiActual){
 	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
 	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog( "close" );
 }
-
 
 function borrarObjetoBogui(id){
 	var i = 0;
@@ -930,7 +950,6 @@ function RGBA2BW(objetoBoguiActual){
 
 }
 
-
 function recortar(objetoBoguiActual){ //objetosBogui[obtenerPosArray(objetoActual)]
 	if(typeof objetoBoguiActual == 'undefined'){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada");
@@ -948,7 +967,7 @@ function recortar(objetoBoguiActual){ //objetosBogui[obtenerPosArray(objetoActua
 		var savedData = new Image();
 		savedData.src = canvasCopy.toDataURL("image/png", 1);
 		//Cargar la matriz de datos en el canvas
-		objetosBogui.push(new Bogui(savedData, numeroObjetos));
+		objetosBogui.push(new Bogui(savedData, numeroObjetos,objetoBoguiActual.nombre));
 		cambiarFoco(numeroObjetos);
 		numeroObjetos++;
 	}
@@ -1021,7 +1040,7 @@ function cambiarBrilloContraste(objetoBoguiActual, nuevoBrillo, nuevoContraste){
 			}
 		}
 
-		objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos));
+		objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre));
 		objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
 		objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
 		cambiarFoco(numeroObjetos);
@@ -1029,22 +1048,7 @@ function cambiarBrilloContraste(objetoBoguiActual, nuevoBrillo, nuevoContraste){
 	}         
 }
 
-
-/////BOTONES INTERFAZ
-
-
-
-function setModoImagen(modo){
-	//TODO: Mostrar un mensaje al usuario de que se ha actualizado el modo
-	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
-	}else{
-		objetosBogui[objetoActual].modo = modo;
-	}
-}
-
-
-function correcccionGamma(objetoBoguiActual, gamma){
+function correccionGamma(objetoBoguiActual, gamma){
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 	var pixelData = imageData.data;
 	var bytesPerPixel = 4;
@@ -1078,7 +1082,7 @@ function correcccionGamma(objetoBoguiActual, gamma){
 		}
 	}
 
-	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos));
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre));
 	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
 	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
 	cambiarFoco(numeroObjetos);
