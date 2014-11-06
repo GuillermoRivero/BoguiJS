@@ -210,11 +210,101 @@ $(document).ready(function() {
 	
 	$("#instaDownloadButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
-			console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
+			mostrarError("Debe seleccionar una imagen para descargar");
 		}else{
 			descargar(window.formatoDescarga);
 		}	
 	});		
+	
+	$("#downloadButton").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("Debe seleccionar una imagen para descargar");
+		}else{
+			//TODO: dialogo para seleccionar formato y nombre y demas
+			descargarImagen(objetosBogui[objetoActual], "foto" + objetosBogui[objetoActual].ident, formato);
+		}
+	});		
+	
+	$("#histograma").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			crearHistogramaSimple(objetosBogui[objetoActual]);
+			objetosBogui[objetoActual].dialogoHistograma.dialog("open");
+		}
+	});	
+	
+	$("#histogramaAcumulativo").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			crearHistogramaAcumulativo(objetosBogui[objetoActual]);
+			objetosBogui[objetoActual].dialogoHistogramaAcumulativo.dialog("open");
+			
+		}
+	});	
+	
+	$("#correccionGamma").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			var dialog, form;
+			
+			$("body").append("<div id=\"dialog\"></div>");
+			dialog = $( "#dialog" ).dialog({
+				title: "Correccion gamma:",
+				height: 200,
+				width: 350,
+				modal: true,	
+				buttons: {
+				Ok:function() {
+					  //COGEMOS LOS VALORES
+						var gamma =  $( "#gammaText" ).val();
+						var error = false;
+										
+						if(gamma == null )
+						{
+							error = true;
+						}
+						
+						if(error == false)
+						{
+								gamma = eval(gamma);
+								correccionGamma(objetosBogui[objetoActual], gamma);
+								$(this).dialog( "close" );
+								$(this).remove();
+						}else
+						{
+							mostrarError("El valor gamma no es correcto");
+						}
+				},
+				Cancel: function() {
+					  $(this).dialog( "close" );
+					  $(this).remove();
+				}
+				},
+				dialogClass: 'no-close' 	
+			});
+			
+			dialog.append("<form><fieldset><p><label for=\"gammaText\">Valor de gamma:</label><input id=\"gammaText\" name=\"gammaValue\" type=\"text\"></p></fieldset></form>");;
+
+			form = dialog.find( "form" ).on( "submit", function( event ) {
+			  event.preventDefault();
+			});		
+			
+			$( "#gammaText" ).on('input', function () {
+				 var val = this.value,
+					 $this = $(this);
+					 var min = 0;
+					 if (!val.match(/^(\d*(\.\d*)?)((\.|\/)(\d*(\.\d*)?))?$/)) val = 1; //we want only number, no alpha
+				 this.value = (val < min) ? min : val;
+			 });	
+			 
+			$("#gammaText").val("1")
+			dialog.dialog();
+			
+		}	
+	});				
 });
 
 function transformacionLinealTramosDialog(numTramos){
@@ -941,34 +1031,7 @@ function cambiarBrilloContraste(objetoBoguiActual, nuevoBrillo, nuevoContraste){
 
 
 /////BOTONES INTERFAZ
-function abrirHistograma(){
 
-	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
-	}else{
-		crearHistogramaSimple(objetosBogui[objetoActual]);
-		objetosBogui[objetoActual].dialogoHistograma.dialog("open");
-	}
-}
-
-function abrirHistogramaAcumulativo(){
-
-	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
-	}else{
-		crearHistogramaAcumulativo(objetosBogui[objetoActual]);
-		objetosBogui[objetoActual].dialogoHistogramaAcumulativo.dialog("open");
-		
-	}
-}
-
-function descargar(formato){
-	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
-	}else{
-		descargarImagen(objetosBogui[objetoActual], "foto" + objetosBogui[objetoActual].ident, formato);
-	}
-}
 
 
 function setModoImagen(modo){
@@ -982,49 +1045,44 @@ function setModoImagen(modo){
 
 
 function correcccionGamma(objetoBoguiActual, gamma){
-	if(typeof objetoBoguiActual == 'undefined'){
-		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
-	}else{
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	var pixelData = imageData.data;
+	var bytesPerPixel = 4;
 
-	        var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
-			var pixelData = imageData.data;
-			var bytesPerPixel = 4;
-	 
-	        crearHistogramaSimple(objetoBoguiActual);
-	 
-	        var funcionTransferencia = new Array(256);
+	crearHistogramaSimple(objetoBoguiActual);
 
-	        for (i = 0; i < objetoBoguiActual.histograma.length; i++){
-	                funcionTransferencia[i] = objetoBoguiActual.histograma[i];
-	        }
-	        //Normalizar
-	        
-	        for (i = 0; i < funcionTransferencia.length; i++){
-	                funcionTransferencia[i] = i/255
-	        }
-	        for (i = 0; i < funcionTransferencia.length; i++){
-	                funcionTransferencia[i] = Math.pow(funcionTransferencia[i],gamma);
-	        }
-	        for (i = 0; i < funcionTransferencia.length; i++){
-	                funcionTransferencia[i] = 255 * funcionTransferencia[i];
-	        }
-	 
-	        for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
-				for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
-					var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+	var funcionTransferencia = new Array(256);
 
-					pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
-					pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
-					pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
-				}
-			}
-
-			objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos));
-			objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-			objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
-			cambiarFoco(numeroObjetos);
-			numeroObjetos++;  
+	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
+			funcionTransferencia[i] = objetoBoguiActual.histograma[i];
 	}
+	//Normalizar
+	
+	for (i = 0; i < funcionTransferencia.length; i++){
+			funcionTransferencia[i] = i/255
+	}
+	for (i = 0; i < funcionTransferencia.length; i++){
+			funcionTransferencia[i] = Math.pow(funcionTransferencia[i],gamma);
+	}
+	for (i = 0; i < funcionTransferencia.length; i++){
+			funcionTransferencia[i] = 255 * funcionTransferencia[i];
+	}
+
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
+			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
+			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+		}
+	}
+
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos));
+	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++;  
  
 }
 
