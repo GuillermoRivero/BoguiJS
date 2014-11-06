@@ -55,7 +55,7 @@ $(document).ready(function() {
 				  var newBrillo =  $( this ).find( '#sliderBrillo' ).slider( "value" );
 				  var newContraste = $( this ).find( '#sliderContraste' ).slider( "value" );
 				  //EJECUTAR BRILLO Y CONTRASTE
-				  cambiarBrilloContraste(objetosBogui[ obtenerPosArray( objetoActual) ], newBrillo, newContraste);
+				  cambiarBrilloContraste(objetosBogui[objetoActual], newBrillo, newContraste);
 				  $(this).dialog( "close" );
 				  $(this).remove();
 			},
@@ -211,7 +211,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("Debe seleccionar una imagen para descargar");
 		}else{
-			descargar(window.formatoDescarga);
+			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
 		}	
 	});		
 	
@@ -220,7 +220,7 @@ $(document).ready(function() {
 			mostrarError("Debe seleccionar una imagen para descargar");
 		}else{
 			//TODO: dialogo para seleccionar formato y nombre y demas
-			descargarImagen(objetosBogui[objetoActual], "foto" + objetosBogui[objetoActual].ident, formato);
+			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
 		}
 	});		
 
@@ -228,7 +228,21 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			//TODO: aplicar ROI
+			objetosBogui[objetoActual].herramientaActual = "roi";
+		}
+	});	
+
+	$("#puntero").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			objetosBogui[objetoActual].herramientaActual = "puntero";
+			//Se limpia el canvas y se resetea la posicion guardada del click
+			objetosBogui[objetoActual].regCanvas.width = objetosBogui[objetoActual].regCanvas.width;
+			objetosBogui[objetoActual].mouseXini = 0;
+			objetosBogui[objetoActual].mouseYini = 0;		
+			objetosBogui[objetoActual].mouseXfin = 0;
+			objetosBogui[objetoActual].mouseYfin = 0;
 		}
 	});	
 
@@ -236,7 +250,11 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			//TODO: aplicar ROI
+			if(objetosBogui[objetoActual].herramientaActual != "roi"){
+				mostrarError("Debe tener seleccionada la herramienta \"Región de interés\" para poder recortar"); 	
+			}else{
+				recortar(objetosBogui[objetoActual]);
+			}
 		}
 	});	
 	
@@ -448,12 +466,10 @@ function readImage() {
 function quitarFormato(cadena){
 	var exp = /(.*)(\..*)/g
 	var res = exp.exec(cadena);
-	if(res == null)
-	{
+	if(res == null){
 		return cadena;
 	}
-	else
-	{
+	else{
 		return res[1];	
 	}
 
@@ -473,6 +489,7 @@ function Bogui(img, id, name) {
 	this.ctx;
 	this.regctx;
 	this.click = false;
+	this.herramientaAcutual = "puntero";
 	this.histograma = new Array(256);
 	this.histogramaAcumulativo = new Array(256);
 	this.dialogoHistograma;
@@ -483,6 +500,9 @@ function Bogui(img, id, name) {
 	this.mouseYini = 0;
 	this.mouseXfin = 0; //Variables para funciones que requieras capturar posiciones de raton
 	this.mouseYfin = 0;
+	this.brillo;
+	this.contraste;
+	this.entropia;
 	
 	//METODOS
 
@@ -554,32 +574,46 @@ function Bogui(img, id, name) {
 	//Ajustar tamaño de la ventana
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
 	this.dialogo.css("overflow","hidden");
-
 	
+	this.brillo = calcularBrilloContraste(this)[0];
+	this.contraste = calcularBrilloContraste(this)[1];
+	this.entropia = calcularEntropia(this);
+
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
-		e.target.click = true;
+
+		
 		var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
-		var pos = findPos(this);
-                objetosBogui[obtenerPosArray(idActual)].mouseXini = e.pageX - pos.x;
-                objetosBogui[obtenerPosArray(idActual)].mouseYini = e.pageY - pos.y;
+
+		switch(objetosBogui[obtenerPosArray(idActual)].herramientaActual){
+			case "roi":	
+						objetosBogui[obtenerPosArray(idActual)].click = true;
+						var pos = findPos(this);
+				        objetosBogui[obtenerPosArray(idActual)].mouseXini = e.pageX - pos.x;        
+				        objetosBogui[obtenerPosArray(idActual)].mouseYini = e.pageY - pos.y;
+			break;
+			default:
+        }
 	});
 
-	//MOUSE MOVE??
-	
-
 	$(this.regCanvas).mouseup(function(e){
-		e.target.click = false;
+		
 		var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 
-		var pos = findPos(this);
-        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
-        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-		dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
+		switch(objetosBogui[obtenerPosArray(idActual)].herramientaActual){
+			case "roi":
+				objetosBogui[obtenerPosArray(idActual)].click = false;
+				var pos = findPos(this);
+		        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+		        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+				dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
+			break;
+			default:
+        }
 	});
 
 	$(this.regCanvas).mousemove(function(e) {
@@ -592,24 +626,28 @@ function Bogui(img, id, name) {
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 
-        if(e.target.click == true){
-	        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
-	        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-	        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
-        	objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-			dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
-		}
-
-		
-
-                var p = objetosBogui[obtenerPosArray(idActual)].ctx.getImageData(x, y, 1, 1).data;
-                var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
-				if(x >= 0 && y >= 0){
-					$("#coordinates"+ objetosBogui[obtenerPosArray(idActual)].ident).html("x=" + x + " y=" + y + " value=" + hex);
+		switch(objetosBogui[obtenerPosArray(idActual)].herramientaActual){
+			case "roi":
+		        if(objetosBogui[obtenerPosArray(idActual)].click == true){
+			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+			        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+		        	objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+					dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
 				}
+			break;
+			default:
+        }
+
+        var p = objetosBogui[obtenerPosArray(idActual)].ctx.getImageData(x, y, 1, 1).data;
+        var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+        var rgb = obetenerColorDesdeCoordenadas(objetosBogui[obtenerPosArray(idActual)],x,y);
+		if(x >= 0 && y >= 0){
+			$("#coordinates"+ objetosBogui[obtenerPosArray(idActual)].ident).html("x=" + x + " y=" + y + " Hex=" + hex + " RGB=" + rgb);
+		}
                 
 
-        });		
+    });		
 }
 
 function dibujarRegionInteres(objetoBoguiActual){
@@ -678,7 +716,7 @@ function cambiarFoco(foco){
 	}
 }
 
-function descargarImagen(objetoBoguiActual, nombreArchivo, formato){
+function descargarImagen(objetoBoguiActual, formato){
 
 	var dataUrl;
 	var link = document.createElement('a');
@@ -912,6 +950,16 @@ function reducirImagen(objetoBoguiActual){
 
 }
 
+function obetenerColorDesdeCoordenadas(objetoBoguiActual, posx, posy){
+
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imagen.width, objetoBoguiActual.imagen.height);
+	var pixelData = imageData.data;
+	var bytesPerPixel = 4;
+	var startIdx = (posy * bytesPerPixel * objetoBoguiActual.imagen.width) + (posx * bytesPerPixel);
+
+	return [pixelData[startIdx], pixelData[startIdx + 1], pixelData[startIdx + 2]];
+}
+
 function RGBA2BW(objetoBoguiActual){
 
 	//Obtener la matriz de datos.
@@ -950,26 +998,31 @@ function RGBA2BW(objetoBoguiActual){
 
 }
 
-function recortar(objetoBoguiActual){ //objetosBogui[obtenerPosArray(objetoActual)]
+function recortar(objetoBoguiActual){ 
 	if(typeof objetoBoguiActual == 'undefined'){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada");
 	}else{
-		var canvasCopy = document.createElement("canvas");
-		var copyContext = canvasCopy.getContext("2d");
 
-		var imageData = objetoBoguiActual.ctx.getImageData( objetoBoguiActual.mouseXini,  objetoBoguiActual.mouseYini,  objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini ,  objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini);
+		if((objetoBoguiActual.mouseXini == objetoBoguiActual.mouseXfin) || (objetoBoguiActual.mouseYini == objetoBoguiActual.mouseYfin)){
+				mostrarError("Debe seleccionar un area no nula para recortar"); 	
+		}else{
+			var canvasCopy = document.createElement("canvas");
+			var copyContext = canvasCopy.getContext("2d");
 
-		canvasCopy.width = objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini;
-		canvasCopy.height = objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini;
+			var imageData = objetoBoguiActual.ctx.getImageData( objetoBoguiActual.mouseXini,  objetoBoguiActual.mouseYini,  objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini ,  objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini);
 
-		copyContext.putImageData(imageData, 0,0);
+			canvasCopy.width = objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini;
+			canvasCopy.height = objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini;
 
-		var savedData = new Image();
-		savedData.src = canvasCopy.toDataURL("image/png", 1);
-		//Cargar la matriz de datos en el canvas
-		objetosBogui.push(new Bogui(savedData, numeroObjetos,objetoBoguiActual.nombre));
-		cambiarFoco(numeroObjetos);
-		numeroObjetos++;
+			copyContext.putImageData(imageData, 0,0);
+
+			var savedData = new Image();
+			savedData.src = canvasCopy.toDataURL("image/png", 1);
+			//Cargar la matriz de datos en el canvas
+			objetosBogui.push(new Bogui(savedData, numeroObjetos, objetoBoguiActual.nombre+objetoBoguiActual.formato));
+			cambiarFoco(numeroObjetos);
+			numeroObjetos++;
+		}
 	}
 }
 
@@ -1040,8 +1093,8 @@ function cambiarBrilloContraste(objetoBoguiActual, nuevoBrillo, nuevoContraste){
 			}
 		}
 
-		objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre));
-		objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+		objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
+		objetosBogui[obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
 		objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
 		cambiarFoco(numeroObjetos);
 		numeroObjetos++;
@@ -1082,7 +1135,7 @@ function correccionGamma(objetoBoguiActual, gamma){
 		}
 	}
 
-	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre));
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
 	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
 	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
 	cambiarFoco(numeroObjetos);
