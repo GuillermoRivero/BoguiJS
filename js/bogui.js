@@ -212,7 +212,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
 		}else{
-			objetosBogui[objetoActual].descargarImagen("foto" + objetosBogui[objetoActual].ident, window.formatoDescarga);
+			descargar(window.formatoDescarga);
 		}	
 	});		
 });
@@ -326,12 +326,9 @@ function readImage() {
     if ( this.files && this.files[0] ) {
         var FR = new FileReader();
         nombre = this.files[0].name;
-        FR.onload = function(e) {
-        
+        FR.onload = function(e) {    
 		imagen = new Image();  
-
 	    imagen.src = e.target.result;
-	    console.log(e.target.result.name);
 		imagen.onload = function() {
 		     objetosBogui.push(new Bogui(imagen, numeroObjetos-1, nombre));
 		     cambiarFoco(numeroObjetos-1);
@@ -361,6 +358,7 @@ function Bogui(img, id, name) {
 	this.regCanvas;
 	this.ctx;
 	this.regctx;
+	this.click = false;
 	this.histograma = new Array(256);
 	this.histogramaAcumulativo = new Array(256);
 	this.dialogoHistograma;
@@ -373,13 +371,7 @@ function Bogui(img, id, name) {
 	this.mouseYfin = 0;
 	
 	//METODOS
-	this.dibujarRegionInteres = dibujarRegionInteres;
-	this.obtenerFormato = obtenerFormato;
-	this.reducirImagen = reducirImagen;								//Cambiar para que sea funcion externa
-	this.RGBA2BW = RGBA2BW;											//Cambiar para que sea funcion externa
-	//this.crearHistogramaSimple = crearHistogramaSimple;
-	//this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
-	this.descargarImagen = descargarImagen;							//Cambiar para que sea funcion externa
+
 	
 	this.imgCanvas = document.createElement("canvas");
 	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
@@ -422,9 +414,9 @@ function Bogui(img, id, name) {
 	this.ctx.drawImage(this.imagen, 0, 0);
 
 	//Reducir imagen y ponerla en blanco y negro
-	this.obtenerFormato();
-	this.reducirImagen();
-	this.RGBA2BW();
+	obtenerFormato(this);
+	reducirImagen(this);
+	RGBA2BW(this);
 
 
 
@@ -452,6 +444,7 @@ function Bogui(img, id, name) {
 	
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
+		e.target.click = true;
 		var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
@@ -460,25 +453,40 @@ function Bogui(img, id, name) {
                 objetosBogui[obtenerPosArray(idActual)].mouseYini = e.pageY - pos.y;
 	});
 
+	//MOUSE MOVE??
+	
+
 	$(this.regCanvas).mouseup(function(e){
+		e.target.click = false;
 		var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 
 		var pos = findPos(this);
-                objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
-                objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-		objetosBogui[obtenerPosArray(idActual)].dibujarRegionInteres();
+        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+		dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
 	});
 
 	$(this.regCanvas).mousemove(function(e) {
-                var pos = findPos(this);
-                var x = e.pageX - pos.x;
-                var y = e.pageY - pos.y;
 
-		var exp = /canvasreg(\d+)/i
+        var pos = findPos(this);
+        var x = e.pageX - pos.x;
+        var y = e.pageY - pos.y;
+
+        var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
+
+        if(e.target.click == true){
+	        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+	        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+	        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+        	objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+			dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
+		}
+
+		
 
                 var p = objetosBogui[obtenerPosArray(idActual)].ctx.getImageData(x, y, 1, 1).data;
                 var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
@@ -490,15 +498,15 @@ function Bogui(img, id, name) {
         });		
 }
 
-function dibujarRegionInteres(){
+function dibujarRegionInteres(objetoBoguiActual){
 
-	this.regCanvas.width = this.regCanvas.width;
-	this.regctx = this.regCanvas.getContext("2d");
+	objetoBoguiActual.regCanvas.width = objetoBoguiActual.regCanvas.width;
+	objetoBoguiActual.regctx = objetoBoguiActual.regCanvas.getContext("2d");
 
-	this.regctx.rect(this.mouseXini, this.mouseYini, this.mouseXfin - this.mouseXini , this.mouseYfin - this.mouseYini);
-	this.regctx.lineWidth="2";
-	this.regctx.strokeStyle="#39b1cc";
-	this.regctx.stroke();
+	objetoBoguiActual.regctx.rect(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini, objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini , objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
+	objetoBoguiActual.regctx.lineWidth="2";
+	objetoBoguiActual.regctx.strokeStyle="#39b1cc";
+	objetoBoguiActual.regctx.stroke();
 }
 
 function findPos(obj) {
@@ -559,42 +567,42 @@ function cambiarFoco(foco){
 	}
 }
 
-function descargarImagen(nombreArchivo, formato){
+function descargarImagen(objetoBoguiActual, nombreArchivo, formato){
 
 	var dataUrl;
 	var link = document.createElement('a');
    	
 	switch(formato){
 	case "png":
-		dataUrl = this.imgCanvas.toDataURL('image/png', 1); // obtenemos la imagen como png
+		dataUrl = objetoBoguiActual.imgCanvas.toDataURL('image/png', 1); // obtenemos la imagen como png
 		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = this.nombre + ".png";
+		link.download = objetoBoguiActual.nombre + ".png";
 		break;
 	case "jpeg":
-		dataUrl = this.imgCanvas.toDataURL('image/jpeg', 1);
+		dataUrl = objetoBoguiActual.imgCanvas.toDataURL('image/jpeg', 1);
 		dataUrl = dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = this.nombre + ".jpeg";
+		link.download = objetoBoguiActual.nombre + ".jpeg";
 		break;
 	case "webp":
-		dataUrl = this.imgCanvas.toDataURL('image/webp', 1);
+		dataUrl = objetoBoguiActual.imgCanvas.toDataURL('image/webp', 1);
 		dataUrl = dataUrl.replace("image/webp",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = this.nombre + ".webp";
+		link.download = objetoBoguiActual.nombre + ".webp";
 		break;
 	default:
-		dataUrl = this.imgCanvas.toDataURL();
+		dataUrl = objetoBoguiActual.imgCanvas.toDataURL();
 		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = this.nombre + ".png";
+		link.download = objetoBoguiActual.nombre + ".png";
 	}
 	link.href = dataUrl;
    	link.click();
 }
 
-function obtenerFormato(){
+function obtenerFormato(objetoBoguiActual){
 	//var exp = /"data:image/(\w+);.*/i;
 	var exp = new RegExp("data:image/(.*);.*","g");
-	var res = exp.exec(this.imagen.src);
+	var res = exp.exec(objetoBoguiActual.imagen.src);
 	var cadena = res[1];
-	this.formato = "."+cadena;
+	objetoBoguiActual.formato = "." + cadena;
 }
 
 function crearHistogramaSimple(objetoBoguiActual){
@@ -770,7 +778,7 @@ function borrarObjetoBogui(id){
 	}
 }
 
-function reducirImagen(){
+function reducirImagen(objetoBoguiActual){
 
 	//Hacer un nuevo canvas
 	var canvasCopy = document.createElement("canvas");
@@ -778,33 +786,33 @@ function reducirImagen(){
 
 	// Determinar el ratio de conversion de la imagen
 	var ratio = 1;
-	if(this.imagen.width > window.maxWidth)
-		ratio = window.maxWidth / this.imagen.width;
-	else if(this.imagen.height > window.maxHeight)
-		ratio = window.maxHeight / this.imagen.height;
+	if(objetoBoguiActual.imagen.width > window.maxWidth)
+		ratio = window.maxWidth / objetoBoguiActual.imagen.width;
+	else if(objetoBoguiActual.imagen.height > window.maxHeight)
+		ratio = window.maxHeight / objetoBoguiActual.imagen.height;
 
 	//Dibujar la imagen original en el segundo canvas
-	canvasCopy.width = this.imagen.width;
-	canvasCopy.height = this.imagen.height;
-	copyContext.drawImage(this.imagen, 0, 0);
+	canvasCopy.width = objetoBoguiActual.imagen.width;
+	canvasCopy.height = objetoBoguiActual.imagen.height;
+	copyContext.drawImage(objetoBoguiActual.imagen, 0, 0);
 	//Copiar y cambiar de tamño el segundo canvas en el primer canvas
-	this.imgCanvas.width = this.imagen.width * ratio;
-	this.imgCanvas.height = this.imagen.height * ratio;
-	this.ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, this.imgCanvas.width, this.imgCanvas.height);
+	objetoBoguiActual.imgCanvas.width = objetoBoguiActual.imagen.width * ratio;
+	objetoBoguiActual.imgCanvas.height = objetoBoguiActual.imagen.height * ratio;
+	objetoBoguiActual.ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 
 }
 
-function RGBA2BW(){
+function RGBA2BW(objetoBoguiActual){
 
 	//Obtener la matriz de datos.
-	var imageData = this.ctx.getImageData(0, 0, this.imagen.width, this.imagen.height);
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imagen.width, objetoBoguiActual.imagen.height);
    	var pixelData = imageData.data;
    	var bytesPerPixel = 4;
 
 	//Modificar los valores RGB para pasarlos a B&W
-   	for(var y = 0; y < this.imagen.height; y++) {
-      		for(var x = 0; x < this.imagen.width; x++) {
-			 var startIdx = (y * bytesPerPixel * this.imagen.width) + (x * bytesPerPixel);
+   	for(var y = 0; y < objetoBoguiActual.imagen.height; y++) {
+      		for(var x = 0; x < objetoBoguiActual.imagen.width; x++) {
+			 var startIdx = (y * bytesPerPixel * objetoBoguiActual.imagen.width) + (x * bytesPerPixel);
 
 			 var red = pixelData[startIdx];
 			 var green = pixelData[startIdx + 1];
@@ -813,7 +821,7 @@ function RGBA2BW(){
 			
 			 var grayScale;
 
-			 switch(this.modo){
+			 switch(objetoBoguiActual.modo){
 				 case "PAL":
 					 grayScale = (red * 0.222) + (green * 0.707) + (blue * 0.071);
 					 break;
@@ -828,7 +836,7 @@ function RGBA2BW(){
 	      	}
 	   }
 	//Cargar la matriz de datos en el canvas
-	this.ctx.putImageData(imageData, 0, 0);
+	objetoBoguiActual.ctx.putImageData(imageData, 0, 0);
 
 }
 
@@ -958,7 +966,7 @@ function descargar(formato){
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
-		objetosBogui[objetoActual].descargarImagen("foto" + objetosBogui[objetoActual].ident, formato);
+		descargarImagen(objetosBogui[objetoActual], "foto" + objetosBogui[objetoActual].ident, formato);
 	}
 }
 
