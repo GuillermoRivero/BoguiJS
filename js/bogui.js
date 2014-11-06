@@ -744,7 +744,7 @@ function crearHistogramaAcumulativo(){
     });
 
 	this.dialogoHistogramaAcumulativo.dialog();
-	this.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + this,nombre);
+	this.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + this.nombre);
 	this.dialogoHistogramaAcumulativo.dialog("option", "resizable", false);
 	
 	this.dialogoHistogramaAcumulativo.dialog("option", "width", anchoHistograma); 
