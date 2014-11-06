@@ -11,9 +11,11 @@ EL TAMAÑO DE TRABAJO DE IMAGEN, FORMATO DE DESCARGA Y MODO DE IMAGEN VIENEN DAD
 */
 
 var imagen;
+var nombre;
 var output = [];
 var objetosBogui = [];
 var objetoActual = 0;
+//var posicionObjetoActual = 0;
 var numeroObjetos = 0;
 var altoHistograma = 470;
 var anchoHistograma = 500;
@@ -54,6 +56,7 @@ $(document).ready(function() {
 				  var newBrillo =  $( this ).find( '#sliderBrillo' ).slider( "value" );
 				  var newContraste = $( this ).find( '#sliderContraste' ).slider( "value" );
 				  //EJECUTAR BRILLO Y CONTRASTE
+				  cambiarBrilloContraste(objetosBogui[ obtenerPosArray( objetoActual) ], newBrillo, newContraste);
 				  $(this).dialog( "close" );
 				  $(this).remove();
 			},
@@ -104,7 +107,7 @@ $(document).ready(function() {
 		brilloSpinner.spinner( "value", $( "#sliderBrillo" ).slider( "value" ));
 
 		var contrasteSpinner = $( "#contrasteSpinner" ).spinner({
-			min: -255,
+			min: 0,
 			max: 255,
 			step: 1,
 			start: 0,
@@ -119,14 +122,14 @@ $(document).ready(function() {
 				 $this = $(this),
 				 max = $this.spinner('option', 'max'),
 				 min = $this.spinner('option', 'min');
-				 if (!val.match(/^-?\d*$/)) val = 0; //we want only number, no alpha
+				 if (!val.match(/^\d*$/)) val = 0; //we want only number, no alpha
 			 this.value = val > max ? max : val < min ? min : val;
 		 });	
 	
 		$( "#sliderContraste" ).slider({
 		  range: "min",
 		  value: 0,
-		  min: -255,
+		  min: 0,
 		  autofocus: "autofocus",
 		  max: 255,
 		  slide: function( event, ui ) {
@@ -135,6 +138,7 @@ $(document).ready(function() {
 		});
 		contrasteSpinner.spinner( "value", $( "#sliderContraste" ).slider( "value" ));
 		
+
 		dialog.dialog();
 	});		
 
@@ -254,18 +258,7 @@ function transformacionLinealTramosDialog(numTramos){
 							$(this).remove();
 					}else
 					{
-						$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>Introduzca correctamente los parametros</p></div></div>");
-						$("#dialog-message").dialog({
-							title: "Error",
-							modal: true,
-							buttons: {
-							Ok: function() {
-							  $(this).dialog( "close" );
-							  $(this).remove();
-							}
-							},
-							dialogClass: 'no-close' 
-						});
+						mostrarError("Introduzca el número correcto de parametros");
 					}
 
 			},
@@ -279,8 +272,8 @@ function transformacionLinealTramosDialog(numTramos){
 		
 		var tramos = "<form><fieldset><table><tbody>";
 		
-		for(i=0; i < numTramos; i++){
-				tramos = tramos + "<tr><td><label>Tramo "+(i+1)+":</label></td><td><input id=\"a"+i+"\" name=\"a"+i+"\" type=\"text\"></td><td><input id=\"b"+i+"\" name=\"b"+i+"\" type=\"text\"></td></tr>";
+		for(i=0; i <= numTramos; i++){
+				tramos = tramos + "<tr><td><label>Punto "+(i+1)+":</label></td><td><input id=\"a"+i+"\" name=\"a"+i+"\" type=\"text\"></td><td><input id=\"b"+i+"\" name=\"b"+i+"\" type=\"text\"></td></tr>";
 		}
 		
 		dialog.append(tramos+"</tbody></table></form>");;
@@ -289,7 +282,7 @@ function transformacionLinealTramosDialog(numTramos){
 		  event.preventDefault();
 		});			
 
-		for(i=0; i < numTramos; i++){
+		for(i=0; i <= numTramos; i++){
 			var tramoASpinner = $( "#a"+i ).spinner({
 				min: 0,
 				max: 255,
@@ -331,26 +324,39 @@ function transformacionLinealTramosDialog(numTramos){
 
 function readImage() {
     if ( this.files && this.files[0] ) {
-        var FR= new FileReader();
+        var FR = new FileReader();
+        nombre = this.files[0].name;
         FR.onload = function(e) {
-		imagen = new Image();   
-	    	imagen.src = e.target.result;
+        
+		imagen = new Image();  
+
+	    imagen.src = e.target.result;
+	    console.log(e.target.result.name);
 		imagen.onload = function() {
-		     objetosBogui.push(new Bogui(imagen, numeroObjetos-1));
+		     objetosBogui.push(new Bogui(imagen, numeroObjetos-1, nombre));
 		     cambiarFoco(numeroObjetos-1);
 		   };
-        };       
+        };    
         FR.readAsDataURL( this.files[0] );
 	numeroObjetos++;
     }
 }
 
-function Bogui(img, id) {
+function quitarFormato(cadena){
+	var exp = /(.*)(\..*)/g
+	var res = exp.exec(cadena);
+	return res[1];
+
+}
+
+function Bogui(img, id, name) {
 
 	//ATRIBUTOS
 	this.ident = id;
 	this.modo = window.modoImagen;
 	this.imagen = img;
+	this.formato = "";
+	this.nombre = quitarFormato(name);
 	this.imgCanvas;
 	this.regCanvas;
 	this.ctx;
@@ -368,12 +374,12 @@ function Bogui(img, id) {
 	
 	//METODOS
 	this.dibujarRegionInteres = dibujarRegionInteres;
-	this.calcularBrilloContraste = calcularBrilloContraste;
-	this.reducirImagen = reducirImagen;
-	this.RGBA2BW = RGBA2BW;
+	this.obtenerFormato = obtenerFormato;
+	this.reducirImagen = reducirImagen;								//Cambiar para que sea funcion externa
+	this.RGBA2BW = RGBA2BW;											//Cambiar para que sea funcion externa
 	this.crearHistogramaSimple = crearHistogramaSimple;
 	this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
-	this.descargarImagen = descargarImagen;
+	this.descargarImagen = descargarImagen;							//Cambiar para que sea funcion externa
 	
 	this.imgCanvas = document.createElement("canvas");
 	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
@@ -385,7 +391,7 @@ function Bogui(img, id) {
 	//Crear ventana con el canvas
 	this.dialogo = $('<div/>', {
 	    id: "dialogo" + this.ident,
-		title: "Imagen: " + this.ident,
+		title: this.nombre,
 	   	height: maxHeight,
 		width: maxWidth
 	}).appendTo('#workspace');
@@ -416,6 +422,7 @@ function Bogui(img, id) {
 	this.ctx.drawImage(this.imagen, 0, 0);
 
 	//Reducir imagen y ponerla en blanco y negro
+	this.obtenerFormato();
 	this.reducirImagen();
 	this.RGBA2BW();
 
@@ -489,6 +496,8 @@ function dibujarRegionInteres(){
 	this.regctx = this.regCanvas.getContext("2d");
 
 	this.regctx.rect(this.mouseXini, this.mouseYini, this.mouseXfin - this.mouseXini , this.mouseYfin - this.mouseYini);
+	this.regctx.lineWidth="2";
+	this.regctx.strokeStyle="#39b1cc";
 	this.regctx.stroke();
 }
 
@@ -523,6 +532,22 @@ function obtenerPosArray(id){
 
 }
 
+function mostrarError(mensaje){
+	$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>"+mensaje+"</p></div></div>");
+	$("#dialog-message").dialog({
+		title: "Error",
+		modal: true,
+		buttons: {
+		Ok: function() {
+		  $(this).dialog( "close" );
+		  $(this).remove();
+		}
+		},
+		dialogClass: 'no-close' 
+	});
+
+}
+
 
 function cambiarFoco(foco){
 	
@@ -543,25 +568,33 @@ function descargarImagen(nombreArchivo, formato){
 	case "png":
 		dataUrl = this.imgCanvas.toDataURL('image/png', 1); // obtenemos la imagen como png
 		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = nombreArchivo + ".png";
+		link.download = this.nombre + ".png";
 		break;
 	case "jpeg":
 		dataUrl = this.imgCanvas.toDataURL('image/jpeg', 1);
 		dataUrl = dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = nombreArchivo + ".jpeg";
+		link.download = this.nombre + ".jpeg";
 		break;
 	case "webp":
 		dataUrl = this.imgCanvas.toDataURL('image/webp', 1);
 		dataUrl = dataUrl.replace("image/webp",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = nombreArchivo + ".webp";
+		link.download = this.nombre + ".webp";
 		break;
 	default:
 		dataUrl = this.imgCanvas.toDataURL();
 		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = nombreArchivo + ".png";
+		link.download = this.nombre + ".png";
 	}
 	link.href = dataUrl;
    	link.click();
+}
+
+function obtenerFormato(){
+	//var exp = /"data:image/(\w+);.*/i;
+	var exp = new RegExp("data:image/(.*);.*","g");
+	var res = exp.exec(this.imagen.src);
+	var cadena = res[1];
+	this.formato = "."+cadena;
 }
 
 function crearHistogramaSimple(){
@@ -632,7 +665,7 @@ function crearHistogramaSimple(){
     });
 	//APPEND
 	this.dialogoHistograma.dialog();
-	this.dialogoHistograma.dialog("option", "title", "Histograma: " + this.ident);
+	this.dialogoHistograma.dialog("option", "title", "Histograma: " + this.nombre);
 	this.dialogoHistograma.dialog("option", "resizable", false);
 	this.dialogoHistograma.dialog("option", "width", anchoHistograma); 
 	this.dialogoHistograma.dialog("option", "height", altoHistograma);
@@ -711,7 +744,7 @@ function crearHistogramaAcumulativo(){
     });
 
 	this.dialogoHistogramaAcumulativo.dialog();
-	this.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + this.ident);
+	this.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + this,nombre);
 	this.dialogoHistogramaAcumulativo.dialog("option", "resizable", false);
 	
 	this.dialogoHistogramaAcumulativo.dialog("option", "width", anchoHistograma); 
@@ -800,90 +833,102 @@ function RGBA2BW(){
 }
 
 
-function recortar(){
+function recortar(objetoBoguiActual){ //objetosBogui[obtenerPosArray(objetoActual)]
+	if(typeof objetoBoguiActual == 'undefined'){
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada");
+	}else{
+		var canvasCopy = document.createElement("canvas");
+		var copyContext = canvasCopy.getContext("2d");
 
-	var canvasCopy = document.createElement("canvas");
-	var copyContext = canvasCopy.getContext("2d");
+		var imageData = objetoBoguiActual.ctx.getImageData( objetoBoguiActual.mouseXini,  objetoBoguiActual.mouseYini,  objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini ,  objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini);
 
-	var imageData = objetosBogui[obtenerPosArray(objetoActual)].ctx.getImageData( objetosBogui[obtenerPosArray(objetoActual)].mouseXini,  objetosBogui[obtenerPosArray(objetoActual)].mouseYini,  objetosBogui[obtenerPosArray(objetoActual)].mouseXfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseXini ,  objetosBogui[obtenerPosArray(objetoActual)].mouseYfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseYini);
+		canvasCopy.width = objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini;
+		canvasCopy.height = objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini;
 
-	canvasCopy.width = objetosBogui[obtenerPosArray(objetoActual)].mouseXfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseXini;
-	canvasCopy.height = objetosBogui[obtenerPosArray(objetoActual)].mouseYfin -  objetosBogui[obtenerPosArray(objetoActual)].mouseYini;
+		copyContext.putImageData(imageData, 0,0);
 
-	copyContext.putImageData(imageData, 0,0);
-
-	var savedData = new Image();
-	savedData.src = canvasCopy.toDataURL("image/png", 1);
-	//Cargar la matriz de datos en el canvas
-	objetosBogui.push(new Bogui(savedData, numeroObjetos));
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;
+		var savedData = new Image();
+		savedData.src = canvasCopy.toDataURL("image/png", 1);
+		//Cargar la matriz de datos en el canvas
+		objetosBogui.push(new Bogui(savedData, numeroObjetos));
+		cambiarFoco(numeroObjetos);
+		numeroObjetos++;
+	}
 }
 
-
-
-
-function calcularBrilloContraste(){
-	this.crearHistogramaSimple();
-	var brillo = 0;
-	var contraste = 0;
-	var total = 0;
-	
-	//BRILLO
-	for (i = 0; i < this.histograma.length; i++) {
-		brillo += this.histograma[i] * i;
-		total = total + this.histograma[i];
-	}
-
-	brillo = brillo/total;
-
-	//CONTRASTE
-	for (i = 0; i < this.histograma.length; i++){
-		contraste += this.histograma[i] * Math.pow( (brillo-i) ,2 );
-	}
-
-	contraste = Math.sqrt(contraste/total);
-
-	return [brillo, contraste];
-}
-
-function cambiarBrilloContraste(nuevoBrillo, nuevoContraste){
-
-	var imageData = objetosBogui[objetoActual].ctx.getImageData(0, 0, objetosBogui[objetoActual].imagen.width, objetosBogui[objetoActual].imagen.height);
-	var pixelData = imageData.data;
-	var bytesPerPixel = 4;
-
-	var brillo, contraste = objetosBogui[objetoActual].calcularBrilloContraste();
-		   // Int32[] byc = brightnessAndContrast(Image);
-		   // Bitmap result = new Bitmap(Image.Width, Image.Height);
-	var a, b;
-	var funcionTransferencia = new Array(256);
-
-	a = nuevoContraste / contraste; 
-	b = nuevoBrillo-a * brillo; 
-	for (i = 0; i < funcionTransferencia.length; i++) {
-		funcionTransferencia[i] = (a * i + b);
-		if (funcionTransferencia[i] > 255)
-		    funcionTransferencia[i] = 255;
-		if (funcionTransferencia[i] < 0)
-		    funcionTransferencia[i] = 0;
-	}
-
-	for(var y = 0; y < objetosBogui[objetoActual].imagen.height; y++) {
-		for(var x = 0; x < objetosBogui[objetoActual].imagen.width; x++) {
-			var startIdx = (y * bytesPerPixel * objetosBogui[objetoActual].imagen.width) + (x * bytesPerPixel);
-
-			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
-			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
-			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+function calcularBrilloContraste(objetoBoguiActual){
+	if(typeof objetoBoguiActual == 'undefined'){
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+	}else{
+		objetoBoguiActual.crearHistogramaSimple();
+		var brillo = 0;
+		var contraste = 0;
+		var total = 0;
+		
+		//BRILLO
+		for (i = 0; i < objetoBoguiActual.histograma.length; i++) {
+			brillo += objetoBoguiActual.histograma[i] * i;
+			total = total + objetoBoguiActual.histograma[i];
 		}
-	}
 
-	objetosBogui.push(new Bogui(objetosBogui[objetoActual].imagen, numeroObjetos));
-	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetosBogui[objetoActual].imgCanvas;
-	objetosBogui[obtenerPosArray(numeroObjetos)].ctx.putImageData(imageData, 0, 0);
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;          
+		brillo = brillo/total;
+
+		//CONTRASTE
+		for (i = 0; i < objetoBoguiActual.histograma.length; i++){
+			contraste += objetoBoguiActual.histograma[i] * Math.pow( (brillo-i) ,2 );
+		}
+
+		contraste = Math.sqrt(contraste/total);
+		return [brillo, contraste];
+	}
+}
+
+function cambiarBrilloContraste(objetoBoguiActual, nuevoBrillo, nuevoContraste){
+	if(typeof objetoBoguiActual == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+	}else{
+
+		var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+		var pixelData = imageData.data;
+		var bytesPerPixel = 4;
+		var valores = calcularBrilloContraste(objetoBoguiActual);
+		var brillo = valores[0];
+		var contraste = valores[1];
+
+		var a, b;
+		var funcionTransferencia = new Array(256);
+		if(contraste != 0){
+			a = nuevoContraste / contraste; 
+		}else{
+			a = nuevoContraste / 0.001;
+		}
+		
+		b = nuevoBrillo-a * brillo; 
+		for (i = 0; i < funcionTransferencia.length; i++) {
+			funcionTransferencia[i] = ((a * i) + b);
+			if (funcionTransferencia[i] > 255)
+			    funcionTransferencia[i] = 255;
+			if (funcionTransferencia[i] < 0)
+			    funcionTransferencia[i] = 0;
+		}
+
+
+		for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+			for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+				var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+				pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
+				pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
+				pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+			}
+		}
+
+		objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos));
+		objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+		objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+		cambiarFoco(numeroObjetos);
+		numeroObjetos++;
+	}         
 }
 
 
@@ -891,7 +936,7 @@ function cambiarBrilloContraste(nuevoBrillo, nuevoContraste){
 function abrirHistograma(){
 
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
 		objetosBogui[objetoActual].crearHistogramaSimple();
 		objetosBogui[objetoActual].dialogoHistograma.dialog("open");
@@ -901,7 +946,7 @@ function abrirHistograma(){
 function abrirHistogramaAcumulativo(){
 
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
 		objetosBogui[objetoActual].crearHistogramaAcumulativo();
 		objetosBogui[objetoActual].dialogoHistogramaAcumulativo.dialog("open");
@@ -911,7 +956,7 @@ function abrirHistogramaAcumulativo(){
 
 function descargar(formato){
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
 		objetosBogui[objetoActual].descargarImagen("foto" + objetosBogui[objetoActual].ident, formato);
 	}
@@ -921,8 +966,82 @@ function descargar(formato){
 function setModoImagen(modo){
 	//TODO: Mostrar un mensaje al usuario de que se ha actualizado el modo
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
-		console.log("ERROR"); //TODO: Cambiar el log, por un mensaje en pantalla explicando que no se puede mostrar la opcion sin un objeto seleccionado
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
 		objetosBogui[objetoActual].modo = modo;
+	}
+}
+
+
+function correcccionGamma(objetoBoguiActual, gamma){
+	if(typeof objetoBoguiActual == 'undefined'){
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+	}else{
+
+	        var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+			var pixelData = imageData.data;
+			var bytesPerPixel = 4;
+	 
+	        objetoBoguiActual.crearHistogramaSimple();
+	 
+	        var funcionTransferencia = new Array(256);
+
+	        for (i = 0; i < objetoBoguiActual.histograma.length; i++){
+	                funcionTransferencia[i] = objetoBoguiActual.histograma[i];
+	        }
+	        //Normalizar
+	        
+	        for (i = 0; i < funcionTransferencia.length; i++){
+	                funcionTransferencia[i] = i/255
+	        }
+	        for (i = 0; i < funcionTransferencia.length; i++){
+	                funcionTransferencia[i] = Math.pow(funcionTransferencia[i],gamma);
+	        }
+	        for (i = 0; i < funcionTransferencia.length; i++){
+	                funcionTransferencia[i] = 255 * funcionTransferencia[i];
+	        }
+	 
+	        for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+				for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+					var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+					pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
+					pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
+					pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+				}
+			}
+
+			objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos));
+			objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+			objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+			cambiarFoco(numeroObjetos);
+			numeroObjetos++;  
+	}
+ 
+}
+
+function calcularEntropia(objetoBoguiActual){
+	if(typeof objetoBoguiActual == 'undefined'){
+		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+	}else{
+
+		objetoBoguiActual.crearHistogramaSimple();
+		var total = 0;
+		var entropia = 0;
+	 	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
+	 		total += objetoBoguiActual.histograma[i];
+	 	}
+
+	    for (i = 0; i < objetoBoguiActual.histograma.length; i++){
+
+			probabilidad = objetoBoguiActual.histograma[i] / total;
+
+			if(probabilidad != 0){
+			    entropia += probabilidad * Math.log(probabilidad, 2);
+			}
+		}
+		
+		return Math.abs(entropia);	
+		
 	}
 }
