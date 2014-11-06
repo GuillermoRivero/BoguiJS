@@ -377,8 +377,8 @@ function Bogui(img, id, name) {
 	this.obtenerFormato = obtenerFormato;
 	this.reducirImagen = reducirImagen;								//Cambiar para que sea funcion externa
 	this.RGBA2BW = RGBA2BW;											//Cambiar para que sea funcion externa
-	this.crearHistogramaSimple = crearHistogramaSimple;
-	this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
+	//this.crearHistogramaSimple = crearHistogramaSimple;
+	//this.crearHistogramaAcumulativo = crearHistogramaAcumulativo;
 	this.descargarImagen = descargarImagen;							//Cambiar para que sea funcion externa
 	
 	this.imgCanvas = document.createElement("canvas");
@@ -597,30 +597,30 @@ function obtenerFormato(){
 	this.formato = "."+cadena;
 }
 
-function crearHistogramaSimple(){
+function crearHistogramaSimple(objetoBoguiActual){
 
-	var imageData = this.ctx.getImageData(0, 0, this.imgCanvas.width, this.imgCanvas.height);
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
    	var pixelData = imageData.data;
 
 	//Inicializar Variables
-	for(i = 0; i < this.histograma.length; i++) {
-		this.histograma[i] = 0;
+	for(i = 0; i < objetoBoguiActual.histograma.length; i++) {
+		objetoBoguiActual.histograma[i] = 0;
 	}
 	
 	//Rellenar histograma Simple
    	for(j = 0; j < pixelData.length; j += 4) {
-		this.histograma[pixelData[j]]++; 
+		objetoBoguiActual.histograma[pixelData[j]]++; 
 	}
 
 	//Histograma Simple
-	this.dialogoHistograma = jQuery('<div/>', {
-	    	id: "dialogo" + this.ident
+	objetoBoguiActual.dialogoHistograma = jQuery('<div/>', {
+	    	id: "dialogo" + objetoBoguiActual.ident
 	}).appendTo('#workspace');
 
-	this.contenedorHistograma = jQuery('<div/>').appendTo(this.dialogoHistograma);
-	this.contenedorHistograma.attr("autofocus", "autofocus");
+	objetoBoguiActual.contenedorHistograma = jQuery('<div/>').appendTo(objetoBoguiActual.dialogoHistograma);
+	objetoBoguiActual.contenedorHistograma.attr("autofocus", "autofocus");
 	
-	this.contenedorHistograma.highcharts({
+	objetoBoguiActual.contenedorHistograma.highcharts({
         chart: {
             type: 'column',
 	    width: anchoHistograma - 50,
@@ -637,7 +637,7 @@ function crearHistogramaSimple(){
         },
         yAxis: {
             min: 0,
-	    max: Math.max.apply(Math, this.histograma),
+	    max: Math.max.apply(Math, objetoBoguiActual.histograma),
             title: {
                 text: 'Cantidad de Pixeles'
             }
@@ -658,48 +658,48 @@ function crearHistogramaSimple(){
         },
         series: [{
             name: 'Histograma Simple',
-            data: this.histograma,
+            data: objetoBoguiActual.histograma,
 	    color: "#39b1cc"
 
         }]
     });
 	//APPEND
-	this.dialogoHistograma.dialog();
-	this.dialogoHistograma.dialog("option", "title", "Histograma: " + this.nombre);
-	this.dialogoHistograma.dialog("option", "resizable", false);
-	this.dialogoHistograma.dialog("option", "width", anchoHistograma); 
-	this.dialogoHistograma.dialog("option", "height", altoHistograma);
+	objetoBoguiActual.dialogoHistograma.dialog();
+	objetoBoguiActual.dialogoHistograma.dialog("option", "title", "Histograma: " + objetoBoguiActual.nombre);
+	objetoBoguiActual.dialogoHistograma.dialog("option", "resizable", false);
+	objetoBoguiActual.dialogoHistograma.dialog("option", "width", anchoHistograma); 
+	objetoBoguiActual.dialogoHistograma.dialog("option", "height", altoHistograma);
 
 	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	this.dialogoHistograma.dialog( "close" );
+	objetoBoguiActual.dialogoHistograma.dialog( "close" );
 }
 
 
-function crearHistogramaAcumulativo(){
+function crearHistogramaAcumulativo(objetoBoguiActual){
 
-	this.crearHistogramaSimple();
+	crearHistogramaSimple(objetoBoguiActual);
 	//Inicializar Variables
-	for(i = 0; i < this.histograma.length; i++) {
-		this.histogramaAcumulativo[i] = 0; 
+	for(i = 0; i < objetoBoguiActual.histograma.length; i++) {
+		objetoBoguiActual.histogramaAcumulativo[i] = 0; 
 	}
 
 	//Rellenar histograma Acumulativo
-	this.histogramaAcumulativo[0] = this.histograma[0]; 
-	for(k = 1; k < this.histograma.length; k++) {
-		this.histogramaAcumulativo[k] = this.histograma[k] + this.histogramaAcumulativo[k-1]; 
+	objetoBoguiActual.histogramaAcumulativo[0] = objetoBoguiActual.histograma[0]; 
+	for(k = 1; k < objetoBoguiActual.histograma.length; k++) {
+		objetoBoguiActual.histogramaAcumulativo[k] = objetoBoguiActual.histograma[k] + objetoBoguiActual.histogramaAcumulativo[k-1]; 
 	}
 
 	//Histograma Acumulativo
 	
-	this.dialogoHistogramaAcumulativo = jQuery('<div/>', {
-	    	id: "dialogo" + this.ident
+	objetoBoguiActual.dialogoHistogramaAcumulativo = jQuery('<div/>', {
+	    	id: "dialogo" + objetoBoguiActual.ident
 	}).appendTo('#workspace');
 
 	
-	this.contenedorHistogramaAcumulativo = jQuery('<div/>').appendTo(this.dialogoHistogramaAcumulativo);
-	this.contenedorHistogramaAcumulativo.attr("autofocus", "autofocus");
+	objetoBoguiActual.contenedorHistogramaAcumulativo = jQuery('<div/>').appendTo(objetoBoguiActual.dialogoHistogramaAcumulativo);
+	objetoBoguiActual.contenedorHistogramaAcumulativo.attr("autofocus", "autofocus");
 	
-	this.contenedorHistogramaAcumulativo.highcharts({
+	objetoBoguiActual.contenedorHistogramaAcumulativo.highcharts({
         chart: {
             type: 'column',
 	    width: anchoHistograma - 50,
@@ -716,7 +716,7 @@ function crearHistogramaAcumulativo(){
         },
         yAxis: {
             min: 0,
-	    max: Math.max.apply(Math, this.histogramaAcumulativo),
+	    max: Math.max.apply(Math, objetoBoguiActual.histogramaAcumulativo),
             title: {
                 text: 'Cantidad de Pixeles'
             }
@@ -737,21 +737,21 @@ function crearHistogramaAcumulativo(){
         },
         series: [{
             name: 'Histograma Acumulativo',
-            data: this.histogramaAcumulativo,
+            data: objetoBoguiActual.histogramaAcumulativo,
 	    color: "#39b1cc"
 
         }]
     });
 
-	this.dialogoHistogramaAcumulativo.dialog();
-	this.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + this.nombre);
-	this.dialogoHistogramaAcumulativo.dialog("option", "resizable", false);
+	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog();
+	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "title", "Histograma: " + objetoBoguiActual.nombre);
+	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "resizable", false);
 	
-	this.dialogoHistogramaAcumulativo.dialog("option", "width", anchoHistograma); 
-	this.dialogoHistogramaAcumulativo.dialog("option", "height", altoHistograma);
+	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "width", anchoHistograma); 
+	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "height", altoHistograma);
 
 	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	this.dialogoHistogramaAcumulativo.dialog( "close" );
+	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog( "close" );
 }
 
 
@@ -860,7 +860,7 @@ function calcularBrilloContraste(objetoBoguiActual){
 	if(typeof objetoBoguiActual == 'undefined'){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
-		objetoBoguiActual.crearHistogramaSimple();
+		crearHistogramaSimple(objetoBoguiActual);
 		var brillo = 0;
 		var contraste = 0;
 		var total = 0;
@@ -938,7 +938,7 @@ function abrirHistograma(){
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
-		objetosBogui[objetoActual].crearHistogramaSimple();
+		crearHistogramaSimple(objetosBogui[objetoActual]);
 		objetosBogui[objetoActual].dialogoHistograma.dialog("open");
 	}
 }
@@ -948,7 +948,7 @@ function abrirHistogramaAcumulativo(){
 	if(typeof objetosBogui[objetoActual] == 'undefined'){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
-		objetosBogui[objetoActual].crearHistogramaAcumulativo();
+		crearHistogramaAcumulativo(objetosBogui[objetoActual]);
 		objetosBogui[objetoActual].dialogoHistogramaAcumulativo.dialog("open");
 		
 	}
@@ -982,7 +982,7 @@ function correcccionGamma(objetoBoguiActual, gamma){
 			var pixelData = imageData.data;
 			var bytesPerPixel = 4;
 	 
-	        objetoBoguiActual.crearHistogramaSimple();
+	        crearHistogramaSimple(objetoBoguiActual);
 	 
 	        var funcionTransferencia = new Array(256);
 
@@ -1025,7 +1025,7 @@ function calcularEntropia(objetoBoguiActual){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
 
-		objetoBoguiActual.crearHistogramaSimple();
+		crearHistogramaSimple(objetoBoguiActual);
 		var total = 0;
 		var entropia = 0;
 	 	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
