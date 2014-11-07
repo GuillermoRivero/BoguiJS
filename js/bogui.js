@@ -13,11 +13,13 @@ var imagen;
 var nombre;
 var output = [];
 var objetosBogui = [];
+var herramientaActual = "puntero";
 var objetoActual = 0;
 //var posicionObjetoActual = 0;
 var numeroObjetos = 0;
 var altoHistograma = 470;
 var anchoHistograma = 500;
+
 
 $(document).ready(function() {
 	//Añadimos el evento para las imagenes
@@ -228,7 +230,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			objetosBogui[objetoActual].herramientaActual = "roi";
+			herramientaActual = "roi";
 		}
 	});	
 
@@ -236,13 +238,15 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			objetosBogui[objetoActual].herramientaActual = "puntero";
+			herramientaActual = "puntero";
 			//Se limpia el canvas y se resetea la posicion guardada del click
-			objetosBogui[objetoActual].regCanvas.width = objetosBogui[objetoActual].regCanvas.width;
-			objetosBogui[objetoActual].mouseXini = 0;
-			objetosBogui[objetoActual].mouseYini = 0;		
-			objetosBogui[objetoActual].mouseXfin = 0;
-			objetosBogui[objetoActual].mouseYfin = 0;
+			for(var i = 0; i < objetosBogui.length; i++){
+				objetosBogui[i].regCanvas.width = objetosBogui[i].regCanvas.width;
+				objetosBogui[i].mouseXini = 0;
+				objetosBogui[i].mouseYini = 0;		
+				objetosBogui[i].mouseXfin = 0;
+				objetosBogui[i].mouseYfin = 0;
+			}
 		}
 	});	
 
@@ -250,7 +254,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			if(objetosBogui[objetoActual].herramientaActual != "roi"){
+			if(herramientaActual != "roi"){
 				mostrarError("Debe tener seleccionada la herramienta \"Región de interés\" para poder recortar"); 	
 			}else{
 				recortar(objetosBogui[objetoActual]);
@@ -489,7 +493,7 @@ function Bogui(img, id, name) {
 	this.ctx;
 	this.regctx;
 	this.click = false;
-	this.herramientaAcutual = "puntero";
+	
 	this.histograma = new Array(256);
 	this.histogramaAcumulativo = new Array(256);
 	this.dialogoHistograma;
@@ -587,7 +591,7 @@ function Bogui(img, id, name) {
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 
-		switch(objetosBogui[obtenerPosArray(idActual)].herramientaActual){
+		switch(herramientaActual){
 			case "roi":	
 						objetosBogui[obtenerPosArray(idActual)].click = true;
 						var pos = findPos(this);
@@ -604,7 +608,7 @@ function Bogui(img, id, name) {
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 
-		switch(objetosBogui[obtenerPosArray(idActual)].herramientaActual){
+		switch(herramientaActual){
 			case "roi":
 				objetosBogui[obtenerPosArray(idActual)].click = false;
 				var pos = findPos(this);
@@ -626,7 +630,7 @@ function Bogui(img, id, name) {
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 
-		switch(objetosBogui[obtenerPosArray(idActual)].herramientaActual){
+		switch(herramientaActual){
 			case "roi":
 		        if(objetosBogui[obtenerPosArray(idActual)].click == true){
 			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
