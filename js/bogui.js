@@ -384,9 +384,10 @@ function transformacionLinealTramosDialog(numTramos){
 					
 					if(error == false)
 					{
+						puntos.push([255,255]);
 						//MOSTRAMOS GRAFICA CON LOS PUNTOS Y DECIDIMOS SI APLICAR
 						//APLICAR Y CERRAR
-						puntos.push([255,255]);
+						
 						transformacionLinearPorTramos(objetosBogui[objetoActual], puntos);
 							//FUNCION TRANSFORMACION
 							//CIERRE
@@ -1069,11 +1070,6 @@ function cambiarBrilloContraste(objetoBoguiActual, viejoBrillo, viejoContraste, 
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
 
-		var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
-		var pixelData = imageData.data;
-		var bytesPerPixel = 4;
-		
-
 		var a, b;
 		var funcionTransferencia = new Array(256);
 		if(viejoContraste != 0){
@@ -1092,28 +1088,11 @@ function cambiarBrilloContraste(objetoBoguiActual, viejoBrillo, viejoContraste, 
 		}
 
 
-		for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
-			for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
-				var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
-
-				pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
-				pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
-				pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
-			}
-		}
-
-		objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-		objetosBogui[obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-		objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
-		cambiarFoco(numeroObjetos);
-		numeroObjetos++;
+		aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
 	}         
 }
 
 function correccionGamma(objetoBoguiActual, gamma){
-	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
-	var pixelData = imageData.data;
-	var bytesPerPixel = 4;
 
 	crearHistogramaSimple(objetoBoguiActual);
 
@@ -1134,21 +1113,7 @@ function correccionGamma(objetoBoguiActual, gamma){
 			funcionTransferencia[i] = 255 * funcionTransferencia[i];
 	}
 
-	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
-		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
-			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
-
-			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
-			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
-			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
-		}
-	}
-
-	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;  
+	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
  
 }
 
@@ -1178,26 +1143,11 @@ function calcularEntropia(objetoBoguiActual){
 	}
 }
 
-//TODO: Crear una funcion a la que le pases un objetoBogui y una funcion de transferencia y te calcule un nuevo objetoBogui
+function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 
-function transformacionLinearPorTramos(objetoBoguiActual, tramos){
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 	var pixelData = imageData.data;
 	var bytesPerPixel = 4;
-
-	var tramoActual = 1;
-	var funcionTransferencia = new Array(256);
-	var profundidadBits = 256;
-
-	for(pixel = 0; pixel < profundidadBits; pixel++){
-		if(pixel > tramos[tramoActual][0]){
-			tramoActual++;
-		}
-        a = (tramos[tramoActual][1] - tramos[tramoActual-1][1]) / (tramos[tramoActual][0] - tramos[tramoActual-1][0]);
-        b = tramos[tramoActual][1] - a * tramos[tramoActual][0];
-        funcionTransferencia[pixel] = (a * pixel) + b;
-	    
-	}
 
 	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
 		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
@@ -1213,6 +1163,28 @@ function transformacionLinearPorTramos(objetoBoguiActual, tramos){
 	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
 	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
 	cambiarFoco(numeroObjetos);
-	numeroObjetos++; 
+	numeroObjetos++;
 
+}
+
+
+function transformacionLinearPorTramos(objetoBoguiActual, tramos){
+	
+
+	var tramoActual = 1;
+	var funcionTransferencia = new Array(256);
+	var profundidadBits = 256;
+
+	for(pixel = 0; pixel < profundidadBits; pixel++){
+		if(pixel > tramos[tramoActual][0]){
+			tramoActual++;
+		}
+        a = (tramos[tramoActual][1] - tramos[tramoActual-1][1]) / (tramos[tramoActual][0] - tramos[tramoActual-1][0]);
+        b = tramos[tramoActual][1] - a * tramos[tramoActual][0];
+        funcionTransferencia[pixel] = (a * pixel) + b;
+	    
+	}
+
+	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
+	
 }
