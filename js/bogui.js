@@ -44,6 +44,9 @@ $(document).ready(function() {
 
 	$("#ajusteBrilloContraste").click(function() {
 		var dialog, form;
+		var valores = calcularBrilloContraste(objetosBogui[objetoActual]);
+		var oldBrillo = valores[0];
+		var oldContraste = valores[1];
 		
 		$("body").append("<div id=\"dialog\"></div>");
 		dialog = $( "#dialog" ).dialog({
@@ -57,7 +60,8 @@ $(document).ready(function() {
 				  var newBrillo =  $( this ).find( '#sliderBrillo' ).slider( "value" );
 				  var newContraste = $( this ).find( '#sliderContraste' ).slider( "value" );
 				  //EJECUTAR BRILLO Y CONTRASTE
-				  cambiarBrilloContraste(objetosBogui[objetoActual], newBrillo, newContraste);
+				  
+				  cambiarBrilloContraste(objetosBogui[objetoActual], oldBrillo, oldContraste, newBrillo, newContraste);
 				  $(this).dialog( "close" );
 				  $(this).remove();
 			},
@@ -79,12 +83,12 @@ $(document).ready(function() {
 			min: -255,
 			max: 255,
 			step: 1,
-			start: 0,
+			start: oldBrillo,
 			stop: (function (event, ui) {
 				$( "#sliderBrillo" ).slider( "value", $(this).spinner('value') );
 			}),
 			spin: (function(event, ui ){
-			$( "#sliderBrillo" ).slider( "value", ui.value );
+				$( "#sliderBrillo" ).slider( "value", ui.value );
 			})
 		}).on('input', function () {
 			 var val = this.value,
@@ -97,7 +101,7 @@ $(document).ready(function() {
 			
 		$( "#sliderBrillo" ).slider({
 		  range: "min",
-		  value: 0,
+		  value: oldBrillo,
 		  min: -255,
 		  autofocus: "autofocus",
 		  max: 255,
@@ -111,7 +115,7 @@ $(document).ready(function() {
 			min: 0,
 			max: 255,
 			step: 1,
-			start: 0,
+			start: oldContraste,
 			stop: (function (event, ui) {
 				$( "#sliderContraste" ).slider( "value", $(this).spinner('value') );
 			}),
@@ -129,7 +133,7 @@ $(document).ready(function() {
 	
 		$( "#sliderContraste" ).slider({
 		  range: "min",
-		  value: 0,
+		  value: oldContraste,
 		  min: 0,
 		  autofocus: "autofocus",
 		  max: 255,
@@ -361,6 +365,7 @@ function transformacionLinealTramosDialog(numTramos){
 					var puntoAnterior = -1;
 					var counter = 0;
 					var puntos = [];
+					puntos.push([0,0]);
 									
 					while(error == false && counter < numTramos)
 					{
@@ -381,6 +386,8 @@ function transformacionLinealTramosDialog(numTramos){
 					{
 						//MOSTRAMOS GRAFICA CON LOS PUNTOS Y DECIDIMOS SI APLICAR
 						//APLICAR Y CERRAR
+						puntos.push([255,255]);
+						transformacionLinearPorTramos(objetosBogui[objetoActual], puntos);
 							//FUNCION TRANSFORMACION
 							//CIERRE
 							$(this).dialog( "close" );
@@ -1057,7 +1064,7 @@ function calcularBrilloContraste(objetoBoguiActual){
 	}
 }
 
-function cambiarBrilloContraste(objetoBoguiActual, nuevoBrillo, nuevoContraste){
+function cambiarBrilloContraste(objetoBoguiActual, viejoBrillo, viejoContraste, nuevoBrillo, nuevoContraste){
 	if(typeof objetoBoguiActual == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
@@ -1065,19 +1072,17 @@ function cambiarBrilloContraste(objetoBoguiActual, nuevoBrillo, nuevoContraste){
 		var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 		var pixelData = imageData.data;
 		var bytesPerPixel = 4;
-		var valores = calcularBrilloContraste(objetoBoguiActual);
-		var brillo = valores[0];
-		var contraste = valores[1];
+		
 
 		var a, b;
 		var funcionTransferencia = new Array(256);
-		if(contraste != 0){
-			a = nuevoContraste / contraste; 
+		if(viejoContraste != 0){
+			a = nuevoContraste / viejoContraste; 
 		}else{
 			a = nuevoContraste / 0.001;
 		}
 		
-		b = nuevoBrillo-a * brillo; 
+		b = nuevoBrillo-a * viejoBrillo; 
 		for (i = 0; i < funcionTransferencia.length; i++) {
 			funcionTransferencia[i] = ((a * i) + b);
 			if (funcionTransferencia[i] > 255)
@@ -1171,4 +1176,43 @@ function calcularEntropia(objetoBoguiActual){
 		return Math.abs(entropia);	
 		
 	}
+}
+
+//TODO: Crear una funcion a la que le pases un objetoBogui y una funcion de transferencia y te calcule un nuevo objetoBogui
+
+function transformacionLinearPorTramos(objetoBoguiActual, tramos){
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	var pixelData = imageData.data;
+	var bytesPerPixel = 4;
+
+	var tramoActual = 1;
+	var funcionTransferencia = new Array(256);
+	var profundidadBits = 256;
+
+	for(pixel = 0; pixel < profundidadBits; pixel++){
+		if(pixel > tramos[tramoActual][0]){
+			tramoActual++;
+		}
+        a = (tramos[tramoActual][1] - tramos[tramoActual-1][1]) / (tramos[tramoActual][0] - tramos[tramoActual-1][0]);
+        b = tramos[tramoActual][1] - a * tramos[tramoActual][0];
+        funcionTransferencia[pixel] = (a * pixel) + b;
+	    
+	}
+
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
+			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
+			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+		}
+	}
+
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
+	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++; 
+
 }
