@@ -385,14 +385,13 @@ function transformacionLinealTramosDialog(numTramos){
 					if(error == false)
 					{
 						puntos.push([255,255]);
-						//MOSTRAMOS GRAFICA CON LOS PUNTOS Y DECIDIMOS SI APLICAR
-						//APLICAR Y CERRAR
 						
+						$(this).append('#contenedorGraficaTransformacionLineal');
 						transformacionLinearPorTramos(objetosBogui[objetoActual], puntos);
-							//FUNCION TRANSFORMACION
-							//CIERRE
-							$(this).dialog( "close" );
-							$(this).remove();
+						//FUNCION TRANSFORMACION
+						//CIERRE
+						$(this).dialog( "close" );
+						$(this).remove();
 					}else
 					{
 						mostrarError("Introduzca el número correcto de parametros");
@@ -536,6 +535,7 @@ function Bogui(img, id, name) {
 
 	var canvasContainer = $("<div id=\"canvasContainer"+this.ident+"\" class=\"canvasContainer\"></div>");
 	canvasContainer.append(this.imgCanvas);
+	canvasContainer.css("background", "#39b1cc");
 
 	this.dialogo.dialog({ resizable: false });
 	
@@ -1165,6 +1165,50 @@ function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 	cambiarFoco(numeroObjetos);
 	numeroObjetos++;
 
+}
+
+function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
+	//calcular primero histograma origen
+	crearHistogramaSimple(objetoBoguiActual);
+	var histograma = objetoBoguiActual.histograma;
+	//normalizacion
+	var numeroPixeles = 0;
+	for(i = 0; i < histograma.length; i++){
+		numeroPixeles = numeroPixeles + histograma[i];
+	}
+	var histogramaNormalizado;
+	for(i = 0; i < histograma.length; i++){
+		histogramaNormalizado[i] = histograma[i]/numeroPixeles;
+	}
+	//Histograma origen acumulado normalizado
+	var histogramaAcumuladoNormalizado;
+	histogramaAcumuladoNormalizado[0] = histogramaNormalizado[0];
+	for(i = 1; i < histograma.length; i++){
+		histogramaAcumuladoNormalizado[i] = histogramaNormalizado[i] + histogramaAcumuladoNormalizado[i-1]
+	}
+	return histogramaAcumuladoNormalizadoDestino;
+}
+
+function ecualizarHistograma(objetoBoguiActual, objetoBoguiOrigen){
+
+	var indiceFuente = 0;
+	var indiceDestino = 0;
+	var funcionTransferencia = new Array(256);
+
+	histogramaOrigenAcumuladoNormalizadoFuente = calcularHistogramaAcumuladoNormalizado(objetoBoguiActual);
+	histogramaOrigenAcumuladoNormalizadoDestino = calcularHistogramaAcumuladoNormalizado(objetoBoguiOrigen);
+
+	while(indiceFuente < 256){
+		if(histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] > histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente] ){
+			funcionTransferencia[indiceFuente] = indiceDestino;
+			indiceFuente++;
+		}else{
+			funcionTransferencia[indiceFuente] = funcionTransferencia[indiceFuente-1];
+			indiceDestino++;
+		}
+	}
+
+	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
 }
 
 
