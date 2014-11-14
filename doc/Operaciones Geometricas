@@ -1,0 +1,43 @@
+
+=Apuntes practica 3=
+
+==Operaciones Geométricas==
+
+Es necesario saber su nivel de gris y su posicion espacial(x,y)
+
+===Rotacion===
+
+x -> x'
+y -> y'
+
+Directa
+
+x' = xcos& - ysen&
+y' = xsen& + ycos&
+
+Inversa
+
+x = x'cos& + y'sen&
+y = -x'sen& + y'cos&
+
+
+x,y,x' e y' esta en el mismo sistema de referencia.
+
+==Pasos==
+
+*Determinar la transformacion de coordenadas
+
+*Usar esa transformacion de coordenadas para conocer la ubicacion de la imagen
+
+*Generar la nueva imagen (interpolacion)
+
+Se entra en un bucle y para todos los valores enteros de la nueva imagen, mapeo hacia detras para ver que valor les otorgaria en la imagen vieja.
+
+Para calcular los "Nuevos pixeles" de la imagen nueva, en caso de que sea mas grande, tengo que mapear hacia detras (X',Y') -> (x,y) y le asiganas color segun donde se ubique en la imagen original.
+
+Si no es un pixel exacto, sino un decimal se puede aproximar el color segun el vecino mas proximo o haciendo la media de los 4 pixeles más cercanos, para ser mas exacto, el promedio dependiendo de la distancia del pixel a cada uno de los pixeles mas cercanos. (Pesos inversamente proporcionales a las distancias).
+
+-Vecino más proximo
+-Bilineal C+(D-C)p+(A-C)q+(B+C-A-D)pq
+-Bicubica ¿?
+

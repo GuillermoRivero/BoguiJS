@@ -19,6 +19,7 @@ var objetoActual = 0;
 var numeroObjetos = 0;
 var altoHistograma = 470;
 var anchoHistograma = 500;
+var tiempo = new Date();
 
 
 $(document).ready(function() {
@@ -42,6 +43,15 @@ $(document).ready(function() {
 		$("#fileSelector").click();
 	});	
 
+	
+	$("#ecualizacion").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			ecualizarHistograma(objetosBogui[objetoActual]);
+		}
+		
+	});
 	$("#ajusteBrilloContraste").click(function() {
 		var dialog, form;
 		var valores = calcularBrilloContraste(objetosBogui[objetoActual]);
@@ -113,7 +123,7 @@ $(document).ready(function() {
 
 		var contrasteSpinner = $( "#contrasteSpinner" ).spinner({
 			min: 0,
-			max: 255,
+			max: 128,
 			step: 1,
 			start: oldContraste,
 			stop: (function (event, ui) {
@@ -136,7 +146,7 @@ $(document).ready(function() {
 		  value: oldContraste,
 		  min: 0,
 		  autofocus: "autofocus",
-		  max: 255,
+		  max: 128,
 		  slide: function( event, ui ) {
 			contrasteSpinner.spinner( "value", ui.value );
 		  }
@@ -590,6 +600,8 @@ function Bogui(img, id, name) {
 	this.brillo = calcularBrilloContraste(this)[0];
 	this.contraste = calcularBrilloContraste(this)[1];
 	this.entropia = calcularEntropia(this);
+	
+
 
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
@@ -641,11 +653,12 @@ function Bogui(img, id, name) {
 		switch(herramientaActual){
 			case "roi":
 		        if(objetosBogui[obtenerPosArray(idActual)].click == true){
+		        	var estado = 0;
 			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
 			        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
 			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
 		        	objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-					dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
+					dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)], estado);
 				}
 			break;
 			default:
@@ -662,13 +675,15 @@ function Bogui(img, id, name) {
     });		
 }
 
-function dibujarRegionInteres(objetoBoguiActual){
+function dibujarRegionInteres(objetoBoguiActual, estado){
 
 	objetoBoguiActual.regCanvas.width = objetoBoguiActual.regCanvas.width;
 	objetoBoguiActual.regctx = objetoBoguiActual.regCanvas.getContext("2d");
 
 	objetoBoguiActual.regctx.rect(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini, objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini , objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
 	objetoBoguiActual.regctx.lineWidth="2";
+	objetoBoguiActual.regctx.setLineDash([5,2]);
+
 	objetoBoguiActual.regctx.strokeStyle="#39b1cc";
 	objetoBoguiActual.regctx.stroke();
 }
@@ -962,6 +977,20 @@ function reducirImagen(objetoBoguiActual){
 
 }
 
+function calcularLimitesColor(objetoBoguiActual){
+	crearHistogramaSimple(objetoBoguiActual);
+	valorMinimo = 0;
+	valorMaximo = 255;
+	while(objetoBoguiActual.histograma[valorMinimo] == 0){
+		valorMinimo++;
+	}
+	while(objetoBoguiActual.histograma[valorMaximo] == 0){
+		valorMaximo--;
+	}
+
+	return [valorMinimo, valorMaximo];
+}
+
 function obetenerColorDesdeCoordenadas(objetoBoguiActual, posx, posy){
 
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imagen.width, objetoBoguiActual.imagen.height);
@@ -1092,6 +1121,23 @@ function cambiarBrilloContraste(objetoBoguiActual, viejoBrillo, viejoContraste, 
 	}         
 }
 
+function ecualizarHistograma(objetoBoguiActual){
+
+	ancho = objetoBoguiActual.imgCanvas.width;
+	alto = objetoBoguiActual.imgCanvas.height;
+
+	var histogramaAcumuladoNormalizado = calcularHistogramaAcumuladoNormalizado(objetoBoguiActual);
+
+	var funcionTransferencia = new Array(256);
+
+	for (i = 0; i < 256; i++){
+		funcionTransferencia[i]=(255/ancho*alto)*histogramaAcumuladoNormalizado[i];
+	}
+
+	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
+
+}
+
 function correccionGamma(objetoBoguiActual, gamma){
 
 	crearHistogramaSimple(objetoBoguiActual);
@@ -1176,20 +1222,20 @@ function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
 	for(i = 0; i < histograma.length; i++){
 		numeroPixeles = numeroPixeles + histograma[i];
 	}
-	var histogramaNormalizado;
+	var histogramaNormalizado = new Array(256);
 	for(i = 0; i < histograma.length; i++){
 		histogramaNormalizado[i] = histograma[i]/numeroPixeles;
 	}
 	//Histograma origen acumulado normalizado
-	var histogramaAcumuladoNormalizado;
+	var histogramaAcumuladoNormalizado = new Array(256);
 	histogramaAcumuladoNormalizado[0] = histogramaNormalizado[0];
 	for(i = 1; i < histograma.length; i++){
 		histogramaAcumuladoNormalizado[i] = histogramaNormalizado[i] + histogramaAcumuladoNormalizado[i-1]
 	}
-	return histogramaAcumuladoNormalizadoDestino;
+	return histogramaAcumuladoNormalizado;
 }
 
-function ecualizarHistograma(objetoBoguiActual, objetoBoguiOrigen){
+function especificarHistograma(objetoBoguiActual, objetoBoguiOrigen){
 
 	var indiceFuente = 0;
 	var indiceDestino = 0;
