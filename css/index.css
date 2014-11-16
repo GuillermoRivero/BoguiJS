@@ -101,3 +101,15 @@ table tbody tr td input{
 fieldset{
 	border:none;
 }
+
+.quarter{
+	width:35%;
+}
+
+.floatleft{
+	float:left;	
+}
+
+.threequarter{
+	width:65%;
+}
