@@ -235,6 +235,15 @@ $(document).ready(function() {
 		}	
 	});		
 	
+	$("#saveImage").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("Debe seleccionar una imagen para descargar");
+			}else{
+			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
+		}	
+	});			
+	
+	
 	$("#downloadButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("Debe seleccionar una imagen para descargar");
@@ -524,7 +533,7 @@ function actualizarGraficaTramos(numTramos){
 		var a =  $( "#dialog" ).find( '#a'+counter ).spinner( "value" );
 		var b =  $( "#dialog" ).find( '#b'+counter ).spinner( "value" );	
 		
-		if((a != null && b != null) && ( a > puntoAnterior) )
+		if((a != null && b != null) && ( a >= puntoAnterior) )
 		{
 			puntoAnterior = a;
 			puntos.push([a,b]);
