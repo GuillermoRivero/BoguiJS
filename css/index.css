@@ -16,6 +16,9 @@ header{
 	margin: 0 auto;
 }
 
+label{
+	font-weight:bold;
+}
 
 #bars{
 	background-color: #e6e6e6;

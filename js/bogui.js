@@ -52,6 +52,7 @@ $(document).ready(function() {
 		}
 		
 	});
+	
 	$("#ajusteBrilloContraste").click(function() {
 		var dialog, form;
 		var valores = calcularBrilloContraste(objetosBogui[objetoActual]);
@@ -369,9 +370,58 @@ $(document).ready(function() {
 			
 		}	
 	});			
-    
+
+	$("#informacion").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			mostrarInformacion(objetosBogui[objetoActual]);
+		}
+	});	    
+
+	$("#informacionImagen").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+			}else{
+			mostrarInformacion(objetosBogui[objetoActual]);
+		}
+	});	    	
 	//TODO: Guardar Imagen, Guardar Imagen Como, Abrir Imagen Como
 });
+
+function mostrarInformacion(objBogui){
+	var dialog, form;
+	
+	$("body").append("<div id=\"dialog\"></div>");
+	dialog = $( "#dialog" ).dialog({
+		title: "Informacion de la imagen:"+objBogui.nombre,
+		width: 400,
+		modal: true,
+		buttons: {
+			Ok:function(ui) {
+				$(this).dialog( "close" );
+				$(this).remove();
+			}
+		},
+		dialogClass: 'no-close' 
+	});
+	
+	dialog.append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue\"></span></td></tr><tr><td><label>Entropia:</label></td><td><span id=\"entropiaValue\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue\"></span></td></tr><tr><td><label>Tamaño:</label></td><td><span id=\"sizeValue\"></span></td></tr></tbody></table>");;
+	
+	$("#nameValue").html(objBogui.nombre);
+	$("#modoValue").html(objBogui.modo);
+	$("#brilloValue").html(objBogui.brillo);
+	$("#contrasteValue").html(objBogui.contraste);
+	$("#entropiaValue").html(objBogui.entropia);
+	$("#formatoValue").html(objBogui.formato);
+	$("#sizeValue").html(objBogui.imgCanvas.width+"X"+objBogui.imgCanvas.height);
+	
+	form = dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});		
+	
+	dialog.dialog();	
+}
 
 function transformacionLinealTramosDialog(numTramos){
 		var dialog, form;
@@ -568,7 +618,7 @@ function quitarFormato(cadena){
 		return cadena;
 	}
 	else{
-		return res[1];	
+		return res;	
 	}
 
 
@@ -580,8 +630,8 @@ function Bogui(img, id, name) {
 	this.ident = id;
 	this.modo = window.modoImagen;
 	this.imagen = img;
-	this.formato = "";
-	this.nombre = quitarFormato(name);
+	this.formato = quitarFormato(name)[2];
+	this.nombre = quitarFormato(name)[1];
 	this.imgCanvas;
 	this.regCanvas;
 	this.ctx;
@@ -647,7 +697,6 @@ function Bogui(img, id, name) {
 	this.ctx.drawImage(this.imagen, 0, 0);
 
 	//Reducir imagen y ponerla en blanco y negro
-	obtenerFormato(this);
 	reducirImagen(this);
 	RGBA2BW(this);
 
@@ -848,14 +897,6 @@ function descargarImagen(objetoBoguiActual, formato){
 	}
 	link.href = dataUrl;
    	link.click();
-}
-
-function obtenerFormato(objetoBoguiActual){
-	//var exp = /"data:image/(\w+);.*/i;
-	var exp = new RegExp("data:image/(.*);.*","g");
-	var res = exp.exec(objetoBoguiActual.imagen.src);
-	var cadena = res[1];
-	objetoBoguiActual.formato = "." + cadena;
 }
 
 function crearHistogramaSimple(objetoBoguiActual){
