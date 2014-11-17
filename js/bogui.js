@@ -387,14 +387,13 @@ $(document).ready(function() {
 	//TODO: Guardar Imagen, Guardar Imagen Como, Abrir Imagen Como
 });
 
-function mostrarInformacion(objBogui){
+function mostrarInformacion(objetoBoguiActual){
 	var dialog, form;
 	
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
-		title: "Informacion de la imagen:"+objBogui.nombre,
+		title: "Informacion de la imagen:" + objetoBoguiActual.nombre,
 		width: 400,
-		modal: true,
 		buttons: {
 			Ok:function(ui) {
 				$(this).dialog( "close" );
@@ -406,13 +405,13 @@ function mostrarInformacion(objBogui){
 	
 	dialog.append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue\"></span></td></tr><tr><td><label>Entropia:</label></td><td><span id=\"entropiaValue\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue\"></span></td></tr><tr><td><label>Tamaño:</label></td><td><span id=\"sizeValue\"></span></td></tr></tbody></table>");;
 	
-	$("#nameValue").html(objBogui.nombre);
-	$("#modoValue").html(objBogui.modo);
-	$("#brilloValue").html(objBogui.brillo);
-	$("#contrasteValue").html(objBogui.contraste);
-	$("#entropiaValue").html(objBogui.entropia);
-	$("#formatoValue").html(objBogui.formato);
-	$("#sizeValue").html(objBogui.imgCanvas.width+"X"+objBogui.imgCanvas.height);
+	$("#nameValue").html(objetoBoguiActual.nombre);
+	$("#modoValue").html(objetoBoguiActual.modo);
+	$("#brilloValue").html(objetoBoguiActual.brillo);
+	$("#contrasteValue").html(objetoBoguiActual.contraste);
+	$("#entropiaValue").html(objetoBoguiActual.entropia);
+	$("#formatoValue").html(objetoBoguiActual.formato);
+	$("#sizeValue").html(objetoBoguiActual.imgCanvas.width+"X"+objetoBoguiActual.imgCanvas.height);
 	
 	form = dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
