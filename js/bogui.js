@@ -9,6 +9,9 @@ EL TAMAÑO DE TRABAJO DE IMAGEN, FORMATO DE DESCARGA Y MODO DE IMAGEN VIENEN DAD
 	-window.formatoDescarga
 */
 
+
+
+
 var imagen;
 var nombre;
 var output = [];
@@ -20,6 +23,9 @@ var numeroObjetos = 0;
 var altoHistograma = 470;
 var anchoHistograma = 500;
 var tiempo = new Date();
+
+$('.ui-dialog').wrap('#workspace');
+$('.ui-widget-overlay').wrap('#workspace');
 
 
 $(document).ready(function() {
@@ -620,6 +626,7 @@ function actualizarGraficaTramos(numTramos){
 }
 
 function readImage() {
+
     if ( this.files && this.files[0] ) {
         var FR = new FileReader();
         nombre = this.files[0].name;
@@ -703,7 +710,9 @@ function Bogui(img, id, name) {
 		title: this.nombre,
 	   	height: window.maxHeight,
 		width: window.maxWidth	
-	}).appendTo('body');
+	}).appendTo('#workspace');
+
+
 
 	var canvasContainer = $("<div id=\"canvasContainer"+this.ident+"\" class=\"canvasContainer\"></div>");
 	canvasContainer.append(this.imgCanvas);
