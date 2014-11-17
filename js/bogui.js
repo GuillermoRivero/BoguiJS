@@ -1171,6 +1171,7 @@ function calcularHistogramaSimple(objetoBoguiActual){
 
 function crearHistogramaSimple(objetoBoguiActual){
 
+	calcularHistogramaSimple(objetoBoguiActual);
 	//Histograma Simple
 	objetoBoguiActual.dialogoHistograma = $('<div/>', {
 	    	id: "dialogoHistogramaSimple" + objetoBoguiActual.ident,
