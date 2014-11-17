@@ -55,6 +55,33 @@ $(document).ready(function() {
 		$("#fileSelector").click();
 	});	
 
+	$("#dropzone").on("dragover", function(event) {
+    event.preventDefault();  
+    event.stopPropagation();
+    $(this).addClass('dragging');
+    $("#dropzone").html("<h1>DROP YOUR IMAGES HERE</h1>");
+	});
+
+	$("#dropzone").on("dragleave", function(event) {
+	    event.preventDefault();  
+	    event.stopPropagation();
+	    $(this).removeClass('dragging');
+	    $("#dropzone").html("");
+	});
+
+	$("#dropzone").on("drop", function(event) {
+	    event.preventDefault();  
+	    event.stopPropagation();
+	    
+	    $("#dropzone").html("");
+	    $(this).removeClass('dragging');
+
+	    var files = event.originalEvent.dataTransfer.files;
+	    for(i = 0; i < files.length;i++){
+	    	readImage(files[i]);
+	    }
+	});
+
 	
 	$("#ecualizacion").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
@@ -829,6 +856,33 @@ function quitarFormato(cadena){
 
 }
 
+function evitarNombresRepetidos(nombre){
+
+	var exp = /(.*)\(.+\)/g
+	var nombreAux = nombre;
+	
+	if(nombre.match(exp)){
+		var res = exp.exec(nombre);
+		console.log(res);
+		nombreAux = res[1];
+	}
+	var nuevoNombre = nombreAux;
+	var repetido = true;
+
+	var numeroRepeticiones = 1;
+	while(repetido == true){
+		repetido = false;
+		for(i = 0; i < objetosBogui.length; i++){
+			if(objetosBogui[i].nombre == nuevoNombre){
+				repetido = true;
+				nuevoNombre = nombreAux +"("+numeroRepeticiones+")"
+				numeroRepeticiones++;
+			}
+		}
+	}
+	return nuevoNombre;
+}
+
 function Bogui(img, id, name) {
 
 	//ATRIBUTOS
@@ -836,7 +890,7 @@ function Bogui(img, id, name) {
 	this.modo = window.modoImagen;
 	this.imagen = img;
 	this.formato = quitarFormato(name)[2];
-	this.nombre = quitarFormato(name)[1];
+	this.nombre = evitarNombresRepetidos(quitarFormato(name)[1]);
 	this.imgCanvas;
 	this.regCanvas;
 	this.ctx;
