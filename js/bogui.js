@@ -295,7 +295,6 @@ $(document).ready(function() {
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
 			crearHistogramaSimple(objetosBogui[objetoActual]);
-			objetosBogui[objetoActual].dialogoHistograma.dialog("open");
 		}
 	});	
 	
@@ -304,7 +303,6 @@ $(document).ready(function() {
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
 			crearHistogramaAcumulativo(objetosBogui[objetoActual]);
-			objetosBogui[objetoActual].dialogoHistogramaAcumulativo.dialog("open");
 			
 		}
 	});	
@@ -608,7 +606,20 @@ function readImage() {
         };    
         FR.readAsDataURL( this.files[0] );
 	numeroObjetos++;
+	clearFileInput();
     }
+}
+
+function clearFileInput(){
+        var oldInput = document.getElementById("fileSelector");
+ 
+        var newInput = document.createElement("input");
+ 
+        newInput.type = "file";
+        newInput.id = oldInput.id;
+        newInput.style.cssText = oldInput.style.cssText;
+        oldInput.parentNode.replaceChild(newInput, oldInput);
+        $("#fileSelector").on("change", readImage);
 }
 
 function quitarFormato(cadena){
@@ -899,8 +910,7 @@ function descargarImagen(objetoBoguiActual, formato){
    	link.click();
 }
 
-function crearHistogramaSimple(objetoBoguiActual){
-
+function calcularHistogramaSimple(objetoBoguiActual){
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
    	var pixelData = imageData.data;
 
@@ -913,12 +923,20 @@ function crearHistogramaSimple(objetoBoguiActual){
    	for(j = 0; j < pixelData.length; j += 4) {
 		objetoBoguiActual.histograma[pixelData[j]]++; 
 	}
+}
+
+function crearHistogramaSimple(objetoBoguiActual){
 
 	//Histograma Simple
 	objetoBoguiActual.dialogoHistograma = $('<div/>', {
-	    	id: "dialogo" + objetoBoguiActual.ident,
+	    	id: "dialogoHistogramaSimple" + objetoBoguiActual.ident,
 
 	}).appendTo('body');
+
+	objetoBoguiActual.dialogoHistograma.on("dialogclose",function(e){			
+		$(this).dialog( "close" );
+		$(this).remove();	
+ 	});
 
 	objetoBoguiActual.contenedorHistograma = $('<div/>').appendTo(objetoBoguiActual.dialogoHistograma);
 	objetoBoguiActual.contenedorHistograma.attr("autofocus", "autofocus");
@@ -934,25 +952,33 @@ function crearHistogramaSimple(objetoBoguiActual){
         },
         xAxis: {
             min: 0,
+            max: 255,
             title: {
                 text: 'Intensidad'
             }
         },
         yAxis: {
             min: 0,
-	    max: Math.max.apply(Math, objetoBoguiActual.histograma),
+	    	max: Math.max.apply(Math, objetoBoguiActual.histograma),
             title: {
                 text: 'Cantidad de Pixeles'
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color}; padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y} </b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
+                formatter: function() {
+                    var tooltip;
+	            	if (this.series.name == 'Media') {
+	                	tooltip = '<table>'+'<tr><td style="color:'+this.series.color+'; padding:0; font-weight:bold;">'+this.series.name+': </td>' +
+	                '<td style="padding:0"><b>'+this.x+'</b></td></tr>'
+	            	}else{
+	            		tooltip = '<table><tr><td style="color:'+this.series.color+'}; padding:0"; font-weight:bold;>'+ 'Nivel de Gris'+': </td>' + '<td style="padding:0"><b>'+this.key+' </b></td></tr>'+
+	            				  '<tr><td style="color:'+this.series.color+'; padding:0"; font-weight:bold;>'+this.series.name+': </td>' + '<td style="padding:0"><b>'+this.y+' </b></td></tr></table>'
+	            	}
+	            	return tooltip;
+                },
+                useHTML: true
         },
+
         plotOptions: {
             column: {
                 pointPadding: 0,
@@ -962,9 +988,14 @@ function crearHistogramaSimple(objetoBoguiActual){
         series: [{
             name: 'Histograma Simple',
             data: objetoBoguiActual.histograma,
-	    color: "#39b1cc"
-
-        }]
+	    	color: "#39b1cc"
+        	},
+        	{
+            name: 'Media',
+            data: [[calcularBrilloContraste(objetoBoguiActual)[0], Math.max.apply(Math, objetoBoguiActual.histograma)]],
+	    	color: "#E70000"
+        	}
+		]
     });
 	//APPEND
 	objetoBoguiActual.dialogoHistograma.dialog();
@@ -972,14 +1003,10 @@ function crearHistogramaSimple(objetoBoguiActual){
 	objetoBoguiActual.dialogoHistograma.dialog("option", "resizable", false);
 	objetoBoguiActual.dialogoHistograma.dialog("option", "width", anchoHistograma); 
 	objetoBoguiActual.dialogoHistograma.dialog("option", "height", altoHistograma);
-
-	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	objetoBoguiActual.dialogoHistograma.dialog( "close" );
 }
 
-function crearHistogramaAcumulativo(objetoBoguiActual){
-
-	crearHistogramaSimple(objetoBoguiActual);
+function calcularHistogramaAcumulativo(objetoBoguiActual){
+	calcularHistogramaSimple(objetoBoguiActual);
 	//Inicializar Variables
 	for(i = 0; i < objetoBoguiActual.histograma.length; i++) {
 		objetoBoguiActual.histogramaAcumulativo[i] = 0; 
@@ -990,11 +1017,13 @@ function crearHistogramaAcumulativo(objetoBoguiActual){
 	for(k = 1; k < objetoBoguiActual.histograma.length; k++) {
 		objetoBoguiActual.histogramaAcumulativo[k] = objetoBoguiActual.histograma[k] + objetoBoguiActual.histogramaAcumulativo[k-1]; 
 	}
+}
 
-	//Histograma Acumulativo
+function crearHistogramaAcumulativo(objetoBoguiActual){
+	calcularHistogramaAcumulativo(objetoBoguiActual);
 	
 	objetoBoguiActual.dialogoHistogramaAcumulativo = jQuery('<div/>', {
-	    	id: "dialogo" + objetoBoguiActual.ident
+	    	id: "dialogoHistogramaAcumulativo" + objetoBoguiActual.ident
 	}).appendTo('body');
 
 	
@@ -1024,12 +1053,18 @@ function crearHistogramaAcumulativo(objetoBoguiActual){
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color}; padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y} </b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
+                formatter: function() {
+                    var tooltip;
+	            	if (this.series.name == 'Media') {
+	                	tooltip = '<table>'+'<tr><td style="color:'+this.series.color+'; padding:0; font-weight:bold;">'+this.series.name+': </td>' +
+	                '<td style="padding:0"><b>'+this.x+'</b></td></tr>'
+	            	}else{
+	            		tooltip = '<table><tr><td style="color:'+this.series.color+'}; padding:0"; font-weight:bold;>'+ 'Nivel de Gris'+': </td>' + '<td style="padding:0"><b>'+this.key+' </b></td></tr>'+
+	            				  '<tr><td style="color:'+this.series.color+'; padding:0"; font-weight:bold;>'+this.series.name+': </td>' + '<td style="padding:0"><b>'+this.y+' </b></td></tr></table>'
+	            	}
+	            	return tooltip;
+                },
+                useHTML: true
         },
         plotOptions: {
             column: {
@@ -1040,9 +1075,14 @@ function crearHistogramaAcumulativo(objetoBoguiActual){
         series: [{
             name: 'Histograma Acumulativo',
             data: objetoBoguiActual.histogramaAcumulativo,
-	    color: "#39b1cc"
-
-        }]
+	    	color: "#39b1cc"
+			},
+			{
+            name: 'Media',
+            data: [[calcularBrilloContraste(objetoBoguiActual)[0], Math.max.apply(Math, objetoBoguiActual.histogramaAcumulativo)]],
+	    	color: "#E70000"
+        	}
+        ]
     });
 
 	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog();
@@ -1051,9 +1091,6 @@ function crearHistogramaAcumulativo(objetoBoguiActual){
 	
 	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "width", anchoHistograma); 
 	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "height", altoHistograma);
-
-	//Se cierran los histogramas ya que no deben abrirse hasta que el usuario los invoque.
-	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog( "close" );
 }
 
 function borrarObjetoBogui(id){
@@ -1096,7 +1133,7 @@ function reducirImagen(objetoBoguiActual){
 }
 
 function calcularLimitesColor(objetoBoguiActual){
-	crearHistogramaSimple(objetoBoguiActual);
+	calcularHistogramaSimple(objetoBoguiActual);
 	valorMinimo = 0;
 	valorMaximo = 255;
 	while(objetoBoguiActual.histograma[valorMinimo] == 0){
@@ -1189,7 +1226,7 @@ function calcularBrilloContraste(objetoBoguiActual){
 	if(typeof objetoBoguiActual == 'undefined'){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
-		crearHistogramaSimple(objetoBoguiActual);
+		calcularHistogramaSimple(objetoBoguiActual);
 		var brillo = 0;
 		var contraste = 0;
 		var total = 0;
@@ -1258,7 +1295,7 @@ function ecualizarHistograma(objetoBoguiActual){
 
 function correccionGamma(objetoBoguiActual, gamma){
 
-	crearHistogramaSimple(objetoBoguiActual);
+	calcularHistogramaSimple(objetoBoguiActual);
 
 	var funcionTransferencia = new Array(256);
 
@@ -1286,7 +1323,7 @@ function calcularEntropia(objetoBoguiActual){
 		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 	}else{
 
-		crearHistogramaSimple(objetoBoguiActual);
+		calcularHistogramaSimple(objetoBoguiActual);
 		var total = 0;
 		var entropia = 0;
 	 	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
@@ -1333,7 +1370,7 @@ function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 
 function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
 	//calcular primero histograma origen
-	crearHistogramaSimple(objetoBoguiActual);
+	calcularHistogramaSimple(objetoBoguiActual);
 	var histograma = objetoBoguiActual.histograma;
 	//normalizacion
 	var numeroPixeles = 0;
