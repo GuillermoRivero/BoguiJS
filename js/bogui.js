@@ -52,6 +52,24 @@ $(document).ready(function() {
 		}
 		
 	});
+
+	$("#diferenciaImagen").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			diferencia(objetosBogui[0], objetosBogui[1], 20);
+		}
+		
+	});
+
+	$("#especificacion").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			especificarHistograma(objetosBogui[0], objetosBogui[1]);
+		}
+		
+	});
 	
 	$("#ajusteBrilloContraste").click(function() {
 		var dialog, form;
@@ -388,30 +406,42 @@ $(document).ready(function() {
 });
 
 function mostrarInformacion(objetoBoguiActual){
+
 	var dialog, form;
 	
-	$("body").append("<div id=\"dialog\"></div>");
-	dialog = $( "#dialog" ).dialog({
-		title: "Informacion de la imagen:" + objetoBoguiActual.nombre,
+	idObjeto = "dialogoInformacion"+ objetoBoguiActual.ident;
+
+	dialogoInformacion = jQuery('<div/>', {
+	    id: idObjeto,
+	}).appendTo('body');
+
+
+	dialog = dialogoInformacion.dialog({
+		title: "Informacion de la imagen: " + objetoBoguiActual.nombre,
 		width: 400,
 		buttons: {
 			Ok:function(ui) {
 				$(this).dialog( "close" );
 				$(this).remove();
 			}
-		},
-		dialogClass: 'no-close' 
+		}
 	});
+
+	dialog.on("dialogclose",function(e){			
+		$(this).dialog( "close" );
+		$(this).remove();	
+ 	});
 	
-	dialog.append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue\"></span></td></tr><tr><td><label>Entropia:</label></td><td><span id=\"entropiaValue\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue\"></span></td></tr><tr><td><label>Tamaño:</label></td><td><span id=\"sizeValue\"></span></td></tr></tbody></table>");;
-	
-	$("#nameValue").html(objetoBoguiActual.nombre);
-	$("#modoValue").html(objetoBoguiActual.modo);
-	$("#brilloValue").html(objetoBoguiActual.brillo);
-	$("#contrasteValue").html(objetoBoguiActual.contraste);
-	$("#entropiaValue").html(objetoBoguiActual.entropia);
-	$("#formatoValue").html(objetoBoguiActual.formato);
-	$("#sizeValue").html(objetoBoguiActual.imgCanvas.width+"X"+objetoBoguiActual.imgCanvas.height);
+	dialog.append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Entropia:</label></td><td><span id=\"entropiaValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor mínimo de gris:</label></td><td><span id=\"minGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor máximo de gris:</label></td><td><span id=\"maxGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Tamaño:</label></td><td><span id=\"sizeValue"+ objetoBoguiActual.ident +"\"></span></td></tr></tbody></table>");
+	$("#nameValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.nombre);
+	$("#modoValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.modo);
+	$("#brilloValue"+ objetoBoguiActual.ident).html(calcularBrilloContraste(objetoBoguiActual)[0]);
+	$("#contrasteValue"+ objetoBoguiActual.ident).html(calcularBrilloContraste(objetoBoguiActual)[1]);
+	$("#entropiaValue"+ objetoBoguiActual.ident).html(calcularEntropia(objetoBoguiActual));
+	$("#minGris"+ objetoBoguiActual.ident).html(calcularLimitesColor(objetoBoguiActual)[0]);
+	$("#maxGris"+ objetoBoguiActual.ident).html(calcularLimitesColor(objetoBoguiActual)[1]);
+	$("#formatoValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.formato);
+	$("#sizeValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.imgCanvas.width+"X"+objetoBoguiActual.imgCanvas.height);
 	
 	form = dialog.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
@@ -557,12 +587,12 @@ function transformacionLinealTramosDialog(numTramos){
 		$("#a0").spinner( "value",0 );
 		$("#a0").spinner( "disable" );
 		$("#b0").spinner( "value",0 );
-		$("#b0").spinner( "disable" );
+
 		
 		$("#a"+numTramos).spinner( "value",255 );
 		$("#a"+numTramos).spinner( "disable" );
 		$("#b"+numTramos).spinner( "value",255);
-		$("#b"+numTramos).spinner( "disable" );		
+	
 		
 	
 		actualizarGraficaTramos(numTramos);
@@ -571,9 +601,8 @@ function transformacionLinealTramosDialog(numTramos){
 
 function actualizarGraficaTramos(numTramos){	
 	var puntoAnterior = 0;
-	var counter = 1;
+	var counter = 0;
 	var puntos = [];
-	puntos.push([0,0]);
 	
 	while(counter <= numTramos)
 	{
@@ -587,7 +616,6 @@ function actualizarGraficaTramos(numTramos){
 		}
 		counter = counter+1;
 	}
-	puntos.push([255,255]);
 	$("#graficaTramos").highcharts().series[0].setData(puntos);
 }
 
@@ -658,9 +686,6 @@ function Bogui(img, id, name) {
 	this.mouseYini = 0;
 	this.mouseXfin = 0; //Variables para funciones que requieras capturar posiciones de raton
 	this.mouseYfin = 0;
-	this.brillo;
-	this.contraste;
-	this.entropia;
 	
 	//METODOS
 
@@ -733,11 +758,6 @@ function Bogui(img, id, name) {
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
 	this.dialogo.css("overflow","hidden");
 	
-	this.brillo = calcularBrilloContraste(this)[0];
-	this.contraste = calcularBrilloContraste(this)[1];
-	this.entropia = calcularEntropia(this);
-	
-
 
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
@@ -817,7 +837,7 @@ function dibujarRegionInteres(objetoBoguiActual, estado){
 	objetoBoguiActual.regctx = objetoBoguiActual.regCanvas.getContext("2d");
 
 	objetoBoguiActual.regctx.rect(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini, objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini , objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
-	objetoBoguiActual.regctx.lineWidth="2";
+	objetoBoguiActual.regctx.lineWidth="1";
 	objetoBoguiActual.regctx.setLineDash([5,2]);
 
 	objetoBoguiActual.regctx.strokeStyle="#39b1cc";
@@ -1141,7 +1161,6 @@ function calcularLimitesColor(objetoBoguiActual){
 	while(objetoBoguiActual.histograma[valorMaximo] == 0){
 		valorMaximo--;
 	}
-
 	return [valorMinimo, valorMaximo];
 }
 
@@ -1285,7 +1304,7 @@ function ecualizarHistograma(objetoBoguiActual){
 	var funcionTransferencia = new Array(256);
 
 	for (i = 0; i < 256; i++){
-		funcionTransferencia[i]=(255/ancho*alto)*histogramaAcumuladoNormalizado[i];
+		funcionTransferencia[i]=(255/*/(ancho*alto)*/)*histogramaAcumuladoNormalizado[i];
 	}
 
 	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
@@ -1336,10 +1355,8 @@ function calcularEntropia(objetoBoguiActual){
 			if(probabilidad != 0){
 			    entropia += probabilidad * Math.log(probabilidad, 2);
 			}
-		}
-		
-		return Math.abs(entropia);	
-		
+		}		
+		return -entropia;			
 	}
 }
 
@@ -1430,4 +1447,43 @@ function transformacionLinearPorTramos(objetoBoguiActual, tramos){
 
 	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
 	
+}
+
+function diferencia(objetoBoguiActual, objetoBoguiResta, umbral){
+
+
+	var imageData1 = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	var pixelData1 = imageData1.data;
+	var bytesPerPixel = 4;
+
+	//Comprobar que objetoBoguiResta es menor que objetoBoguiActual
+	var imageData2 = objetoBoguiResta.ctx.getImageData(0, 0, objetoBoguiResta.imgCanvas.width, objetoBoguiResta.imgCanvas.height);
+	var pixelData2 = imageData2.data;
+
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+			//if(Math.abs(pixelData1[startIdx] - pixelData2[startIdx]) < umbral){
+				/*pixelData1[startIdx] = pixelData1[startIdx];
+				pixelData1[startIdx+1] = pixelData1[startIdx+1];
+				pixelData1[startIdx+2] = pixelData1[startIdx+2];*/
+				pixelData1[startIdx] = Math.abs(pixelData1[startIdx] - pixelData2[startIdx]);
+				pixelData1[startIdx+1] = Math.abs(pixelData1[startIdx+1] - pixelData2[startIdx+2]);
+				pixelData1[startIdx+2] = Math.abs(pixelData1[startIdx+2] - pixelData2[startIdx+2]);
+			/*}else{
+				//PINTAR DE AZUL CLARO
+				pixelData1[startIdx] = 57;
+				pixelData1[startIdx+1] = 117;
+				pixelData1[startIdx+2] = 204;
+			}*/
+		}
+	}
+
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
+	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData1, 0, 0);
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++;
+
 }
