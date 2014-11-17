@@ -821,7 +821,9 @@ function readImage(file) {
         image.src    = _file.target.result;              // url.createObjectURL(file);
         image.onload = function() {
                 objetosBogui.push(new Bogui(image, numeroObjetos, file.name));
+                objetoBoguiActual = numeroObjetos;
                 numeroObjetos++;
+
         };
         image.onerror= function() {
             alert('Invalid file type: '+ file.type);
@@ -1721,9 +1723,6 @@ function mapaCambios(objetoBoguiActual, objetoBoguiResta, umbral){
 				pixelData1[startIdx] = pixelData1[startIdx];
 				pixelData1[startIdx+1] = pixelData1[startIdx+1];
 				pixelData1[startIdx+2] = pixelData1[startIdx+2];
-				pixelData1[startIdx] = Math.abs(pixelData1[startIdx] - pixelData2[startIdx]);
-				pixelData1[startIdx+1] = Math.abs(pixelData1[startIdx+1] - pixelData2[startIdx+2]);
-				pixelData1[startIdx+2] = Math.abs(pixelData1[startIdx+2] - pixelData2[startIdx+2]);
 			}else{
 				//PINTAR DE AZUL CLARO
 				pixelData1[startIdx] = 57;
