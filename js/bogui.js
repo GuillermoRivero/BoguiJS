@@ -69,16 +69,167 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			diferencia(objetosBogui[0], objetosBogui[1], 20);
+			if(typeof objetosBogui[objetoActual] == 'undefined'){
+				mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+				}else{
+				var dialog, form;
+				var valores = calcularBrilloContraste(objetosBogui[objetoActual]);
+				var oldBrillo = valores[0];
+				var oldContraste = valores[1];
+				
+				$("body").append("<div id=\"dialog\"></div>");
+				dialog = $( "#dialog" ).dialog({
+					title: "Imagen diferencia:",
+					height: 250,
+					width: 350,
+					modal: true,
+					buttons: {
+						Ok:function(ui) {
+							//COGEMOS LOS VALORES
+							var objetoReferencia = document.getElementById("imagenesReferencia").value;					
+							diferencia(objetosBogui[objetoActual],objetosBogui[objetoReferencia]);
+							$(this).dialog( "close" );
+							$(this).remove();
+						},
+						Cancel: function() {
+							$(this).dialog( "close" );
+							$(this).remove();
+						}
+					},
+					dialogClass: 'no-close' 
+				});
+				
+				form = dialog.find( "form" ).on( "submit", function( event ) {
+					event.preventDefault();
+				});		
+				
+				
+				var contenido = "<form><fieldset><p><label>Imagen de referencia: </label><select id = \"imagenesReferencia\">"
+				for(i = 0; i<objetosBogui.length;i++)
+				{
+					contenido = contenido + "<option value = \""+i+"\">"+objetosBogui[i].nombre+"</option>";
+				}
+				contenido = contenido + "</select></p></fieldset></form>";
+				dialog.append(contenido);					
+			}
 		}
 		
 	});
 
+	$("#mapaCambios").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			var dialog, form;
+			var valores = calcularBrilloContraste(objetosBogui[objetoActual]);
+			var oldBrillo = valores[0];
+			var oldContraste = valores[1];
+			
+			$("body").append("<div id=\"dialog\"></div>");
+			dialog = $( "#dialog" ).dialog({
+				title: "Mapa de cambios:",
+				height: 250,
+				width: 350,
+				modal: true,
+				buttons: {
+					Ok:function(ui) {
+						//COGEMOS LOS VALORES
+						var objetoReferencia = document.getElementById("imagenesReferencia").value;					
+						var umbral =  $( this ).find( '#sliderUmbral' ).slider( "value" );
+						mapaCambios(objetosBogui[objetoActual],objetosBogui[objetoReferencia],umbral);
+						$(this).dialog( "close" );
+						$(this).remove();
+					},
+					Cancel: function() {
+						$(this).dialog( "close" );
+						$(this).remove();
+					}
+				},
+				dialogClass: 'no-close' 
+			});
+			
+			form = dialog.find( "form" ).on( "submit", function( event ) {
+				event.preventDefault();
+			});		
+
+			
+			var contenido = "<form><fieldset><p><label>Imagen de referencia: </label><select id = \"imagenesReferencia\">"
+			for(i = 0; i<objetosBogui.length;i++)
+			{
+				contenido = contenido + "<option value = \""+i+"\">"+objetosBogui[i].nombre+"</option>";
+			}
+			contenido = contenido + "</select></p><p><label for=\"umbralSpinner\">Umbral:</label><input id=\"umbralSpinner\" name=\"umbralValue\" type=\"text\"></p><div id=\"sliderUmbral\"></div></p></fieldset></form>";
+			dialog.append(contenido);
+			
+			var umbralSpinner = $( "#umbralSpinner" ).spinner({
+				min: 0,
+				max: 255,
+				step: 1,
+				stop: (function (event, ui) {
+					$( "#sliderUmbral" ).slider( "value", $(this).spinner('value') );
+				}),
+				spin: (function(event, ui ){
+					$( "#sliderUmbral" ).slider( "value", ui.value );
+				})
+				}).on('input', function () {
+				var val = this.value,
+				$this = $(this),
+				max = $this.spinner('option', 'max'),
+				min = $this.spinner('option', 'min');
+				if (!val.match(/^\d*$/)) val = 0; //we want only number, no alpha
+				this.value = val > max ? max : val < min ? min : val;
+			});	
+			
+			$( "#sliderUmbral" ).slider({
+				range: "min",
+				min: 0,
+				autofocus: "autofocus",
+				max: 255,
+				slide: function( event, ui ) {
+					umbralSpinner.spinner( "value", ui.value );
+				}
+			});
+			umbralSpinner.spinner( "value", $( "#sliderUmbral" ).slider( "value" ));						
+		}
+	});	
+	
 	$("#especificacion").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			especificarHistograma(objetosBogui[0], objetosBogui[1]);
+			$("body").append("<div id=\"dialog\"></div>");
+			dialog = $( "#dialog" ).dialog({
+				title: "Especificación histograma:",
+				height: 170,
+				width: 350,
+				modal: true,
+				buttons: {
+					Ok:function(ui) {
+						var objetoReferencia = document.getElementById("imagenesReferencia").value;
+						especificarHistograma(objetosBogui[objetoActual], objetosBogui[objetoReferencia]);
+						$(this).dialog( "close" );
+						$(this).remove();
+					},
+					Cancel: function() {
+						$(this).dialog( "close" );
+						$(this).remove();
+					}
+				},
+				dialogClass: 'no-close' 
+			});
+			
+			form = dialog.find( "form" ).on( "submit", function( event ) {
+				event.preventDefault();
+			});					
+			
+			var contenido = "<form><fieldset><p><label>Imagen de referencia: </label><select id = \"imagenesReferencia\">"
+			for(i = 0; i<objetosBogui.length;i++)
+			{
+				contenido = contenido + "<option value = \""+i+"\">"+objetosBogui[i].nombre+"</option>";
+			}
+			contenido = contenido +	"</select></p></fieldset></form>";
+			dialog.append(contenido);
+			
 		}
 		
 	});
@@ -114,7 +265,7 @@ $(document).ready(function() {
 			dialogClass: 'no-close' 
 		});
 		
-		dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brightValue\" type=\"text\"></p><div id=\"sliderBrillo\"></div><p><label for=\"contrasteSpinner\">Contraste:</label><input id=\"contrasteSpinner\" name=\"contrastValue\" type=\"text\"></p><div id=\"sliderContraste\"></div></fieldset></form>");;
+		dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brightValue\" type=\"text\"></p><div id=\"sliderBrillo\"></div><p><label for=\"contrasteSpinner\">Contraste:</label><input id=\"contrasteSpinner\" name=\"contrastValue\" type=\"text\"></p><div id=\"sliderContraste\"></div></fieldset></form>");
 
 		form = dialog.find( "form" ).on( "submit", function( event ) {
 		  event.preventDefault();
@@ -336,6 +487,8 @@ $(document).ready(function() {
 			
 		}
 	});	
+	
+
 	
 	$("#correccionGamma").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
@@ -846,6 +999,8 @@ function Bogui(img, id, name) {
 
     });		
 }
+
+
 
 function dibujarRegionInteres(objetoBoguiActual, estado){
 
@@ -1465,7 +1620,7 @@ function transformacionLinearPorTramos(objetoBoguiActual, tramos){
 	
 }
 
-function diferencia(objetoBoguiActual, objetoBoguiResta, umbral){
+function diferencia(objetoBoguiActual, objetoBoguiResta){
 
 
 	var imageData1 = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
@@ -1479,20 +1634,9 @@ function diferencia(objetoBoguiActual, objetoBoguiResta, umbral){
 	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
 		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
 			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
-
-			//if(Math.abs(pixelData1[startIdx] - pixelData2[startIdx]) < umbral){
-				/*pixelData1[startIdx] = pixelData1[startIdx];
-				pixelData1[startIdx+1] = pixelData1[startIdx+1];
-				pixelData1[startIdx+2] = pixelData1[startIdx+2];*/
-				pixelData1[startIdx] = Math.abs(pixelData1[startIdx] - pixelData2[startIdx]);
-				pixelData1[startIdx+1] = Math.abs(pixelData1[startIdx+1] - pixelData2[startIdx+2]);
-				pixelData1[startIdx+2] = Math.abs(pixelData1[startIdx+2] - pixelData2[startIdx+2]);
-			/*}else{
-				//PINTAR DE AZUL CLARO
-				pixelData1[startIdx] = 57;
-				pixelData1[startIdx+1] = 117;
-				pixelData1[startIdx+2] = 204;
-			}*/
+			pixelData1[startIdx] = Math.abs(pixelData1[startIdx] - pixelData2[startIdx]);
+			pixelData1[startIdx+1] = Math.abs(pixelData1[startIdx+1] - pixelData2[startIdx+2]);
+			pixelData1[startIdx+2] = Math.abs(pixelData1[startIdx+2] - pixelData2[startIdx+2]);
 		}
 	}
 
@@ -1502,4 +1646,42 @@ function diferencia(objetoBoguiActual, objetoBoguiResta, umbral){
 	cambiarFoco(numeroObjetos);
 	numeroObjetos++;
 
+}
+
+function mapaCambios(objetoBoguiActual, objetoBoguiResta, umbral){
+
+	var imageData1 = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	var pixelData1 = imageData1.data;
+	var bytesPerPixel = 4;
+	
+	//Comprobar que objetoBoguiResta es menor que objetoBoguiActual
+	var imageData2 = objetoBoguiResta.ctx.getImageData(0, 0, objetoBoguiResta.imgCanvas.width, objetoBoguiResta.imgCanvas.height);
+	var pixelData2 = imageData2.data;
+	
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+			
+			if(Math.abs(pixelData1[startIdx] - pixelData2[startIdx]) < umbral){
+				pixelData1[startIdx] = pixelData1[startIdx];
+				pixelData1[startIdx+1] = pixelData1[startIdx+1];
+				pixelData1[startIdx+2] = pixelData1[startIdx+2];
+				pixelData1[startIdx] = Math.abs(pixelData1[startIdx] - pixelData2[startIdx]);
+				pixelData1[startIdx+1] = Math.abs(pixelData1[startIdx+1] - pixelData2[startIdx+2]);
+				pixelData1[startIdx+2] = Math.abs(pixelData1[startIdx+2] - pixelData2[startIdx+2]);
+			}else{
+				//PINTAR DE AZUL CLARO
+				pixelData1[startIdx] = 57;
+				pixelData1[startIdx+1] = 117;
+				pixelData1[startIdx+2] = 204;
+			}
+		}
+	}
+	
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
+	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData1, 0, 0);
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++;
+	
 }
