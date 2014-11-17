@@ -9,13 +9,9 @@
 		<script src="../js/bogui.js" type="text/javascript"></script>
 		<script src="../js/highcharts/highcharts.js"></script>
 		<script src="../js/highcharts/modules/exporting.js"></script>
-		<script src="../js/dropzone/dropzone.js"></script>
-		<script src="../js/dropzoneconf.js"></script>
 		
 		<link rel="stylesheet" type="text/css" href="../css/index.css">
 		<link rel="stylesheet" type="text/css" href="../css/menu.css">
-		<link rel="stylesheet" type="text/css" href="../js/dropzone/css/basic.css">
-		<link rel="stylesheet" type="text/css" href="../js/dropzone/css/dropzone.css">
 		<link rel="stylesheet" href="../css/jquery-ui.css">
 
 	</head>
@@ -97,7 +93,7 @@
 					</ul>
 				</div>
 				<ul id="tools" class="ui-widget ui-helper-clearfix">
-					<li class="ui-state-default ui-corner-all" title="Abrir Imagen"><span id="fileButton" class="ui-icon ui-icon-document"></span> <input type='file' id="fileSelector" accept="image/*"/></li>
+					<li class="ui-state-default ui-corner-all" title="Abrir Imagen"><span id="fileButton" class="ui-icon ui-icon-document"></span> <input type='file' id="fileSelector" accept="image/*" multiple="multiple"/></li>
 					<li class="ui-state-default ui-corner-all" title="Abrir Imagen Como"><span id="openImageAs" class="ui-icon ui-icon-folder-open"></span></li>								
 					<li class="ui-state-default ui-corner-all" title="Guardar Imagen "><span id="instaDownloadButton" class="ui-icon ui-icon-arrowthick-1-s"></span></li>
 					<li class="ui-state-default ui-corner-all" title="Guardar Imagen Como"><span id="downloadButton" class="ui-icon ui-icon-image"></span></li>							
@@ -111,15 +107,6 @@
 			</header>
 		</section>
 		<div id="workspace">
-			<form id="my-awesome-dropzone" action="/upload" class="dropzone">  
-				<div class="dropzone-previews"></div>
-				<div class="fallback"> <!-- this is the fallback if JS isn't working -->
-					<input name="file" type="file" multiple />
-				</div>
-
-			</form>
-			<button type="submit" id="submit-all" class="btn btn-primary btn-xs">Upload the file</button>
-
       	</div>
 	</body>
 </html>

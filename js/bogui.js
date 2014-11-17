@@ -30,7 +30,13 @@ $('.ui-widget-overlay').wrap('#workspace');
 
 $(document).ready(function() {
 	//Añadimos el evento para las imagenes
-	$("#fileSelector").on("change", readImage);
+	//$("#fileSelector").on("change", readImage);
+	$("#fileSelector").change(function (e) {
+    if(this.disabled) return alert('File upload not supported!');
+    var F = this.files;
+    	if(F && F[0]) for(var i=0; i<F.length; i++) readImage( F[i] );
+	});
+
 	
 	// Hover para los botones de la barra
 	$( "#tools li" ).hover(
@@ -625,24 +631,25 @@ function actualizarGraficaTramos(numTramos){
 	$("#graficaTramos").highcharts().series[0].setData(puntos);
 }
 
-function readImage() {
-
-    if ( this.files && this.files[0] ) {
-        var FR = new FileReader();
-        nombre = this.files[0].name;
-        FR.onload = function(e) {    
-		imagen = new Image();  
-	    imagen.src = e.target.result;
-		imagen.onload = function() {
-		     objetosBogui.push(new Bogui(imagen, numeroObjetos-1, nombre));
-		     cambiarFoco(numeroObjetos-1);
-		   };
-        };    
-        FR.readAsDataURL( this.files[0] );
-	numeroObjetos++;
-	clearFileInput();
-    }
+function readImage(file) {
+  
+    var reader = new FileReader();
+    var image  = new Image();
+  
+    reader.readAsDataURL(file);  
+    reader.onload = function(_file) {
+        image.src    = _file.target.result;              // url.createObjectURL(file);
+        image.onload = function() {
+                objetosBogui.push(new Bogui(image, numeroObjetos, file.name));
+                numeroObjetos++;
+        };
+        image.onerror= function() {
+            alert('Invalid file type: '+ file.type);
+        };      
+    };    
 }
+
+
 
 function clearFileInput(){
         var oldInput = document.getElementById("fileSelector");
