@@ -932,7 +932,6 @@ function Bogui(img, id, name) {
 
 	var canvasContainer = $("<div id=\"canvasContainer"+this.ident+"\" class=\"canvasContainer\"></div>");
 	canvasContainer.append(this.imgCanvas);
-	canvasContainer.css("background", "#39b1cc");
 
 	this.dialogo.dialog({ resizable: false });
 	
@@ -1643,13 +1642,16 @@ function especificarHistograma(objetoBoguiActual, objetoBoguiOrigen){
 	histogramaOrigenAcumuladoNormalizadoFuente = calcularHistogramaAcumuladoNormalizado(objetoBoguiActual);
 	histogramaOrigenAcumuladoNormalizadoDestino = calcularHistogramaAcumuladoNormalizado(objetoBoguiOrigen);
 
-	while(indiceFuente < 256){
-		if(histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] > histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente] ){
+	while(indiceFuente < funcionTransferencia.length){
+		if(histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] > histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente]){
 			funcionTransferencia[indiceFuente] = indiceDestino;
 			indiceFuente++;
 		}else{
 			funcionTransferencia[indiceFuente] = funcionTransferencia[indiceFuente-1];
 			indiceDestino++;
+		}
+		if(indiceDestino == 255){
+			indiceFuente++;
 		}
 	}
 
@@ -1724,10 +1726,8 @@ function mapaCambios(objetoBoguiActual, objetoBoguiResta, umbral){
 				pixelData1[startIdx+1] = pixelData1[startIdx+1];
 				pixelData1[startIdx+2] = pixelData1[startIdx+2];
 			}else{
-				//PINTAR DE AZUL CLARO
-				pixelData1[startIdx] = 57;
-				pixelData1[startIdx+1] = 117;
-				pixelData1[startIdx+2] = 204;
+				//SE PONEN LOS PIXELES EN ALFA
+				pixelData1[startIdx+3] = 100;
 			}
 		}
 	}

@@ -2,16 +2,23 @@ img{
 	height:100%;
 }
 
-#logo{
+/*#logo{
 	height: 50px;
 	text-align:center;
-}
+	pointer-events: none;
+}*/
 
 #workspace{
 	min-width: 1024px;
 	min-height: 400px;
 	height:100%;
 	width:100%;
+	background-image: url("../images/logo.png");
+	opacity: 0.8;
+	background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50%;
+	
 }
 
 #dropzone{
@@ -19,6 +26,8 @@ img{
 	min-height: 400px;
 	height:100%;
 	width:100%;
+
+
 }
 
 .dragging{
@@ -74,8 +83,12 @@ label{
 	top: 0;
 }
 
+
+
 .canvasContainer{
 	position:relative;
+	background-image: url("../images/patronFondo.png");
+    background-repeat: repeat;
 }
 
 .relative {
