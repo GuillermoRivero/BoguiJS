@@ -6,27 +6,29 @@ img{
 	height: 50px;
 	text-align:center;
 }
+ 
 
-#workspace{
-	min-width: 1024px;
-	min-height: 400px;
-	height:100%;
-	width:100%;
-}
+ .overlay{
+	 	border-style: dashed;
+	 	border-width: 2px;
+		border-color: rgb(26,26,26,0.7);
+	    background: rgba(51,51,51,0.7);
+ }
+ 
+
 
 #dropzone{
 	min-width: 1024px;
 	min-height: 400px;
 	height:100%;
 	width:100%;
+	z-index:10;
 }
 
-.dragging{
-	background-color: red;
-}
-
-body{
-	min-width: 1024px;
+html,body{
+    margin: 0;
+    height: 100%;
+	min-width: 1024px;	
 }
 
 header{
@@ -36,6 +38,24 @@ header{
 
 label{
 	font-weight:bold;
+}
+
+.visible{
+	visibility: visible;
+}
+
+.hidden{
+	visibility: hidden;	
+}
+.noPointerEvents {
+  pointer-events: none;
+}
+#dropContent{
+	position:absolute;
+	font-family:Arial, Helvetica, sans-serif;
+	text-transform:uppercase;
+	font-weight:bold;
+	color: rgba(0, 0, 0, 0.5);
 }
 
 #bars{
@@ -56,7 +76,6 @@ label{
 	padding: 0;
 }
 #tools li {
-	z-index:998;
 	margin: 2px;
 	position: relative;
 	padding: 4px 0;
@@ -133,4 +152,8 @@ fieldset{
 
 .threequarter{
 	width:65%;
+}
+
+#workspace{
+	position:absolute; bottom:0px; top:121px ;	min-width: 1024px; width:100%
 }

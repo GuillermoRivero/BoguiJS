@@ -55,31 +55,35 @@ $(document).ready(function() {
 		$("#fileSelector").click();
 	});	
 
-	$("#dropzone").on("dragover", function(event) {
-    event.preventDefault();  
-    event.stopPropagation();
-    $(this).addClass('dragging');
-    $("#dropzone").html("<h1>DROP YOUR IMAGES HERE</h1>");
-	});
-
-	$("#dropzone").on("dragleave", function(event) {
+	$("#workspace").on("dragover", function(event) {
 	    event.preventDefault();  
-	    event.stopPropagation();
-	    $(this).removeClass('dragging');
-	    $("#dropzone").html("");
+    	event.stopPropagation();
+		$(this).addClass('overlay');
+		$('#dropContent').addClass('visible');
+		$('#dropContent').removeClass('hidden');
+
 	});
 
-	$("#dropzone").on("drop", function(event) {
+	$("#workspace").on("dragleave", function(event) {
 	    event.preventDefault();  
 	    event.stopPropagation();
 	    
-	    $("#dropzone").html("");
-	    $(this).removeClass('dragging');
-
+	    $(this).removeClass('overlay');
+		$('#dropContent').removeClass('visible');
+		$('#dropContent').addClass('hidden');		
+	});
+	
+	$("#workspace").on("drop", function(event) {
+	    event.preventDefault();  
+	    event.stopPropagation();
+	    
 	    var files = event.originalEvent.dataTransfer.files;
 	    for(i = 0; i < files.length;i++){
 	    	readImage(files[i]);
 	    }
+	    $(this).removeClass('overlay');	
+		$('#dropContent').removeClass('visible');
+		$('#dropContent').addClass('hidden');				
 	});
 
 	
@@ -452,7 +456,6 @@ $(document).ready(function() {
 		}	
 	});			
 	
-	
 	$("#downloadButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("Debe seleccionar una imagen para descargar");
@@ -514,9 +517,7 @@ $(document).ready(function() {
 			
 		}
 	});	
-	
-
-	
+		
 	$("#correccionGamma").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
@@ -594,8 +595,28 @@ $(document).ready(function() {
 			mostrarInformacion(objetosBogui[objetoActual]);
 		}
 	});	    	
+	
+	$(window).load(function()
+	{
+		centerContent();
+	});
+	
+	$(window).resize(function()
+	{
+		centerContent();
+	});
+	
 	//TODO: Guardar Imagen, Guardar Imagen Como, Abrir Imagen Como
 });
+
+
+function centerContent()
+{
+	var container = $('#workspace');
+	var content = $('#dropContent');
+	content.css("left", (container.width()-content.width())/2);
+	content.css("top", (container.height()-content.height())/2);
+}
 
 function mostrarInformacion(objetoBoguiActual){
 
