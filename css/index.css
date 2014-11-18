@@ -2,9 +2,11 @@ img{
 	height:100%;
 }
 
+
 #logo{
 	height: 50px;
 	text-align:center;
+
 }
  
 
@@ -15,7 +17,23 @@ img{
 	    background: rgba(51,51,51,0.7);
  }
  
+.noPointerEvents{
+	pointer-events: none;
+}
 
+#workspace{
+	min-width: 1024px;
+	min-height: 400px;
+	height:100%;
+	width:100%;
+	background-image: url("../images/logo.png");
+	opacity: 0.8;
+	background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50%;
+	
+}
+>>>>>>> origin/master
 
 #dropzone{
 	min-width: 1024px;
@@ -93,8 +111,12 @@ label{
 	top: 0;
 }
 
+
+
 .canvasContainer{
 	position:relative;
+	background-image: url("../images/patronFondo.png");
+    background-repeat: repeat;
 }
 
 .relative {
