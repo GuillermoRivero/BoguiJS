@@ -58,17 +58,19 @@ $(document).ready(function() {
 	$("#workspace").on("dragover", function(event) {
 	    event.preventDefault();  
     	event.stopPropagation();
-		$(this).addClass('overlay');
+	    $(this).addClass('overlay');	
 		$('#dropContent').addClass('visible');
 		$('#dropContent').removeClass('hidden');
 
+			
 	});
 
 	$("#workspace").on("dragleave", function(event) {
 	    event.preventDefault();  
 	    event.stopPropagation();
 	    
-	    $(this).removeClass('overlay');
+		
+	    $(this).removeClass('overlay');	
 		$('#dropContent').removeClass('visible');
 		$('#dropContent').addClass('hidden');		
 	});
@@ -81,7 +83,8 @@ $(document).ready(function() {
 	    for(i = 0; i < files.length;i++){
 	    	readImage(files[i]);
 	    }
-	    $(this).removeClass('overlay');	
+
+		$(this).removeClass('overlay');	
 		$('#dropContent').removeClass('visible');
 		$('#dropContent').addClass('hidden');				
 	});
@@ -614,8 +617,9 @@ function centerContent()
 {
 	var container = $('#workspace');
 	var content = $('#dropContent');
-	content.css("left", (container.width()-content.width())/2);
-	content.css("top", (container.height()-content.height())/2);
+	content.css("left", (container.width()-(content.width()))/2);
+	content.css("top", (container.height()-(content.height()))/2);
+
 }
 
 function mostrarInformacion(objetoBoguiActual){
