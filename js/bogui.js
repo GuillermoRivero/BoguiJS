@@ -1215,6 +1215,13 @@ function calcularPixelesICS(objetoBoguiActual){
   return pixeles;
 }
 
+function calcularMedia(puntos){
+	var total = 0;
+	for(i = 0; i < puntos.length; i++){
+		total += puntos[i];
+	}
+	return (total/puntos.length);
+}
 
 function crearGraficaICS(objetoBoguiActual, pixeles){
 
@@ -1231,7 +1238,37 @@ function crearGraficaICS(objetoBoguiActual, pixeles){
 		var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
 		grafica.push(pixelData[startIdx]);	
 	}
-	//return grafica;
+
+	var derivadaGrafica = [];
+
+	for(i = 0; i < grafica.length-1; i++){
+		derivadaGrafica.push(Math.abs(grafica[i+1]-grafica[i]));	
+	}
+
+	//TODO: Decidir si dejar 0 o el ultimo valor
+	//derivadaGrafica.push(grafica[grafica.length-1]);
+	derivadaGrafica.push(0);
+	
+
+	var derivadaGraficaSuavizada = [];
+	var cantidadSuavizado = 3;
+	var puntos;
+	var i = 0;
+	while(i < derivadaGrafica.length-1){
+		console.log("i " + i);
+		puntos = [];
+
+		for(j = i-cantidadSuavizado; j <= i+cantidadSuavizado; j++){
+			console.log("j " + j);
+			if( (j > 0) && (j < derivadaGrafica.length)){
+				puntos.push(derivadaGrafica[j]);
+			}
+
+		}
+		derivadaGraficaSuavizada.push(calcularMedia(puntos));
+		i++;		
+	}
+
 
 	dialogoICS = $('<div/>', {
 	    	id: "dialogoICS" + objetoBoguiActual.ident,
@@ -1290,10 +1327,21 @@ function crearGraficaICS(objetoBoguiActual, pixeles){
                 borderWidth: 0
             }
         },
-        series: [{
-            name: 'Pixeles',
+        series: [
+        	{
+            name: 'Perfil',
             data: grafica,
 	    	color: "#39b1cc"
+        	},
+        	{
+            name: 'Perfil Derivado',
+            data: derivadaGrafica,
+	    	color: "#FF0000"
+        	},
+        	{
+            name: 'Perfil Derivado Suavizado',
+            data: derivadaGraficaSuavizada,
+	    	color: "#0000FF"
         	}
 		]
     });
