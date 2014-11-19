@@ -472,6 +472,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
+			resetearRegionInteres();
 			herramientaActual = "roi";
 		}
 	});	
@@ -482,13 +483,7 @@ $(document).ready(function() {
 		}else{
 			herramientaActual = "puntero";
 			//Se limpia el canvas y se resetea la posicion guardada del click
-			for(var i = 0; i < objetosBogui.length; i++){
-				objetosBogui[i].regCanvas.width = objetosBogui[i].regCanvas.width;
-				objetosBogui[i].mouseXini = 0;
-				objetosBogui[i].mouseYini = 0;		
-				objetosBogui[i].mouseXfin = 0;
-				objetosBogui[i].mouseYfin = 0;
-			}
+			resetearRegionInteres();
 		}
 	});	
 
@@ -589,7 +584,32 @@ $(document).ready(function() {
 		}else{
 			mostrarInformacion(objetosBogui[objetoActual]);
 		}
-	});	    
+	});	
+
+	$("#ics").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			resetearRegionInteres();
+			herramientaActual = "ics";
+		}
+	});	 
+
+	$("#imageCrossSection").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			
+			if(herramientaActual != "ics"){
+				mostrarError("Debe tener seleccionada la herramienta \"Región de interés\" para poder recortar"); 	
+			}else{
+				var pixeles = calcularPixelesICS(objetosBogui[objetoActual]);
+				crearGraficaICS(objetosBogui[objetoActual], pixeles);
+			}
+
+		}
+	});	 
+
 
 	$("#informacionImagen").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
@@ -846,7 +866,7 @@ function readImage(file) {
         image.src    = _file.target.result;              // url.createObjectURL(file);
         image.onload = function() {
                 objetosBogui.push(new Bogui(image, numeroObjetos, file.name));
-                objetoBoguiActual = numeroObjetos;
+                cambiarFoco(numeroObjetos);
                 numeroObjetos++;
 
         };
@@ -890,7 +910,6 @@ function evitarNombresRepetidos(nombre){
 	
 	if(nombre.match(exp)){
 		var res = exp.exec(nombre);
-		console.log(res);
 		nombreAux = res[1];
 	}
 	var nuevoNombre = nombreAux;
@@ -1023,6 +1042,12 @@ function Bogui(img, id, name) {
 				        objetosBogui[obtenerPosArray(idActual)].mouseXini = e.pageX - pos.x;        
 				        objetosBogui[obtenerPosArray(idActual)].mouseYini = e.pageY - pos.y;
 			break;
+			case "ics":	
+						objetosBogui[obtenerPosArray(idActual)].click = true;
+						var pos = findPos(this);
+				        objetosBogui[obtenerPosArray(idActual)].mouseXini = e.pageX - pos.x;        
+				        objetosBogui[obtenerPosArray(idActual)].mouseYini = e.pageY - pos.y;
+			break;
 			default:
         }
 	});
@@ -1040,6 +1065,13 @@ function Bogui(img, id, name) {
 		        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
 		        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
 				dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)]);
+			break;
+			case "ics":
+				objetosBogui[obtenerPosArray(idActual)].click = false;
+				var pos = findPos(this);
+		        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+		        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+				dibujarLineaICS(objetosBogui[obtenerPosArray(idActual)]);
 			break;
 			default:
         }
@@ -1066,6 +1098,16 @@ function Bogui(img, id, name) {
 					dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)], estado);
 				}
 			break;
+			case "ics":
+		        if(objetosBogui[obtenerPosArray(idActual)].click == true){
+		        	var estado = 0;
+			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+			        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
+		        	objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
+					dibujarLineaICS(objetosBogui[obtenerPosArray(idActual)]);
+				}
+			break;
 			default:
         }
 
@@ -1080,7 +1122,15 @@ function Bogui(img, id, name) {
     });		
 }
 
-
+function resetearRegionInteres(){
+	for(var i = 0; i < objetosBogui.length; i++){
+				objetosBogui[i].regCanvas.width = objetosBogui[i].regCanvas.width;
+				objetosBogui[i].mouseXini = 0;
+				objetosBogui[i].mouseYini = 0;		
+				objetosBogui[i].mouseXfin = 0;
+				objetosBogui[i].mouseYfin = 0;
+			}
+}
 
 function dibujarRegionInteres(objetoBoguiActual, estado){
 
@@ -1088,6 +1138,199 @@ function dibujarRegionInteres(objetoBoguiActual, estado){
 	objetoBoguiActual.regctx = objetoBoguiActual.regCanvas.getContext("2d");
 
 	objetoBoguiActual.regctx.rect(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini, objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini , objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
+	objetoBoguiActual.regctx.lineWidth="1";
+	objetoBoguiActual.regctx.setLineDash([5,2]);
+
+	objetoBoguiActual.regctx.strokeStyle="#39b1cc";
+	objetoBoguiActual.regctx.stroke();
+}
+
+
+
+
+function calcularPixelesICS(objetoBoguiActual){
+  var x, y;
+  var dx, dy;
+  var p;
+  var incE, incNE;
+  var stepx, stepy;
+  var pixeles = [];
+
+  dx = (objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini);
+  dy = (objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
+ 
+ // determinar que punto usar para empezar, cual para terminar 
+  if (dy < 0) { 
+    dy = -dy; 
+    stepy = -1; 
+  } 
+  else {
+    stepy = 1;
+  }
+ 
+  if (dx < 0) {  
+    dx = -dx;  
+    stepx = -1; 
+  } 
+  else {
+    stepx = 1;
+  }
+ 
+  x = objetoBoguiActual.mouseXini;
+  y = objetoBoguiActual.mouseYini;
+
+ // se cicla hasta llegar al extremo de la línea 
+  if(dx>dy){
+    p = 2*dy - dx;
+    incE = 2*dy;
+    incNE = 2*(dy-dx);
+    while (x != objetoBoguiActual.mouseXfin){
+      x = x + stepx;
+      if (p < 0){
+        p = p + incE;
+      }
+      else {
+        y = y + stepy;
+        p = p + incNE;
+      }
+      pixeles.push([x,y]);
+    }
+  }
+  else{
+    p = 2*dx - dy;
+    incE = 2*dx;
+    incNE = 2*(dx-dy);
+    while (y != objetoBoguiActual.mouseYfin){
+      y = y + stepy;
+      if (p < 0){
+        p = p + incE;
+      }
+      else {
+        x = x + stepx;
+        p = p + incNE;
+      }
+      pixeles.push([x,y]);
+    }
+  }
+  return pixeles;
+}
+
+
+function crearGraficaICS(objetoBoguiActual, pixeles){
+
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	var pixelData = imageData.data;
+	var bytesPerPixel = 4;
+	var x,y;
+	var grafica = [];
+
+	for(i = 0; i < pixeles.length; i++){
+
+		x = pixeles[i][0];
+		y = pixeles[i][1];
+		var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+		grafica.push(pixelData[startIdx]);	
+	}
+	//return grafica;
+
+	dialogoICS = $('<div/>', {
+	    	id: "dialogoICS" + objetoBoguiActual.ident,
+
+	}).appendTo('body');
+
+	dialogoICS.on("dialogclose",function(e){			
+		$(this).dialog( "close" );
+		$(this).remove();	
+ 	});
+
+	contenedorICS = $('<div/>').appendTo(dialogoICS);
+	contenedorICS.attr("autofocus", "autofocus");
+	
+	contenedorICS.highcharts({
+        chart: {
+            type: 'column',
+	    width: anchoHistograma - 50,
+	    height: altoHistograma - 70
+        },
+        title: {
+            text: 'Image-Cross Section'
+        },
+        xAxis: {
+            min: 0,
+            max: pixeles.length,
+            title: {
+                text: 'Pixel'
+            }
+        },
+        yAxis: {
+            min: 0,
+	    	max: 255,
+            title: {
+                text: 'Valor de gris'
+            }
+        },
+        tooltip: {
+                formatter: function() {
+                    var tooltip;
+	            	if (this.series.name == 'Media') {
+	                	tooltip = '<table>'+'<tr><td style="color:'+this.series.color+'; padding:0; font-weight:bold;">'+this.series.name+': </td>' +
+	                '<td style="padding:0"><b>'+this.x+'</b></td></tr>'
+	            	}else{
+	            		tooltip = '<table><tr><td style="color:'+this.series.color+'}; padding:0"; font-weight:bold;>'+ 'Nivel de Gris'+': </td>' + '<td style="padding:0"><b>'+this.key+' </b></td></tr>'+
+	            				  '<tr><td style="color:'+this.series.color+'; padding:0"; font-weight:bold;>'+this.series.name+': </td>' + '<td style="padding:0"><b>'+this.y+' </b></td></tr></table>'
+	            	}
+	            	return tooltip;
+                },
+                useHTML: true
+        },
+
+        plotOptions: {
+            column: {
+                pointPadding: 0,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Pixeles',
+            data: grafica,
+	    	color: "#39b1cc"
+        	}
+		]
+    });
+	//APPEND
+	dialogoICS.dialog();
+	dialogoICS.dialog("option", "title", "Image-Cross Section: " + objetoBoguiActual.nombre);
+	dialogoICS.dialog("option", "resizable", false);
+	dialogoICS.dialog("option", "width", anchoHistograma); 
+	dialogoICS.dialog("option", "height", altoHistograma);
+}
+
+
+
+
+
+
+function dibujarLineaICS(objetoBoguiActual, estado){
+
+	objetoBoguiActual.regCanvas.width = objetoBoguiActual.regCanvas.width;
+	objetoBoguiActual.regctx = objetoBoguiActual.regCanvas.getContext("2d");
+
+	if(objetoBoguiActual.regctx.mouseXini > objetoBoguiActual.regctx.mouseXfin){
+		aux = objetoBoguiActual.regctx.mouseXini;
+		objetoBoguiActual.regctx.mouseXini = objetoBoguiActual.regctx.mouseXfin;
+		objetoBoguiActual.regctx.mouseXfin = aux;
+	}
+
+	if(objetoBoguiActual.regctx.mouseYini > objetoBoguiActual.regctx.mouseYfin){
+		aux = objetoBoguiActual.regctx.mouseYini;
+		objetoBoguiActual.regctx.mouseYini = objetoBoguiActual.regctx.mouseYfin;
+		objetoBoguiActual.regctx.mouseYfin = aux;
+	}
+
+	//objetoBoguiActual.regctx.rect(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini, objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini , objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
+	objetoBoguiActual.regctx.beginPath();
+	objetoBoguiActual.regctx.moveTo(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini);
+	objetoBoguiActual.regctx.lineTo(objetoBoguiActual.mouseXfin, objetoBoguiActual.mouseYfin);
 	objetoBoguiActual.regctx.lineWidth="1";
 	objetoBoguiActual.regctx.setLineDash([5,2]);
 
