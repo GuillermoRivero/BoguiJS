@@ -55,6 +55,7 @@ function errorDialog(mensaje){
 		},
 		dialogClass: 'no-close' 
 	});
+	$("#dialog-message").dialog({ resizable: false });
 }
 
 function histogramaSimpleDialog(objetoBoguiActual){
@@ -136,6 +137,7 @@ function histogramaSimpleDialog(objetoBoguiActual){
 	objetoBoguiActual.dialogoHistograma.dialog("option", "resizable", false);
 	objetoBoguiActual.dialogoHistograma.dialog("option", "width", window.anchoHistograma); 
 	objetoBoguiActual.dialogoHistograma.dialog("option", "height", window.altoHistograma);
+	dialog.dialog({ resizable: false });
 }
 
 function histogramaAcumulativoDialog(objetoBoguiActual){
@@ -210,4 +212,5 @@ function histogramaAcumulativoDialog(objetoBoguiActual){
 	
 	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "width", window.anchoHistograma); 
 	objetoBoguiActual.dialogoHistogramaAcumulativo.dialog("option", "height", window.altoHistograma);
+	dialog.dialog({ resizable: false });
 }

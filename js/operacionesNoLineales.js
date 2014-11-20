@@ -47,7 +47,7 @@ function mapaCambios(objetoBoguiActual, objetoBoguiResta, umbral){
 				pixelData1[startIdx+2] = pixelData1[startIdx+2];
 			}else{
 				//SE PONEN LOS PIXELES EN ALFA
-				pixelData1[startIdx+3] = 100;
+				pixelData1[startIdx+3] = 100; //TODO: Mala visibilidad, cambiar a un color
 			}
 		}
 	}

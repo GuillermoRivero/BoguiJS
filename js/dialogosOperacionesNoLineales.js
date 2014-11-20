@@ -99,6 +99,7 @@ function simularDigitalizacionDialog(objetoBoguiActual){
 		}
 	});
 	bitsSpinner.spinner( "value", $( "#sliderBits" ).slider( "value" ));
+	dialog.dialog({ resizable: false });
 	dialog.dialog();	
 }
 
@@ -197,6 +198,7 @@ function imageCrossSectionDialog(){
 		}
 	});
 	umbralSpinner.spinner( "value", $( "#sliderUmbral" ).slider( "value" ));
+	dialog.dialog({ resizable: false });
 	dialog.dialog();	
 }
 function graficaICSDialog(objetoBoguiActual, pixeles){
@@ -328,6 +330,7 @@ function graficaICSDialog(objetoBoguiActual, pixeles){
 	dialogoICS.dialog("option", "resizable", false);
 	dialogoICS.dialog("option", "width", anchoHistograma); 
 	dialogoICS.dialog("option", "height", window.altoHistograma);
+	dialogoICS.dialog({ resizable: false });
 }
 
 function correccionGammaDialog(objetoBogui){
@@ -381,6 +384,7 @@ function correccionGammaDialog(objetoBogui){
 	 });	
 	 
 	$("#gammaText").val("1")
+	dialog.dialog({ resizable: false });
 	dialog.dialog();
 }
 
@@ -395,7 +399,7 @@ function especificarHistogramaDialog(objetoBogui){
 		buttons: {
 			Ok:function(ui) {
 				var objetoReferencia = objetosBogui[document.getElementById("imagenesReferencia").value];
-				especificar(objetosBogui[objetoActual], objetosBogui[objetoReferencia]);
+				especificarHistograma(objetosBogui[objetoActual], objetosBogui[objetoReferencia]);
 				$(this).dialog( "close" );
 				$(this).remove();
 			},
@@ -435,7 +439,7 @@ function mapaCambiosDialog(objetoBogui){
 			Ok:function(ui) {
 				var objetoReferencia = objetosBogui[document.getElementById("imagenesReferencia").value];					
 				var umbral =  $( this ).find( '#sliderUmbral' ).slider( "value" );
-				mapa(objetoBogui, objetoReferencia ,umbral);
+				mapaCambios(objetoBogui, objetoReferencia ,umbral);
 				$(this).dialog( "close" );
 				$(this).remove();
 			},
@@ -487,7 +491,8 @@ function mapaCambiosDialog(objetoBogui){
 			umbralSpinner.spinner( "value", ui.value );
 		}
 	});
-	umbralSpinner.spinner( "value", $( "#sliderUmbral" ).slider( "value" ));						
+	umbralSpinner.spinner( "value", $( "#sliderUmbral" ).slider( "value" ));	
+	dialog.dialog({ resizable: false });
 }
 
 function imagenDiferenciaDialog(objetoBogui){
@@ -528,5 +533,5 @@ function imagenDiferenciaDialog(objetoBogui){
 	}
 	contenido = contenido + "</select></p></fieldset></form>";
 	dialog.append(contenido);					
-	
+	dialog.dialog({ resizable: false });
 }

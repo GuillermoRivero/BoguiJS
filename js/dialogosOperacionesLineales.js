@@ -95,6 +95,7 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 		}
 	});
 	contrasteSpinner.spinner( "value", $( "#sliderContraste" ).slider( "value" ));
+	dialog.dialog({ resizable: false });
 	dialog.dialog();	
 }
 
@@ -160,7 +161,7 @@ function transformacionLinealTramosDialog(){
 		}
 	});
 	tramosSpinner.spinner( "value", $( "#tramosSlider" ).slider( "value" ));
-	
+	dialog.dialog({ resizable: false });
 	dialog.dialog();
 }
 
@@ -307,6 +308,7 @@ function transformacionLinealPuntosDialog(numTramos){
 	
 
 	actualizarGraficaTramos(numTramos);
+	dialog.dialog({ resizable: false });
 	dialog.dialog();
 }
 
