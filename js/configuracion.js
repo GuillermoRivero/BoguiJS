@@ -3,6 +3,10 @@ var modoImagen = "PAL";
 var formatoDescarga = "PNG";
 var maxWidth = 400;
 var maxHeight = 400;
+var altoHistograma = 470;
+var anchoHistograma = 500;
+var herramientaActual = "puntero";
+
 /*
 TO DO:
 	<li><span id="saveConfig">Tamaño por defecto</span></li> --> DIALOGO

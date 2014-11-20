@@ -1,40 +1,16 @@
-img{
-	height:100%;
-}
-
-
-#logo{
-	height: 50px;
-	text-align:center;
-
-}
- 
-
- .overlay{
-	background: rgba(51,51,51,0.7);
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
- }
- 
-.noPointerEvents{
-	pointer-events: none;
-}
-
-
-
-#dropzone{
-	min-width: 1024px;
-	min-height: 400px;
-	height:100%;
-	width:100%;
-	z-index:10;
-}
+@charset "UTF-8";
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,700);
 
 html,body{
     margin: 0;
     height: 100%;
 	min-width: 1024px;	
+	font-family:Arial, Helvetica, sans-serif;
+	font-family: 'Open Sans', Helvetica, sans-serif;
+}
+
+table tbody tr{
+	margin: 5px auto;
 }
 
 header{
@@ -46,38 +22,54 @@ label{
 	font-weight:bold;
 }
 
-.visible{
-	visibility: visible;
+img{
+	height:100%;
 }
 
-.hidden{
-	visibility: hidden;	
+table tbody tr td input{
+	width: 35px;
+	margin: 0 5px;
 }
-.noPointerEvents {
-  pointer-events: none;
+
+fieldset{
+	border:none;
 }
+#dropzone{
+	min-width: 1024px;
+	min-height: 400px;
+	height:100%;
+	width:100%;
+	z-index:10;
+}
+
+#logo{
+	height: 50px;
+	text-align:center;
+}
+
+#fileSelector{
+	display:none;
+}
+
+#workspace{
+	position:absolute; bottom:0px; top:121px ;	min-width: 1024px; width:100%;
+	border-style: dashed;
+	border-width: 2px;
+	border-color: transparent;	
+}
+
 #dropContent{
 	position:absolute;
-	font-family: 'Gloria Hallelujah';
-	/*font-family:Arial, Helvetica, sans-serif;*/
 	text-transform:uppercase;
 	font-weight:bold;
 	font-size: 3.125em;
 	color: #d3eced;
 	opacity: 0.9;
 	padding:24px;
-    	background: linear-gradient(to bottom, #51bbd2 0%, #2d97af 100%);
+    background: linear-gradient(to bottom, #51bbd2 0%, #2d97af 100%);
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-}
-
-.logoBackground{
-	position:absolute;
-	background-image: url("../images/logo-opacity-50.png");
-	background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 25%;
 }
 
 #bars{
@@ -90,7 +82,6 @@ label{
 	-webkit-border-bottom-left-radius: 10px;
 	border-bottom-left-radius: 10px;	
 }
-
 
 #tools {
 	margin: 0;
@@ -109,12 +100,6 @@ label{
 	float: left;
 	margin: 0 4px;
 }
-.capaCanvas {
-	position: absolute;
-	left: 0;
-	top: 0;
-}
-
 
 
 .canvasContainer{
@@ -125,47 +110,6 @@ label{
 
 .relative {
 	position: relative;
-}
-
-.noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-.no-close .ui-dialog-titlebar-close {display: none }
-
-table tbody tr{
-	margin: 5px auto;
-}
-
-.izq{
-	width:25%;
-	float:left;
-}
-.izq img{
-	width:80%;
-}
-.dcha{
-	width:75%;
-	float:left;
-}
-
-
-table tbody tr td input{
-	width: 35px;
-	margin: 0 5px;
-}
-
-#fileSelector{
-	display:none;
-}
-
-fieldset{
-	border:none;
 }
 
 .quarter{
@@ -180,11 +124,73 @@ fieldset{
 	width:65%;
 }
 
-#workspace{
-	position:absolute; bottom:0px; top:121px ;	min-width: 1024px; width:100%;
-	border-style: dashed;
-	border-width: 2px;
-	border-color: transparent;	
+ .overlay{
+	background: rgba(51,51,51,0.7);
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+ }
+ 
+.noPointerEvents{
+	pointer-events: none;
 }
 
+.visible{
+	visibility: visible;
+}
+
+.hidden{
+	visibility: hidden;	
+}
+
+.noPointerEvents {
+  pointer-events: none;
+}
+
+.logoBackground{
+	position:absolute;
+	background-image: url("../images/logo-opacity-50.png");
+	background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 25%;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.no-close .ui-dialog-titlebar-close {
+	display: none;
+}
+
+.capaCanvas {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.izq{
+	width:25%;
+	float:left;
+}
+.izq img{
+	width:80%;
+}
+.dcha{
+	width:75%;
+	float:left;
+}
+
+.informacion table tbody tr td {
+	min-width: 136px;
+}
+
+.informacion{
+	max-width:550px;
+}
 
