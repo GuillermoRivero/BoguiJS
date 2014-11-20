@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    $( "#menu" ).tooltip();	
 	//Archivo
 	//TODO: Guardar Imagen, Guardar Imagen Como, Abrir Imagen Como
 	//Abrir archivo
@@ -14,7 +15,7 @@ $(document).ready(function() {
 			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
 		}	
 	});		
-	
+
 	//Ver
 	//Histograma
 	$("#histograma").click(function() {

@@ -22,6 +22,8 @@ $(function() {
 		    formatoDescarga = localStorage.getItem("formatoDescarga");
 			maxWidth = localStorage.getItem("maxWidth");
 			maxHeight = localStorage.getItem("maxHeight");
+			anchoHistograma = localStorage.getItem("anchoHistograma");
+			altoHistograma = localStorage.getItem("altoHistograma");
 		}
 	}
 
@@ -63,51 +65,12 @@ $(function() {
 			localStorage.setItem("modoImagen",modoImagen);
 			localStorage.setItem("formatoDescarga",formatoDescarga);
 			localStorage.setItem("maxWidth",maxWidth);
-			localStorage.setItem("maxHeight",maxHeight);					
-			$("body").append("<div id=\"dialog-message\">Your configuration has been saved</div>");
-			$( "#dialog-message" ).dialog({
-				title: "Message",
-				modal: true,
-				buttons: {
-				Ok: function() {
-				  $(this).dialog( "close" );
-				  $(this).remove();
-				}
-				},
-				dialogClass: 'no-close' 		
-				/*
-				1 FORMA JQUERY
-				open: function(event, ui) { 
-					// Hide close button 
-					$(this).parent().children().children(".ui-dialog-titlebar-close").hide(); 
-				}
-				2 JQUERY Y CSS, MAS LIMPIA
-				dialogClass: 'no-close' 	 CSS: .no-close .ui-dialog-titlebar-close {display: none }
-				3 JQUERY OPTIMA
-					open: function(event, ui) {
-					  $(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').hide();
-					}			
-
-				open: function(event, ui) { 
-					// Hide close button 
-					$(".ui-dialog-titlebar-close", ui).hide()
-				}					
-				*/
-			});
+			localStorage.setItem("maxHeight",maxHeight);		
+			localStorage.setItem("anchoHistograma",anchoHistograma);	
+			localStorage.setItem("altoHistograma",altoHistograma);	
+			savedConfigurationDialog();
 		}else{
-			$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>Tu navegador no soporta localStorage</p></div></div>");
-			$("#dialog-message").dialog({
-				title: "Error",
-				modal: true,
-				buttons: {
-				Ok: function() {
-				  $(this).dialog( "close" );
-				  $(this).remove();
-				}
-				},
-				dialogClass: 'no-close' 
-			});
-
+			errorDialog("Tu navegador no soporta Local Storage");
 		}
 	});		
 	
@@ -117,8 +80,14 @@ $(function() {
 		}
 		modoImagen = "PAL";
 		formatoDescarga = "PNG";		
+		maxWidth = 400;
+		maxHeight = 400;
+		altoHistograma = 470;
+		anchoHistograma = 500;		
 	});				
 	
-	
+	$("#imageSize").click(function() {
+		cambiarDimensionDialog();
+	});	
 	
 });
