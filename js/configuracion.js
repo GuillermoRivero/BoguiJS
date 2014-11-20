@@ -7,11 +7,7 @@ var altoHistograma = 470;
 var anchoHistograma = 500;
 var herramientaActual = "puntero";
 
-/*
-TO DO:
-	<li><span id="saveConfig">Tamaño por defecto</span></li> --> DIALOGO
-	COLORES PARA EL CSS??? 
-*/
+//TODO:	COLORES PARA EL CSS??? 
 
 // Atajo para $( document ).ready()
 $(function() {
@@ -74,9 +70,16 @@ $(function() {
 		}
 	});		
 	
+
 	$("#defaultConfig").click(function() {
 		if(window.localStorage !== null){
 			localStorage.clear();
+			localStorage.setItem("modoImagen",modoImagen);
+			localStorage.setItem("formatoDescarga",formatoDescarga);
+			localStorage.setItem("maxWidth",maxWidth);
+			localStorage.setItem("maxHeight",maxHeight);		
+			localStorage.setItem("anchoHistograma",anchoHistograma);	
+			localStorage.setItem("altoHistograma",altoHistograma);	
 		}
 		modoImagen = "PAL";
 		formatoDescarga = "PNG";		
@@ -84,10 +87,17 @@ $(function() {
 		maxHeight = 400;
 		altoHistograma = 470;
 		anchoHistograma = 500;		
-	});				
-	
-	$("#imageSize").click(function() {
-		cambiarDimensionDialog();
 	});	
 	
+	$("#actualConfig").click(function() {
+		configuracionActualDialog();
+	});	
+	
+	$("#imageSize").click(function() {
+		cambiarDimensionImagenesDialog();
+	});	
+
+	$("#histogramSize").click(function() {
+		cambiarDimensionHistogramasDialog();
+	});		
 });
