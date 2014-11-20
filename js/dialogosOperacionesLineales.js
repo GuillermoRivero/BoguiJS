@@ -12,8 +12,8 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
-				var newBrillo =  $( this ).find( '#sliderBrillo' ).slider( "value" );
-				var newContraste = $( this ).find( '#sliderContraste' ).slider( "value" );
+				var newBrillo =  $( this ).find( '#brilloSlider' ).slider( "value" );
+				var newContraste = $( this ).find( '#contrasteSlider' ).slider( "value" );
 				ajusteBrilloContraste(objetoBogui, oldBrillo, oldContraste, newBrillo, newContraste);
 				$(this).dialog( "close" );
 				$(this).remove();
@@ -23,14 +23,11 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 				$(this).remove();
 			}
 		},
-		dialogClass: 'no-close' 
+		dialogClass: 'no-close',
+		resizable: false
 	});
 
-	dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brightValue\" type=\"text\"></p><div id=\"sliderBrillo\"></div><p><label for=\"contrasteSpinner\">Contraste:</label><input id=\"contrasteSpinner\" name=\"contrastValue\" type=\"text\"></p><div id=\"sliderContraste\"></div></fieldset></form>");
-
-	form = dialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});		
+	dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brilloValue\" type=\"text\"></p><div id=\"brilloSlider\"></div><p><label for=\"contrasteSpinner\">Contraste:</label><input id=\"contrasteSpinner\" name=\"contrasteValue\" type=\"text\"></p><div id=\"contrasteSlider\"></div></fieldset></form>");
 
 	var brilloSpinner = $( "#brilloSpinner" ).spinner({
 		min: -255,
@@ -38,10 +35,10 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 		step: 1,
 		start: oldBrillo,
 		stop: (function (event, ui) {
-			$( "#sliderBrillo" ).slider( "value", $(this).spinner('value') );
+			$( "#brilloSlider" ).slider( "value", $(this).spinner('value') );
 		}),
 		spin: (function(event, ui ){
-			$( "#sliderBrillo" ).slider( "value", ui.value );
+			$( "#brilloSlider" ).slider( "value", ui.value );
 		})
 	}).on('input', function () {
 		var val = this.value,
@@ -50,9 +47,14 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 		min = $this.spinner('option', 'min');
 		if (!val.match(/^-?\d*$/)) val = 0; //we want only number, no alpha
 		this.value = val > max ? max : val < min ? min : val;
-	});	
+	}).keypress(function(e){
+		if(e.which == 13){
+			$(this).blur();
 
-	$( "#sliderBrillo" ).slider({
+		}
+	});
+
+	$( "#brilloSlider" ).slider({
 		range: "min",
 		value: oldBrillo,
 		min: -255,
@@ -62,7 +64,7 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 			brilloSpinner.spinner( "value", ui.value );
 		}
 	});
-	brilloSpinner.spinner( "value", $( "#sliderBrillo" ).slider( "value" ));
+	brilloSpinner.spinner( "value", $( "#brilloSlider" ).slider( "value" ));
 
 	var contrasteSpinner = $( "#contrasteSpinner" ).spinner({
 		min: 0,
@@ -70,21 +72,26 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 		step: 1,
 		start: oldContraste,
 		stop: (function (event, ui) {
-			$( "#sliderContraste" ).slider( "value", $(this).spinner('value') );
+			$( "#contrasteSlider" ).slider( "value", $(this).spinner('value') );
 		}),
 		spin: (function(event, ui ){
-			$( "#sliderContraste" ).slider( "value", ui.value );
+			$( "#contrasteSlider" ).slider( "value", ui.value );
 		})
-		}).on('input', function () {
+	}).on('input', function () {
 		var val = this.value,
 		$this = $(this),
 		max = $this.spinner('option', 'max'),
 		min = $this.spinner('option', 'min');
 		if (!val.match(/^\d*$/)) val = 0; //we want only number, no alpha
 		this.value = val > max ? max : val < min ? min : val;
-	});	
+	}).keypress(function(e){
+		if(e.which == 13){
+			$(this).blur();
 
-	$( "#sliderContraste" ).slider({
+		}
+	});
+
+	$( "#contrasteSlider" ).slider({
 		range: "min",
 		value: oldContraste,
 		min: 0,
@@ -94,9 +101,10 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 			contrasteSpinner.spinner( "value", ui.value );
 		}
 	});
-	contrasteSpinner.spinner( "value", $( "#sliderContraste" ).slider( "value" ));
-	dialog.dialog({ resizable: false });
-	dialog.dialog();	
+	contrasteSpinner.spinner( "value", $( "#contrasteSlider" ).slider( "value" ));
+	form = dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 }
 
 function transformacionLinealTramosDialog(){
@@ -121,15 +129,12 @@ function transformacionLinealTramosDialog(){
 				$(this).remove();
 			}
 		},
-		dialogClass: 'no-close' 	
+		dialogClass: 'no-close',
+		resizable: false
 	});
 	
 	dialog.append("<form><fieldset><p><label for=\"tramosSpinner\">Numero de tramos:</label><input id=\"tramosSpinner\" name=\"tramosValue\" type=\"text\"></p><div id=\"tramosSlider\"></div></fieldset></form>");;
-	
-	form = dialog.find( "form" ).on( "submit", function( event ) {
-		event.preventDefault();
-	});		
-	
+		
 	var tramosSpinner = $( "#tramosSpinner" ).spinner({
 		min: 1,
 		max: 254,
@@ -148,7 +153,12 @@ function transformacionLinealTramosDialog(){
 		min = $this.spinner('option', 'min');
 		if (!val.match(/^\d*$/)) val = 1; //we want only number, no alpha
 		this.value = (val > max) ? max : val;
-	});	
+	}).keypress(function(e){
+		if(e.which == 13){
+			$(this).blur();
+
+		}
+	});
 
 	$( "#tramosSlider" ).slider({
 		range: "min",
@@ -161,8 +171,9 @@ function transformacionLinealTramosDialog(){
 		}
 	});
 	tramosSpinner.spinner( "value", $( "#tramosSlider" ).slider( "value" ));
-	dialog.dialog({ resizable: false });
-	dialog.dialog();
+	form = dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 }
 
 function transformacionLinealPuntosDialog(numTramos){
@@ -210,7 +221,8 @@ function transformacionLinealPuntosDialog(numTramos){
 				  $(this).remove();
 			}
 		},
-		dialogClass: 'no-close' 	
+		dialogClass: 'no-close',
+		resizable: false
 	});
 	
 	var tramos = "<form class=\"quarter floatleft\"><fieldset><table><tbody>";
@@ -221,10 +233,7 @@ function transformacionLinealPuntosDialog(numTramos){
 	
 	dialog.append(tramos+"</tbody></table></form>");;
 	dialog.append("<div id=\"graficaTramos\" class=\"threequarter floatleft\"></div>");
-	form = dialog.find( "form" ).on( "submit", function( event ) {
-	  event.preventDefault();
-	});			
-	
+
 	$('#graficaTramos').highcharts({
 		chart: {
 			type: 'scatter'
@@ -274,7 +283,12 @@ function transformacionLinealPuntosDialog(numTramos){
 				 min = $this.spinner('option', 'min');
 				 if (!val.match(/^\d*$/)) val = 0; //we want only number, no alpha
 			 this.value = (val > max) ? max : val;
-		 });	
+		 }).keypress(function(e){
+			if(e.which == 13){
+				$(this).blur();
+
+			}
+		});	
 		 
 		var tramoBSpinner = $( "#b"+i ).spinner({
 			min: 0,
@@ -291,7 +305,12 @@ function transformacionLinealPuntosDialog(numTramos){
 				 min = $this.spinner('option', 'min');
 				 if (!val.match(/^\d*$/)) val = 0; //we want only number, no alpha
 			 this.value = (val > max) ? max : val;
-		 });				 
+		 }).keypress(function(e){
+			if(e.which == 13){
+				$(this).blur();
+
+			}
+		});			 
 		 
 	}
 
@@ -305,11 +324,10 @@ function transformacionLinealPuntosDialog(numTramos){
 	$("#a"+numTramos).spinner( "disable" );
 	$("#b"+numTramos).spinner( "value",255);
 
-	
-
 	actualizarGraficaTramos(numTramos);
-	dialog.dialog({ resizable: false });
-	dialog.dialog();
+	form = dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+	});
 }
 
 function actualizarGraficaTramos(numTramos){	

@@ -60,7 +60,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			transformacionTramos(objetosBogui[objetoActual]);
+			transformacionLinealTramosDialog(objetosBogui[objetoActual]);
 		}
 	});			
 	

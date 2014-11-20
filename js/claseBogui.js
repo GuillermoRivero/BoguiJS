@@ -457,3 +457,28 @@ function descargarImagen(objetoBoguiActual, formato){
 	link.href = dataUrl;
    	link.click();
 }
+
+
+function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
+
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	var pixelData = imageData.data;
+	var bytesPerPixel = 4;
+
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+			pixelData[startIdx] = funcionTransferencia[pixelData[startIdx]];
+			pixelData[startIdx+1] = funcionTransferencia[pixelData[startIdx+1]];
+			pixelData[startIdx+2] = funcionTransferencia[pixelData[startIdx+2]];
+		}
+	}
+
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
+	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++;
+
+}
