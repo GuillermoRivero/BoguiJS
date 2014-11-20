@@ -637,8 +637,8 @@ function centerContent()
 {
 	var container = $('#workspace');
 	var content = $('#dropContent');
-	content.css("left", (container.width()-(content.width()))/2);
-	content.css("top", (container.height()-(content.height()))/2);
+	content.css("left", (container.width()-(content.width()+48))/2);
+	content.css("top", (container.height()-(content.height()+48))/2);
 
 }
 
@@ -1223,6 +1223,22 @@ function calcularMedia(puntos){
 	return (total/puntos.length);
 }
 
+/*TODO:
+	-Dialogo Cross Section
+		-Umbral (0-255)
+		-Cantidad Suavizado(0-255)
+	-Dialogo Digitalizacion
+		-Tamaño muestreo (Piensatelo con suajj)
+		-Cantidad de bits (1-8)
+*/
+
+
+//TODO: Acabar simulacionDigital
+
+function simulacionDigital(){
+
+}
+
 function crearGraficaICS(objetoBoguiActual, pixeles){
 
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
@@ -1242,7 +1258,7 @@ function crearGraficaICS(objetoBoguiActual, pixeles){
 	var derivadaGrafica = [];
 
 	for(i = 0; i < grafica.length-1; i++){
-		derivadaGrafica.push(Math.abs(grafica[i+1]-grafica[i]));	
+		derivadaGrafica.push(grafica[i+1]-grafica[i]);	
 	}
 
 	//TODO: Decidir si dejar 0 o el ultimo valor
@@ -1300,8 +1316,9 @@ function crearGraficaICS(objetoBoguiActual, pixeles){
             }
         },
         yAxis: {
-            min: 0,
+            min: -255,
 	    	max: 255,
+	    	tickInterval: 15,
             title: {
                 text: 'Valor de gris'
             }
