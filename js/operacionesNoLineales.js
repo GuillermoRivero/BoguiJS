@@ -107,6 +107,29 @@ function ecualizarHistograma(objetoBoguiActual){
 
 }
 
+
+function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
+	//calcular primero histograma origen
+	calcularHistogramaSimple(objetoBoguiActual);
+	var histograma = objetoBoguiActual.histograma;
+	//normalizacion
+	var numeroPixeles = 0;
+	for(i = 0; i < histograma.length; i++){
+		numeroPixeles = numeroPixeles + histograma[i];
+	}
+	var histogramaNormalizado = new Array(256);
+	for(i = 0; i < histograma.length; i++){
+		histogramaNormalizado[i] = histograma[i]/numeroPixeles;
+	}
+	//Histograma origen acumulado normalizado
+	var histogramaAcumuladoNormalizado = new Array(256);
+	histogramaAcumuladoNormalizado[0] = histogramaNormalizado[0];
+	for(i = 1; i < histograma.length; i++){
+		histogramaAcumuladoNormalizado[i] = histogramaNormalizado[i] + histogramaAcumuladoNormalizado[i-1]
+	}
+	return histogramaAcumuladoNormalizado;
+}
+
 //Correccion gamma
 function correccionGamma(objetoBoguiActual, gamma){
 
@@ -239,10 +262,34 @@ function simulacionDigital(objetoBoguiActual, desplazamiento, bits){
 	}
 
 	var original = 256;
-	var destino = Math.pow(2,bits);
-	var rango = original/destino;
+	var destino = (Math.pow(2,bits)-1);
+	var rango = (original/destino);
 	
+	
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
 
+			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+
+			var lugar = Math.floor(pixelData[startIdx]/rango);
+			var redondear;
+
+			if(pixelData[startIdx]%rango >= rango/2){
+				//console.log("REDONDEO ARRIBA");
+				redondear = rango;
+			}else{
+				redondear = 0;
+				//console.log("REDONDEO ABAJO");
+			}
+			
+			
+			pixelData[startIdx] = (rango*lugar) + redondear;
+			pixelData[startIdx+1] = (rango*lugar) + redondear;
+			pixelData[startIdx+2] = (rango*lugar) + redondear;
+		}
+	}
+	/*
 	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
 		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
 			var contadorColor = 0;
@@ -258,6 +305,7 @@ function simulacionDigital(objetoBoguiActual, desplazamiento, bits){
 			pixelData[startIdx+2] = (rango*contadorColor)-rango;
 		}
 	}
+	*/
 
 	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
 	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;

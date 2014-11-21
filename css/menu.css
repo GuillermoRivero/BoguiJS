@@ -116,7 +116,7 @@
   -ms-transition: top 0.2s ease, opacity 0.2s ease-in;
   -o-transition: top 0.2s ease, opacity 0.2s ease-in;
   transition: top 0.2s ease, opacity 0.2s ease-in;
-  z-index: 2;
+  z-index: 10;
 }
 .cssmenu.align-right ul ul {
   text-align: right;
@@ -169,7 +169,7 @@
 }
 .cssmenu.align-right ul ul ul {
   padding-right: 6px;
-  z-index: 2;
+  z-index: 10;
 }
 .cssmenu ul ul > li:hover > ul {
   left: 180px;

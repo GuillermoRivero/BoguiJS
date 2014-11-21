@@ -38,8 +38,9 @@ function Bogui(img, id, name) {
 	    id: "dialogo" + this.ident,
 		title: this.nombre,
 	   	height: window.maxHeight,
-		width: window.maxWidth	
+		width: window.maxWidth
 	}).appendTo('#workspace');
+
 
 
 
@@ -48,6 +49,7 @@ function Bogui(img, id, name) {
 
 	this.dialogo.dialog({ resizable: false });
 	
+
 	this.dialogo.on("dialogclose",function(e){			
 		var exp = /dialogo(\d+)/i
 		var res = exp.exec(e.target.id);
@@ -188,7 +190,9 @@ function Bogui(img, id, name) {
 		}
                 
 
-    });		
+    });
+ 	//TODO: BROIS ES GAY $("#dialogo" + this.ident).removeClass("ui-front");
+	//TODO: INTENTAR QUE BORIS ME CHUPE EL PENE HASTA EL AMANECER $("#dialogo" + this.ident).addClass("zIndexDialog");		
 }
 
 function calcularBrilloContraste(objetoBoguiActual){
@@ -291,13 +295,15 @@ function calcularEntropia(objetoBoguiActual){
 	 	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
 	 		total += objetoBoguiActual.histograma[i];
 	 	}
+	 	//console.log(Math.log(0.5)/Math.LN2);
 
 	    for (i = 0; i < objetoBoguiActual.histograma.length; i++){
 
 			probabilidad = objetoBoguiActual.histograma[i] / total;
 
 			if(probabilidad != 0){
-			    entropia += probabilidad * Math.log(probabilidad, 2);
+			    entropia += probabilidad * (Math.log(probabilidad)/Math.LN2); //TODO: Comprobar logaritmo en base 2 Probar binarizando
+
 			}
 		}		
 		return -entropia;			

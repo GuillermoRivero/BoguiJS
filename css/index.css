@@ -66,10 +66,14 @@ fieldset{
 	color: #d3eced;
 	opacity: 0.9;
 	padding:24px;
-    background: linear-gradient(to bottom, #51bbd2 0%, #2d97af 100%);
+   	background: linear-gradient(to bottom, #51bbd2 0%, #2d97af 100%);
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
+}
+
+.zIndexDialog{
+	z-index:9;
 }
 
 #bars{

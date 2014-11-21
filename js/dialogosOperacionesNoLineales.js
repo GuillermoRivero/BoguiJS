@@ -2,7 +2,7 @@ function simularDigitalizacionDialog(objetoBoguiActual){
 	var dialog, form, mayorMuestreo,menorMuestreo;
 	
 	menorMuestreo = 2;
-	if(objetoBoguiActual.imgCanvas.width < objetoBoguiActual.imgCanvas.height){ //TODO: Comprobar si trabajamos sobre la original o sobre la reducida
+	if(objetoBoguiActual.imgCanvas.width < objetoBoguiActual.imgCanvas.height){ 
 		mayorMuestreo = objetoBoguiActual.imgCanvas.width;
 	}else{
 		mayorMuestreo = objetoBoguiActual.imgCanvas.height
@@ -18,8 +18,7 @@ function simularDigitalizacionDialog(objetoBoguiActual){
 			Ok:function(ui) {
 				var dimensionMuestreo =  $( this ).find( '#sliderMuestreo' ).slider( "value" );
 				var numeroBits = $( this ).find( '#sliderBits' ).slider( "value" );
-				//TODO: Simular digitalizacion
-				console.log(dimensionMuestreo);
+
 				simulacionDigital(objetosBogui[objetoActual], dimensionMuestreo, numeroBits);
 				$(this).dialog( "close" );
 				$(this).remove();
@@ -118,8 +117,8 @@ function imageCrossSectionDialog(){
 			Ok:function(ui) {
 				var cantidadSuavizado =  $( this ).find( '#sliderSuavizado' ).slider( "value" );
 				var umbral = $( this ).find( '#sliderUmbral' ).slider( "value" );
-				var pixeles = pixelesICS(objetoBoguiActual);//TODO: aplicar umbral y cantidad de suavizado
-				graficaICSDialog(objetoBoguiActual, pixeles);
+				var pixeles = pixelesICS(objetosBogui[objetoActual]);//objetoBoguiActual);//TODO: aplicar umbral y cantidad de suavizado
+				graficaICSDialog(objetosBogui[objetoActual], pixeles, umbral);
 				$(this).dialog( "close" );
 				$(this).remove();
 			},
@@ -203,13 +202,22 @@ function imageCrossSectionDialog(){
 	dialog.dialog({ resizable: false });
 	dialog.dialog();	
 }
-function graficaICSDialog(objetoBoguiActual, pixeles){
+function graficaICSDialog(objetoBoguiActual, pixeles, umbral){ //TODO: Pasar umbral
 
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 	var pixelData = imageData.data;
 	var bytesPerPixel = 4;
 	var x,y;
 	var grafica = [];
+
+
+	var arrayUmbralPos = [];
+	var arrayUmbralNeg = [];
+
+	for(i = 0; i < pixeles.length; i++){
+		arrayUmbralPos.push(umbral);
+		arrayUmbralNeg.push(-umbral);
+	}
 
 	for(i = 0; i < pixeles.length; i++){
 
@@ -219,36 +227,43 @@ function graficaICSDialog(objetoBoguiActual, pixeles){
 		grafica.push(pixelData[startIdx]);	
 	}
 
-	var derivadaGrafica = [];
-
-	for(i = 0; i < grafica.length-1; i++){
-		derivadaGrafica.push(grafica[i+1]-grafica[i]);	
-	}
-
-	//TODO: Decidir si dejar 0 o el ultimo valor
-	//derivadaGrafica.push(grafica[grafica.length-1]);
-	derivadaGrafica.push(0);
-	
-
-	var derivadaGraficaSuavizada = [];
+	var perfilSuavizado = [];
 	var cantidadSuavizado = 3;
 	var puntos;
 	var i = 0;
-	while(i < derivadaGrafica.length-1){
+
+	while(i < grafica.length-1){
 		console.log("i " + i);
 		puntos = [];
 
 		for(j = i-cantidadSuavizado; j <= i+cantidadSuavizado; j++){
 			console.log("j " + j);
-			if( (j > 0) && (j < derivadaGrafica.length)){
-				puntos.push(derivadaGrafica[j]);
+			if( (j > 0) && (j < grafica.length)){
+				puntos.push(grafica[j]);
 			}
 
 		}
-		derivadaGraficaSuavizada.push(calcularMedia(puntos));
+		perfilSuavizado.push(calcularMedia(puntos));
 		i++;		
 	}
 
+	var derivadaPerfil = [];
+
+	for(i = 0; i < grafica.length-1; i++){
+		derivadaPerfil.push(grafica[i+1]-grafica[i]);	
+	}
+	//TODO: Decidir si dejar 0 o el ultimo valor
+	//derivadaGrafica.push(grafica[grafica.length-1]);
+	derivadaPerfil.push(0);
+
+	var derivadaPerfilSuavizado = [];
+
+	for(i = 0; i < grafica.length-1; i++){
+		derivadaPerfilSuavizado.push(perfilSuavizado[i+1]-perfilSuavizado[i]);	
+	}
+	//TODO: Decidir si dejar 0 o el ultimo valor
+	//derivadaGrafica.push(grafica[grafica.length-1]);
+	derivadaPerfilSuavizado.push(0);
 
 	dialogoICS = $('<div/>', {
 	    	id: "dialogoICS" + objetoBoguiActual.ident,
@@ -315,15 +330,33 @@ function graficaICSDialog(objetoBoguiActual, pixeles){
 				color: "#39b1cc"
         	},
         	{
-				name: 'Perfil Derivado',
-				data: derivadaGrafica,
+				name: 'Perfil Suavizado',
+				data: perfilSuavizado,
 				color: "#FF0000"
         	},
         	{
-				name: 'Perfil Derivado Suavizado',
-				data: derivadaGraficaSuavizada,
+				name: 'Derivada perfil',
+				data: derivadaPerfil,
 				color: "#0000FF"
+        	},
+        	{
+				name: 'Derivada perfil Suavizado',
+				data: derivadaPerfilSuavizado,
+				color: "#B22222"
+        	},
+        	{
+        		type: 'spline',
+				name: 'Umbral Positivo',
+				data: arrayUmbralPos,
+				color: "#00FF00"
+        	},
+        	{
+        		type: 'spline',
+				name: 'Umbral Negativo',
+				data: arrayUmbralNeg,
+				color: "#00FF00"
         	}
+
 		]
     });
 	//APPEND
@@ -394,13 +427,14 @@ function correccionGammaDialog(objetoBogui){
 function especificarHistogramaDialog(objetoBogui){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
-		title: "Especificación histograma:",
+		title: "Especificaci&oactue;n histograma:",
 		height: 170,
 		width: 350,
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
-				var objetoReferencia = objetosBogui[document.getElementById("imagenesReferencia").value];
+				var objetoReferencia = $("#imagenesReferencia").val();
+
 				especificarHistograma(objetosBogui[objetoActual], objetosBogui[objetoReferencia]);
 				$(this).dialog( "close" );
 				$(this).remove();

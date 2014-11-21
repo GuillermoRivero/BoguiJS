@@ -16,6 +16,12 @@ function informacionDialog(objetoBoguiActual){
 			resizable: false 		
 		}).append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Entrop&iacute;a:</label></td><td><span id=\"entropiaValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&iacute;nimo de gris:</label></td><td><span id=\"minGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&aacute;ximo de gris:</label></td><td><span id=\"maxGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Tama&ntilde;o:</label></td><td><span id=\"sizeValue"+ objetoBoguiActual.ident +"\"></span></td></tr></tbody></table>");
 		
+		dialog.on("dialogclose",function(e){			
+			$(this).dialog( "close" );
+			$(this).remove();	
+		});
+		
+
 		$("#nameValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.nombre);
 		$("#modoValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.modo);
 		$("#brilloValue"+ objetoBoguiActual.ident).html(calcularBrilloContraste(objetoBoguiActual)[0]);
@@ -408,6 +414,7 @@ function configuracionActualDialog(){
 		dialogClass: "informacion",
 		resizable: false 		
 	}).append("<table><tbody>	<tr><td><label>Modo de imagen:</label></td><td><span id=\"modoImagenConfig\"></span></td></tr><tr><td><label>Formato de descarga:</label></td><td><span id=\"formatoDescargaConfig\"></span></td></tr><tr><td><label>Tamaño imágenes:</label></td><td><span id=\"imageSizeConfig\"></span></td></tr><tr><td><label>Tamaño histogramas:</label></td><td><span id=\"histogramSizeConfig\"></span></td></tr></tbody></table>");
+
 
 	$("#modoImagenConfig").html(window.modoImagen);
 	$("#formatoDescargaConfig").html(window.formatoDescarga);

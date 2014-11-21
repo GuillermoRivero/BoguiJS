@@ -23,6 +23,8 @@ $(function() {
 		}
 	}
 
+	$("body").disableSelection();
+
 	$("#"+modoImagen).toggleClass('checked');
 	$("#"+formatoDescarga).toggleClass('checked');
 
