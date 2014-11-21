@@ -84,30 +84,32 @@ function abrirImagenWebCam(){
 	window.URL = window.URL || window.webkitURL;
 	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia ||
 	function() {
-	    alert('Su navegador no soporta navigator.getUserMedia().');
+	    errorDialog("Su navegador no permite obtener una imagen desde la WebCam");
 	};
-	var checkFoto = false;
 
-	//Este objeto guardará algunos datos sobre la cámara
-	window.datosVideo = {
-	    'StreamVideo': null,
-	    'url': null
-	}
-	navigator.getUserMedia({
-				    'audio': false,
-				    'video': true
-				}, function(streamVideo) {
-				    datosVideo.StreamVideo = streamVideo;
-				    datosVideo.url = window.URL.createObjectURL(streamVideo);
-				    $('#camara').attr('src', datosVideo.url);
+	if(navigator.getUserMedia){
+		var checkFoto = false;
 
-				}, function() {
-				    alert('No fue posible obtener acceso a la cámara.');
-				});
+		//Este objeto guardará algunos datos sobre la cámara
+		window.datosVideo = {
+		    'StreamVideo': null,
+		    'url': null
+		}
+		navigator.getUserMedia({
+					    'audio': false,
+					    'video': true
+					}, function(streamVideo) {
+					    datosVideo.StreamVideo = streamVideo;
+					    datosVideo.url = window.URL.createObjectURL(streamVideo);
+					    $('#camara').attr('src', datosVideo.url);
+
+					}, function() {
+					    errorDialog("No fue posible obtener acceso a la cámara.");
+					});
 
 
-	$("body").append("<div id=\"dialog-webcam\"></div>");
-	dialog = $( "#dialog-webcam" ).dialog({
+		$("body").append("<div id=\"dialog-webcam\"></div>");
+		dialog = $( "#dialog-webcam" ).dialog({
 		title: "Abrir imagen desde URL",
 		height: 360,
 		width: 700,
@@ -165,6 +167,7 @@ function abrirImagenWebCam(){
 			$(this).remove();	
 		});
 
+	}
 }
 
 
