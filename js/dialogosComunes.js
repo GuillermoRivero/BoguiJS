@@ -147,7 +147,6 @@ function histogramaAcumulativoDialog(objetoBoguiActual){
 			title: "Histograma acumulativo: " + objetoBoguiActual.nombre,
 			width: window.anchoHistograma,
 			height: window.altoHistograma,
-			dialogClass: 'no-close',
 			resizable: false
 		}).on("dialogclose",function(e){			
 			$(this).dialog( "close" );
