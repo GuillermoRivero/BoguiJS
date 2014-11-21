@@ -51,6 +51,14 @@ $(document).ready(function() {
 			informacionDialog(objetosBogui[objetoActual]);
 		}
 	});	
+
+	$("#openImageFromURL").click(function() {	
+		//abrirImagenURL(); //TODO: Descomentar cuadno se arregle el metodo
+	});
+
+	$("#openImageFromWebCam").click(function() {
+		abrirImagenWebCam();		
+	});
 	
 	//Operaciones lineales
 	//Ajuste brillo y contraste

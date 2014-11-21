@@ -118,7 +118,7 @@ function imageCrossSectionDialog(){
 				var cantidadSuavizado =  $( this ).find( '#sliderSuavizado' ).slider( "value" );
 				var umbral = $( this ).find( '#sliderUmbral' ).slider( "value" );
 				var pixeles = pixelesICS(objetosBogui[objetoActual]);//objetoBoguiActual);//TODO: aplicar umbral y cantidad de suavizado
-				graficaICSDialog(objetosBogui[objetoActual], pixeles, umbral);
+				graficaICSDialog(objetosBogui[objetoActual], pixeles, cantidadSuavizado, umbral);
 				$(this).dialog( "close" );
 				$(this).remove();
 			},
@@ -138,7 +138,7 @@ function imageCrossSectionDialog(){
 
 	var suavizadoSpinner = $( "#suavizadoSpinner" ).spinner({
 		min: 0,
-		max: 255,
+		max: 10,
 		step: 1,
 		start: 0,
 		stop: (function (event, ui) {
@@ -161,7 +161,7 @@ function imageCrossSectionDialog(){
 		value: 0,
 		min: 0,
 		autofocus: "autofocus",
-		max: 255,
+		max: 10,
 		slide: function( event, ui ) {
 			suavizadoSpinner.spinner( "value", ui.value );
 		}
@@ -202,7 +202,7 @@ function imageCrossSectionDialog(){
 	dialog.dialog({ resizable: false });
 	dialog.dialog();	
 }
-function graficaICSDialog(objetoBoguiActual, pixeles, umbral){ //TODO: Pasar umbral
+function graficaICSDialog(objetoBoguiActual, pixeles, cantidadSuavizado, umbral){ //TODO: Pasar umbral
 
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 	var pixelData = imageData.data;
@@ -228,7 +228,7 @@ function graficaICSDialog(objetoBoguiActual, pixeles, umbral){ //TODO: Pasar umb
 	}
 
 	var perfilSuavizado = [];
-	var cantidadSuavizado = 3;
+	
 	var puntos;
 	var i = 0;
 

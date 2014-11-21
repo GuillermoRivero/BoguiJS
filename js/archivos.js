@@ -49,6 +49,124 @@ function readImage(file) {
     };    
 }
 
+function abrirImagenURL(){ //TODO: Arreglar cross-origin
+	var dialog, form,content;
+
+	$("body").append("<div id=\"dialog-message\"></div>");
+	dialog = $( "#dialog-message" ).dialog({
+		title: "Abrir imagen desde URL",
+		modal: true,
+		buttons: {
+			Ok:function(ui) {
+				var URL = $("#enlaceImagen").val();	
+				var img = $('<img  />').load(function () {
+		        	objetosBogui.push(new Bogui(img, numeroObjetos, URL));
+			        cambiarFoco(numeroObjetos);
+			        numeroObjetos++;
+			    }).error(function () {
+			        errorDialog("Imagen no valida");
+			    }).attr('src', URL);
+
+				$(this).dialog( "close" );
+				$(this).remove();
+			}
+		},
+		dialogClass: "no-close",
+		resizable: false 		
+	}).append("<table><tbody><tr><td><label>URL:</label></td><td><input id=\"enlaceImagen\" type=\"text\"></td></tr>");
+	 
+	 
+}
+
+function abrirImagenWebCam(){
+//Este objeto guardará algunos datos sobre la cámara
+	var dialog, form,content, contexto ;
+	window.URL = window.URL || window.webkitURL;
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia ||
+	function() {
+	    alert('Su navegador no soporta navigator.getUserMedia().');
+	};
+	var checkFoto = false;
+
+	//Este objeto guardará algunos datos sobre la cámara
+	window.datosVideo = {
+	    'StreamVideo': null,
+	    'url': null
+	}
+	navigator.getUserMedia({
+				    'audio': false,
+				    'video': true
+				}, function(streamVideo) {
+				    datosVideo.StreamVideo = streamVideo;
+				    datosVideo.url = window.URL.createObjectURL(streamVideo);
+				    $('#camara').attr('src', datosVideo.url);
+
+				}, function() {
+				    alert('No fue posible obtener acceso a la cámara.');
+				});
+
+
+	$("body").append("<div id=\"dialog-webcam\"></div>");
+	dialog = $( "#dialog-webcam" ).dialog({
+		title: "Abrir imagen desde URL",
+		height: 360,
+		width: 700,
+		modal: true,
+		buttons: {
+
+			Foto:function(ui) {
+
+				var camara, foto, w, h;
+
+			    camara = $('#camara');
+			    foto = $('#foto');
+			    w = camara.width();
+			    h = camara.height();
+			    foto.attr({
+			        'width': w,
+			        'height': h
+			    });
+
+			    console.log(camara);
+
+			    contexto = foto[0].getContext('2d');
+			    contexto.drawImage(camara[0], 0, 0, w, h);
+			    checkFoto = true;
+				
+			},
+
+			Guardar:function(ui) {
+
+				if(checkFoto == true){
+					var canvas = $('#foto')[0];
+					var dataURL = canvas.toDataURL();
+				    var image  = new Image();
+			        image.src    = dataURL;            // url.createObjectURL(file);
+			        image.onload = function() {
+			                objetosBogui.push(new Bogui(image, numeroObjetos, "webCam.png"));
+			                cambiarFoco(numeroObjetos);
+			                numeroObjetos++;
+			        };
+
+			        image.onerror= function() {
+			            alert('Invalid file type: '+ file.type);
+			        };  
+							  
+					$(this).dialog( "close" );
+					$(this).remove();
+				}else{
+					errorDialog("Debe sacar una foto antes de guardarla");
+				}
+			}
+		},
+		resizable: false 		
+		}).append("<div class=\"contenedor\"><video id=\"camara\" autoplay controls></video><canvas id=\"foto\" ></canvas></div>").on("dialogclose",function(e){			
+			$(this).dialog( "close" );
+			$(this).remove();	
+		});
+
+}
+
 
 function descargarImagen(objetoBoguiActual,nombre,formato){
 
