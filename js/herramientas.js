@@ -14,21 +14,20 @@ $(document).ready(function() {
 	);	
 
 	//Boton descarga directa
-	$("#instaDownloadButton").click(function() {
+	$("#saveButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("Debe seleccionar una imagen para descargar");
 		}else{
-			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
+			descargarImagen(objetosBogui[objetoActual],objetosBogui[objetoActual].nombre,window.formatoDescarga);
 		}	
 	});		
 	
 	//Boton descarga
-	$("#downloadButton").click(function() {
+	$("#saveAsButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("Debe seleccionar una imagen para descargar");
 		}else{
-			//TODO: dialogo para seleccionar formato y nombre y demas
-			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
+			guardarComoDialog(objetosBogui[objetoActual]);
 		}
 	});		
 	

@@ -428,37 +428,6 @@ function readImage(file) {
     };    
 }
 
-function descargarImagen(objetoBoguiActual, formato){
-
-	var dataUrl;
-	var link = document.createElement('a');
-   	
-	switch(formato){
-	case "png":
-		dataUrl = objetoBoguiActual.imgCanvas.toDataURL('image/png', 1); // obtenemos la imagen como png
-		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = objetoBoguiActual.nombre + ".png";
-		break;
-	case "jpeg":
-		dataUrl = objetoBoguiActual.imgCanvas.toDataURL('image/jpeg', 1);
-		dataUrl = dataUrl.replace("image/jpeg",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = objetoBoguiActual.nombre + ".jpeg";
-		break;
-	case "webp":
-		dataUrl = objetoBoguiActual.imgCanvas.toDataURL('image/webp', 1);
-		dataUrl = dataUrl.replace("image/webp",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = objetoBoguiActual.nombre + ".webp";
-		break;
-	default:
-		dataUrl = objetoBoguiActual.imgCanvas.toDataURL();
-		dataUrl = dataUrl.replace("image/png",'image/octet-stream'); // sustituimos el tipo por octet
-		link.download = objetoBoguiActual.nombre + ".png";
-	}
-	link.href = dataUrl;
-   	link.click();
-}
-
-
 function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);

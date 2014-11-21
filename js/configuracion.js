@@ -56,7 +56,7 @@ $(function() {
 		$("#"+formatoDescarga).toggleClass('checked');
 	});			
 
-	$("#saveConfig,  #saveButton").click(function() {
+	$("#saveConfig,  #saveConfigButton").click(function() {
 		if (window.localStorage) { //Si el navegador soporta localStorage
 			localStorage.setItem("modoImagen",modoImagen);
 			localStorage.setItem("formatoDescarga",formatoDescarga);

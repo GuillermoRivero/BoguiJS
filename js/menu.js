@@ -15,7 +15,14 @@ $(document).ready(function() {
 			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
 		}	
 	});		
-
+	//Boton descarga
+	$("#saveImageAsButton").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			errorDialog("Debe seleccionar una imagen para descargar");
+		}else{
+			guardarComoDialog(objetosBogui[objetoActual]);
+		}
+	});		
 	//Ver
 	//Histograma
 	$("#histograma").click(function() {

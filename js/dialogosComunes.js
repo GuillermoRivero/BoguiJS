@@ -416,3 +416,26 @@ function configuracionActualDialog(){
 	$("#histogramSizeConfig").html(window.anchoHistograma+"X"+window.altoHistograma+" píxeles");
 	
 }
+
+function guardarComoDialog(objetoBoguiActual){
+	var dialog, form,content;
+	$("body").append("<div id=\"dialog-message\"></div>");
+	dialog = $( "#dialog-message" ).dialog({
+		title: "Guardar imagen como",
+		modal: true,
+		buttons: {
+			Ok:function(ui) {
+				var formato = $("#formatoDescargaSelect").val();
+				var nombre = $("#nombreText").val();
+				descargarImagen(objetoBoguiActual, nombre, formato);			
+				$(this).dialog( "close" );
+				$(this).remove();
+			}
+		},
+		dialogClass: "no-close",
+		dialogClass: "saveImageAs",
+		resizable: false 		
+	}).append("<table><tbody><tr><td><label>Nombre:</label></td><td><input id=\"nombreText\" type=\"text\"></td></tr><tr><td><label>Formato de descarga:</label></td><td><select id=\"formatoDescargaSelect\"><option value = \"PNG\">PNG</option><option value = \"WEBP\">WEBP</option><option value = \"JPEG\">JPEG</option></select></td></tr></tbody></table>");
+	 $("#formatoDescargaSelect").val(window.formatoDescarga);
+	
+}
