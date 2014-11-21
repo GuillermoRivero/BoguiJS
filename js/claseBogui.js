@@ -444,10 +444,15 @@ function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 		}
 	}
 
-	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+	objetoNuevo = new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato);
+	objetoNuevo.imgCanvas = objetoBoguiActual.imgCanvas;
+	objetoNuevo.ctx.putImageData(imageData, 0, 0);
+	addBogui(objetoNuevo);
+	
+}
+
+function addBogui(objetoBoguiActual){
+	objetosBogui.push(objetoBoguiActual);	
 	cambiarFoco(numeroObjetos);
 	numeroObjetos++;
-
 }

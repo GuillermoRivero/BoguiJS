@@ -46,8 +46,11 @@ function mapaCambios(objetoBoguiActual, objetoBoguiResta, umbral){
 				pixelData1[startIdx+1] = pixelData1[startIdx+1];
 				pixelData1[startIdx+2] = pixelData1[startIdx+2];
 			}else{
-				//SE PONEN LOS PIXELES EN ALFA
-				pixelData1[startIdx+3] = 100; //TODO: Mala visibilidad, cambiar a un color
+				//SE PONEN LOS PIXELES EN ROJO
+				pixelData1[startIdx] = 255;
+				pixelData1[startIdx+1] = 0;
+				pixelData1[startIdx+2] = 0;
+				//pixelData1[startIdx+3] = 100; //TODO: Mala visibilidad, cambiar a un color
 			}
 		}
 	}
@@ -194,9 +197,73 @@ function pixelesICS(objetoBoguiActual){
 }
 
 //TODO: Acabar simulacionDigital
-//Simulacion digital
-function simulacionDigital(){
 
+function simulacionDigital(objetoBoguiActual, desplazamiento, bits){
+
+
+	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	var pixelData = imageData.data;
+	var bytesPerPixel = 4;
+	color = 0;
+
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y = y + desplazamiento) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+
+			if((x+desplazamiento)%desplazamiento == 0){
+				var colorTotal = 0;
+				var numeroPixeles = 0;
+
+				for(y1 = y; y1 < y + desplazamiento; y1++){
+					for(x1 = x; x1 < x + desplazamiento; x1++){
+						
+						if((x1<objetoBoguiActual.imgCanvas.width) && (y1<objetoBoguiActual.imgCanvas.height)  ){
+							var pixelArraySimple = (y1 * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x1 * bytesPerPixel);
+							colorTotal += pixelData[pixelArraySimple];
+							numeroPixeles++;
+						}
+					}
+				}
+
+				color = (colorTotal/numeroPixeles);
+			}
+
+			for(i = 0; i < desplazamiento; i++){
+
+				var startIdx = ((y+i) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+				pixelData[startIdx] = color;
+				pixelData[startIdx+1] = color;
+				pixelData[startIdx+2] = color;
+			}
+
+		}
+	}
+
+	var original = 256;
+	var destino = Math.pow(2,bits);
+	var rango = original/destino;
+	
+
+	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
+			var contadorColor = 0;
+			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+
+			for(avance = 0; avance < pixelData[startIdx]; avance += rango){
+				contadorColor++;
+			}
+			
+			
+			pixelData[startIdx] = (rango*contadorColor)-rango;
+			pixelData[startIdx+1] = (rango*contadorColor)-rango;
+			pixelData[startIdx+2] = (rango*contadorColor)-rango;
+		}
+	}
+
+	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
+	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
+	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
+	cambiarFoco(numeroObjetos);
+	numeroObjetos++;
 }
 
 //Otros metodos

@@ -3,22 +3,24 @@ function simularDigitalizacionDialog(objetoBoguiActual){
 	
 	menorMuestreo = 2;
 	if(objetoBoguiActual.imgCanvas.width < objetoBoguiActual.imgCanvas.height){ //TODO: Comprobar si trabajamos sobre la original o sobre la reducida
-		mayorMuestreo = objetoBoguiActual.imagen.width;
+		mayorMuestreo = objetoBoguiActual.imgCanvas.width;
 	}else{
-		mayorMuestreo = objetoBoguiActual.imagen.height
+		mayorMuestreo = objetoBoguiActual.imgCanvas.height
 	}
 	
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Ajuste lineal de brillo y contraste:",
-		height: 250,
-		width: 370,
+		height: 270,
+		width: 400,
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
-				var dimensionMuestreo =  $( this ).find( '#sliderDimension' ).slider( "value" );
+				var dimensionMuestreo =  $( this ).find( '#sliderMuestreo' ).slider( "value" );
 				var numeroBits = $( this ).find( '#sliderBits' ).slider( "value" );
 				//TODO: Simular digitalizacion
+				console.log(dimensionMuestreo);
+				simulacionDigital(objetosBogui[objetoActual], dimensionMuestreo, numeroBits);
 				$(this).dialog( "close" );
 				$(this).remove();
 			},
@@ -37,7 +39,7 @@ function simularDigitalizacionDialog(objetoBoguiActual){
 	});		
 
 	var muestreoSpinner = $( "#muestreoSpinner" ).spinner({
-		min: 2,
+		min: 1,
 		max: mayorMuestreo,
 		step: 1,
 		start: 2,
@@ -59,7 +61,7 @@ function simularDigitalizacionDialog(objetoBoguiActual){
 	$( "#sliderMuestreo" ).slider({
 		range: "min",
 		value: 0,
-		min: 2,
+		min: 1,
 		autofocus: "autofocus",
 		max: mayorMuestreo,
 		slide: function( event, ui ) {
