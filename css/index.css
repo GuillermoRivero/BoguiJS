@@ -27,11 +27,11 @@ label{
 img{
 	height:100%;
 }
-
+/*
 table tbody tr td input{
 	width: 35px;
 	margin: 0 5px;
-}
+}*/
 
 fieldset{
 	border:none;
@@ -222,7 +222,7 @@ footer{
 	float:left;
 }
 
-.informacion table tbody tr td {
+table tbody tr td {
 	min-width: 136px;
 }
 

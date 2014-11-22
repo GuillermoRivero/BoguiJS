@@ -467,7 +467,7 @@ function mapaCambiosDialog(objetoBogui){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Mapa de cambios:",
-		height: 250,
+		width: 370,
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -490,11 +490,11 @@ function mapaCambiosDialog(objetoBogui){
 	});		
 	
 	
-	var contenido = "<form><fieldset><p><label for=\"imagenesReferencia\">Imagen de referencia: </label><select id = \"imagenesReferencia\">"
+	var contenido = "<form><fieldset><table><tbody><tr><td><label for=\"imagenesReferencia\">Imagen de referencia: </label></td><td><select id = \"imagenesReferencia\">"
 	for(i = 0; i<objetosBogui.length;i++){
 		contenido = contenido + "<option value = \""+i+"\">"+objetosBogui[i].nombre+"</option>";
 	}
-	contenido = contenido + "</select></p><p><label for=\"umbralSpinner\">Umbral:</label><input id=\"umbralSpinner\" name=\"umbralValue\" type=\"text\"></p><div id=\"sliderUmbral\"></div></p></fieldset></form>";
+	contenido = contenido + "</select></td></tr><tr><td><label for=\"umbralSpinner\">Umbral:</label></td><td><input id=\"umbralSpinner\" name=\"umbralValue\" type=\"text\"></td></tr><tr ><td colspan=\"2\"><div id=\"sliderUmbral\"></div></td></tr></fieldset></form>";
 	dialog.append(contenido);
 	
 	var umbralSpinner = $( "#umbralSpinner" ).spinner({
