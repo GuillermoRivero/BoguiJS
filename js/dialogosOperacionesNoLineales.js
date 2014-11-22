@@ -1,6 +1,5 @@
 function simularDigitalizacionDialog(objetoBoguiActual){
 	var dialog, form, mayorMuestreo,menorMuestreo;
-	
 	menorMuestreo = 2;
 	if(objetoBoguiActual.imgCanvas.width < objetoBoguiActual.imgCanvas.height){ 
 		mayorMuestreo = objetoBoguiActual.imgCanvas.width;
@@ -469,7 +468,6 @@ function mapaCambiosDialog(objetoBogui){
 	dialog = $( "#dialog" ).dialog({
 		title: "Mapa de cambios:",
 		height: 250,
-		width: 350,
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -492,7 +490,7 @@ function mapaCambiosDialog(objetoBogui){
 	});		
 	
 	
-	var contenido = "<form><fieldset><p><label>Imagen de referencia: </label><select id = \"imagenesReferencia\">"
+	var contenido = "<form><fieldset><p><label for=\"imagenesReferencia\">Imagen de referencia: </label><select id = \"imagenesReferencia\">"
 	for(i = 0; i<objetosBogui.length;i++){
 		contenido = contenido + "<option value = \""+i+"\">"+objetosBogui[i].nombre+"</option>";
 	}

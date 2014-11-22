@@ -1,7 +1,5 @@
 //Imagen diferencia
 function imagenDiferencia(objetoBoguiActual, objetoBoguiResta){
-
-
 	var imageData1 = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 	var pixelData1 = imageData1.data;
 	var bytesPerPixel = 4;

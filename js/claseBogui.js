@@ -1,4 +1,3 @@
-
 function Bogui(img, id, name) {
 	//ATRIBUTOS
 	this.ident = id;
@@ -177,8 +176,8 @@ function Bogui(img, id, name) {
 		}
                 
     });
- 	//TODO: BROIS ES GAY $("#dialogo" + this.ident).removeClass("ui-front");
-	//TODO: INTENTAR QUE BORIS ME CHUPE EL PENE HASTA EL AMANECER $("#dialogo" + this.ident).addClass("zIndexDialog");		
+ 	//TODO:  $("#dialogo" + this.ident).removeClass("ui-front");
+	//TODO:  $("#dialogo" + this.ident).addClass("zIndexDialog");		
 }
 
 function calcularBrilloContraste(objetoBoguiActual){
