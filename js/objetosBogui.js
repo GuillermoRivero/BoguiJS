@@ -16,6 +16,7 @@ function cambiarFoco(foco){
 	for(i = 0; i < objetosBogui.length; i++){
 		if(objetosBogui[i].ident == foco ){
 			objetoActual = i;	
+			$("#imgSelected").html("Imagen seleccionada: "+objetosBogui[objetoActual].nombre);
 		}
 	}
 }

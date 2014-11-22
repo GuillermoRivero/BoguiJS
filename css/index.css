@@ -34,6 +34,18 @@ table tbody tr td input{
 fieldset{
 	border:none;
 }
+
+footer{
+	position: absolute;
+	padding: 5px;
+	bottom:0;
+	left: 0;
+	background-color: #e6e6e6;
+	font-size: 12px;
+	font-weight: 500;	
+	width:100%;
+}
+
 #dropzone{
 	min-width: 1024px;
 	min-height: 400px;
@@ -155,6 +167,18 @@ fieldset{
 
 .noPointerEvents {
   pointer-events: none;
+}
+
+.colorBlock{
+	width:14px;
+	height:14px;
+	display: block;
+	float:left;
+	margin-right:5px;
+}
+
+.imageInfo{
+	margin-top: 5px;
 }
 
 .logoBackground{

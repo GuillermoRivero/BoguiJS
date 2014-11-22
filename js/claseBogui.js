@@ -14,25 +14,19 @@ function Bogui(img, id, name) {
 	
 	this.histograma = new Array(256);
 	this.histogramaAcumulativo = new Array(256);
-	this.dialogoHistograma;
-	this.contenedorHistograma;
-	this.dialogoHistogramaAcumulativo;
-	this.contenedorHistogramaAcumulativo;
+	
 	this.mouseXini = 0; //Variables para funciones que requieras capturar posiciones de raton
 	this.mouseYini = 0;
 	this.mouseXfin = 0; //Variables para funciones que requieras capturar posiciones de raton
 	this.mouseYfin = 0;
 	
 	//METODOS
-
-	
 	this.imgCanvas = document.createElement("canvas");
 	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
 	this.imgCanvas.setAttribute("height", this.imagen.height);
 	this.imgCanvas.setAttribute("width", this.imagen.width);
 	this.imgCanvas.setAttribute("class", "capaCanvas");
 
-	
 	//Crear ventana con el canvas
 	this.dialogo = $('<div/>', {
 	    id: "dialogo" + this.ident,
@@ -41,14 +35,10 @@ function Bogui(img, id, name) {
 		width: window.maxWidth
 	}).appendTo('#workspace');
 
-
-
-
 	var canvasContainer = $("<div id=\"canvasContainer"+this.ident+"\" class=\"canvasContainer\"></div>");
 	canvasContainer.append(this.imgCanvas);
 
 	this.dialogo.dialog({ resizable: false });
-	
 
 	this.dialogo.on("dialogclose",function(e){			
 		var exp = /dialogo(\d+)/i
@@ -74,8 +64,6 @@ function Bogui(img, id, name) {
 	reducirImagen(this);
 	RGBA2BW(this);
 
-
-
 	this.regCanvas = document.createElement("canvas");
 	this.regCanvas.setAttribute("id", "canvasreg"+this.ident);
 	this.regCanvas.setAttribute("height", this.imgCanvas.height);
@@ -92,7 +80,7 @@ function Bogui(img, id, name) {
 	$('.ui-dialog :button').blur();//REMOVE FOCUS
 	
 	this.dialogo.append(canvasContainer);
-	this.dialogo.append("<div id=\"position"+this.ident+"\"><span id=\"coordinates"+this.ident+"\">x= - y= - value= - </span></div>");
+	this.dialogo.append("<div id=\"position"+this.ident+"\" class=\"imageInfo\"><span id=\"colorBlock"+this.ident+"\" class=\"colorBlock\"> </span><span id=\"coordinates"+this.ident+"\"></span></div>");
 	//Ajustar tamaño de la ventana
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
 	this.dialogo.css("overflow","hidden");
@@ -100,8 +88,6 @@ function Bogui(img, id, name) {
 
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
-
-		
 		var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
@@ -186,10 +172,10 @@ function Bogui(img, id, name) {
         var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
         var rgb = obtenerColorDesdeCoordenadas(objetosBogui[obtenerPosArray(idActual)],x,y);
 		if(x >= 0 && y >= 0){
-			$("#coordinates"+ objetosBogui[obtenerPosArray(idActual)].ident).html("x=" + x + " y=" + y + " Hex=" + hex + " RGB=" + rgb);
+		    $("#colorBlock"+ objetosBogui[obtenerPosArray(idActual)].ident).css("background-color",hex);
+			$("#coordinates"+ objetosBogui[obtenerPosArray(idActual)].ident).html("x=" + x + " y=" + y + " HEX=" + hex + " RGB=" + rgb);
 		}
                 
-
     });
  	//TODO: BROIS ES GAY $("#dialogo" + this.ident).removeClass("ui-front");
 	//TODO: INTENTAR QUE BORIS ME CHUPE EL PENE HASTA EL AMANECER $("#dialogo" + this.ident).addClass("zIndexDialog");		
@@ -412,26 +398,6 @@ function RGBA2BW(objetoBoguiActual){
 	//Cargar la matriz de datos en el canvas
 	objetoBoguiActual.ctx.putImageData(imageData, 0, 0);
 
-}
-
-function readImage(file) {
-  
-    var reader = new FileReader();
-    var image  = new Image();
-  
-    reader.readAsDataURL(file);  
-    reader.onload = function(_file) {
-        image.src    = _file.target.result;              // url.createObjectURL(file);
-        image.onload = function() {
-                objetosBogui.push(new Bogui(image, numeroObjetos, file.name));
-                cambiarFoco(numeroObjetos);
-                numeroObjetos++;
-
-        };
-        image.onerror= function() {
-            alert('Invalid file type: '+ file.type);
-        };      
-    };    
 }
 
 function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){

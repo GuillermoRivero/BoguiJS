@@ -1,11 +1,19 @@
 $(document).ready(function() {
     $( "#menu" ).tooltip();	
 	//Archivo
-	//TODO: Guardar Imagen, Guardar Imagen Como, Abrir Imagen Como
+	//TODO: Abrir Imagen Como
 	//Abrir archivo
 	$("#fileMenu").click(function() {
 		$("#fileSelector").click();
 	});	
+	
+	/*$("#openImageFromURL").click(function() {	
+		abrirImagenURLDialog(); //TODO: Descomentar cuadno se arregle el metodo
+	});
+
+	$("#openImageFromWebCam").click(function() {
+		abrirImagenWebCamDialog();		
+	});*/
 	
 	//Descargar
 	$("#saveImage").click(function() {
@@ -52,13 +60,6 @@ $(document).ready(function() {
 		}
 	});	
 
-	$("#openImageFromURL").click(function() {	
-		//abrirImagenURL(); //TODO: Descomentar cuadno se arregle el metodo
-	});
-
-	$("#openImageFromWebCam").click(function() {
-		abrirImagenWebCam();		
-	});
 	
 	//Operaciones lineales
 	//Ajuste brillo y contraste

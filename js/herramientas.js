@@ -4,7 +4,7 @@ $(document).ready(function() {
 	$( "#tools" ).tooltip();	
 
 	// Hover para los botones de la barra de herramientas
-	$( "#tools li" ).hover(
+	$( "#tools li.ui-state-default" ).hover(
 		function() {
 			$( this ).addClass( "ui-state-hover" );
 		},
@@ -37,7 +37,10 @@ $(document).ready(function() {
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
 			resetearRegionInteres();
-			window.herramientaActual = "roi";
+			$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
+		    window.herramientaActual = "roi";
+			$(this).addClass( "ui-state-hover" );
+
 		}
 	});	
 	
@@ -45,10 +48,11 @@ $(document).ready(function() {
 	$("#puntero").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
-		}else{
-			window.herramientaActual = "puntero";
-			//Se limpia el canvas y se resetea la posicion guardada del click
+		}else{			
 			resetearRegionInteres();
+			$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
+		    window.herramientaActual = "puntero";
+			$(this).addClass( "ui-state-hover" );
 		}
 	});	
 	
@@ -85,7 +89,9 @@ $(document).ready(function() {
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
 			resetearRegionInteres();
-			window.herramientaActual = "ics";
+			$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
+		    window.herramientaActual = "ics";
+			$(this).addClass( "ui-state-hover" );
 		}
 	});	 
 });	 
