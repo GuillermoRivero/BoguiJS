@@ -25,7 +25,9 @@ $(document).ready(function() {
 			errorDialog("Debe seleccionar una imagen para descargar");
 		}else{
 			//transpuesta(objetosBogui[objetoActual]);
-			rotarBasico(objetosBogui[objetoActual], 180);
+			//rotarBasico(objetosBogui[0], 0);
+			rotarBasico(objetosBogui[0], 180);
+			//rotarBasico(objetosBogui[0], 270);
 		}
 	});	
 
