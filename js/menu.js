@@ -26,8 +26,9 @@ $(document).ready(function() {
 		}else{
 			//transpuesta(objetosBogui[objetoActual]);
 			//rotarBasico(objetosBogui[0], 0);
-			rotarBasico(objetosBogui[0], 180);
+			//rotarBasico(objetosBogui[0], 180);
 			//rotarBasico(objetosBogui[0], 270);
+			escalar(objetosBogui[0], objetosBogui[0].imgCanvas.width*1.5, objetosBogui[0].imgCanvas.height *1.5, "media");
 		}
 	});	
 
