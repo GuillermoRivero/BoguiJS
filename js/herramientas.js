@@ -45,15 +45,11 @@ $(document).ready(function() {
 	});	
 	
 	//Boton puntero
-	$("#puntero").click(function() {
-		if(typeof objetosBogui[objetoActual] == 'undefined'){
-			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
-		}else{			
-			resetearRegionInteres();
-			$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
-		    window.herramientaActual = "puntero";
-			$(this).addClass( "ui-state-hover" );
-		}
+	$("#puntero").click(function() {		
+		resetearRegionInteres();
+		$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
+		window.herramientaActual = "puntero";
+		$(this).addClass( "ui-state-hover" );
 	});	
 	
 	//Boton recortar
@@ -88,7 +84,7 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			resetearRegionInteres();
+			resetearRegionInteres();//TODO: cambiar nombre a esta funcion, a reducirImg en claseBogui
 			$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
 		    window.herramientaActual = "ics";
 			$(this).addClass( "ui-state-hover" );
@@ -99,12 +95,12 @@ $(document).ready(function() {
 //Region de interes
 function resetearRegionInteres(){
 	for(var i = 0; i < objetosBogui.length; i++){
-				objetosBogui[i].regCanvas.width = objetosBogui[i].regCanvas.width;
-				objetosBogui[i].mouseXini = 0;
-				objetosBogui[i].mouseYini = 0;		
-				objetosBogui[i].mouseXfin = 0;
-				objetosBogui[i].mouseYfin = 0;
-			}
+		objetosBogui[i].regCanvas.width = objetosBogui[i].regCanvas.width;
+		objetosBogui[i].mouseXini = 0;
+		objetosBogui[i].mouseYini = 0;		
+		objetosBogui[i].mouseXfin = 0;
+		objetosBogui[i].mouseYfin = 0;
+	}
 }
 
 function dibujarRegionInteres(objetoBoguiActual, estado){
@@ -151,9 +147,6 @@ function recortar(objetoBoguiActual){
 //Image-Cross Section
 function dibujarLineaICS(objetoBoguiActual, estado){
 
-	objetoBoguiActual.regCanvas.width = objetoBoguiActual.regCanvas.width;
-	objetoBoguiActual.regctx = objetoBoguiActual.regCanvas.getContext("2d");
-
 	if(objetoBoguiActual.regctx.mouseXini > objetoBoguiActual.regctx.mouseXfin){
 		aux = objetoBoguiActual.regctx.mouseXini;
 		objetoBoguiActual.regctx.mouseXini = objetoBoguiActual.regctx.mouseXfin;
@@ -167,6 +160,7 @@ function dibujarLineaICS(objetoBoguiActual, estado){
 	}
 
 	//objetoBoguiActual.regctx.rect(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini, objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini , objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
+	objetoBoguiActual.regCanvas.width = objetoBoguiActual.regCanvas.width;
 	objetoBoguiActual.regctx.beginPath();
 	objetoBoguiActual.regctx.moveTo(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini);
 	objetoBoguiActual.regctx.lineTo(objetoBoguiActual.mouseXfin, objetoBoguiActual.mouseYfin);

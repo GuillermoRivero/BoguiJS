@@ -13,6 +13,7 @@ function Bogui(img, id, name) {
 	
 	this.histograma = new Array(256);
 	this.histogramaAcumulativo = new Array(256);
+	this.histogramaAcumulativoNormalizado = new Array(256);
 	
 	this.mouseXini = 0; //Variables para funciones que requieras capturar posiciones de raton
 	this.mouseYini = 0;
@@ -20,71 +21,59 @@ function Bogui(img, id, name) {
 	this.mouseYfin = 0;
 	
 	//METODOS
-	this.imgCanvas = document.createElement("canvas");
-	this.imgCanvas.setAttribute("id", "canvas"+this.ident);
-	this.imgCanvas.setAttribute("height", this.imagen.height);
-	this.imgCanvas.setAttribute("width", this.imagen.width);
-	this.imgCanvas.setAttribute("class", "capaCanvas");
 
-	//Crear ventana con el canvas
-	this.dialogo = $('<div/>', {
-	    id: "dialogo" + this.ident,
+    //Creamos dialogo
+	var dialog, form,idObjeto,content;
+	idObjeto = "dialogo" + this.ident;
+	$("#workspace").append("<div id=\""+idObjeto+"\"></div>");	
+	this.dialogo = $( "#"+idObjeto ).dialog({
 		title: this.nombre,
-	   	height: window.maxHeight,
-		width: window.maxWidth
-	}).appendTo('#workspace');
-
-	var canvasContainer = $("<div id=\"canvasContainer"+this.ident+"\" class=\"canvasContainer\"></div>");
-	canvasContainer.append(this.imgCanvas);
-
-	this.dialogo.dialog({ resizable: false });
-
-	this.dialogo.on("dialogclose",function(e){			
+		resizable: false
+	}).on("dialogclose",function(e){			
 		var exp = /dialogo(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 		borrarObjetoBogui(idActual);
 		$(this).dialog( "close" );
 		$(this).remove();	
- 	});
+ 	}).on( "dialogfocus", function( e, ui ) {
+		var exp = /dialogo(\d+)/i
+		var res = exp.exec(e.target.id);
+		var idActual = res[1];
+		cambiarFoco(idActual);
+	} );
+
+	//Creamos el contenedor de los canvas y añadimos la imagen
+	var contenido = $("<div id=\"canvasContainer"+this.ident+"\"><canvas id=\"canvas"+this.ident+"\" ></canvas><canvas id=\"canvasreg"+this.ident+"\"></canvas></div><div id=\"position"+this.ident+"\" class=\"imageInfo\"><span id=\"colorBlock"+this.ident+"\" class=\"colorBlock\"> </span><span id=\"coordinates"+this.ident+"\"></span></div><div style=\"clear:both\"></div>");
+	//CSS
+	this.dialogo.append(contenido);
 	
-	this.dialogo.on( "dialogfocus", function( e, ui ) {
-						var exp = /dialogo(\d+)/i
-						var res = exp.exec(e.target.id);
-						var idActual = res[1];
-						cambiarFoco(idActual);
-						} );
-
-	//Dibujar imagen en el canvas
+	$("#canvas"+this.ident).addClass("capaCanvas");
+	$("#canvasreg"+this.ident).addClass("capaCanvasReg");
+	
+	this.imgCanvas = $("#canvas"+this.ident)[0];
 	this.ctx = this.imgCanvas.getContext('2d');
-	this.ctx.drawImage(this.imagen, 0, 0);
-
+	
 	//Reducir imagen y ponerla en blanco y negro
 	reducirImagen(this);
 	RGBA2BW(this);
+	
+	this.regCanvas = $("#canvasreg"+this.ident)[0];
+	this.regctx = this.regCanvas.getContext("2d");
+		
+	//Ajustar tamaño de la ventana
+	var canvasContainer = $("#canvasContainer"+this.ident);
+	canvasContainer.addClass("canvasContainer");
+    canvasContainer.height(this.imgCanvas.height);
+	canvasContainer.width(this.imgCanvas.width);	
+	
+	this.regCanvas.height = this.imgCanvas.height;
+	this.regCanvas.width = this.imgCanvas.width ;	
 
-	this.regCanvas = document.createElement("canvas");
-	this.regCanvas.setAttribute("id", "canvasreg"+this.ident);
-	this.regCanvas.setAttribute("height", this.imgCanvas.height);
-	this.regCanvas.setAttribute("width", this.imgCanvas.width);
-	this.regCanvas.setAttribute("z-index", 1);
-	this.regCanvas.setAttribute("class", "capaCanvas");
-
-	
-	canvasContainer.append(this.regCanvas);
-	canvasContainer.append("<div style=\"clear:both\"></div>");
-	canvasContainer.css("height",this.imgCanvas.height+"px");
-	canvasContainer.css("width",this.imgCanvas.width+"px");
-	
-	$('.ui-dialog :button').blur();//REMOVE FOCUS
-	
-	this.dialogo.append(canvasContainer);
-	this.dialogo.append("<div id=\"position"+this.ident+"\" class=\"imageInfo\"><span id=\"colorBlock"+this.ident+"\" class=\"colorBlock\"> </span><span id=\"coordinates"+this.ident+"\"></span></div>");
 	//Ajustar tamaño de la ventana
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
 	this.dialogo.css("overflow","hidden");
 	
-
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
 		var exp = /canvasreg(\d+)/i
@@ -106,9 +95,7 @@ function Bogui(img, id, name) {
 			break;
 			default:
         }
-	});
-
-	$(this.regCanvas).mouseup(function(e){
+	}).mouseup(function(e){
 		
 		var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
@@ -131,9 +118,7 @@ function Bogui(img, id, name) {
 			break;
 			default:
         }
-	});
-
-	$(this.regCanvas).mousemove(function(e) {
+	}).mousemove(function(e) {
 
         var pos = findPos(this);
         var x = e.pageX - pos.x;
@@ -149,8 +134,6 @@ function Bogui(img, id, name) {
 		        	var estado = 0;
 			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
 			        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
-		        	objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
 					dibujarRegionInteres(objetosBogui[obtenerPosArray(idActual)], estado);
 				}
 			break;
@@ -159,9 +142,7 @@ function Bogui(img, id, name) {
 		        	var estado = 0;
 			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
 			        objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-			        objetosBogui[obtenerPosArray(idActual)].mouseXfin = e.pageX - pos.x;
-		        	objetosBogui[obtenerPosArray(idActual)].mouseYfin = e.pageY - pos.y;
-					dibujarLineaICS(objetosBogui[obtenerPosArray(idActual)]);
+					dibujarLineaICS(objetosBogui[obtenerPosArray(idActual)],estado);
 				}
 			break;
 			default:
@@ -176,12 +157,30 @@ function Bogui(img, id, name) {
 		}
                 
     });
- 	//TODO:  $("#dialogo" + this.ident).removeClass("ui-front");
-	//TODO:  $("#dialogo" + this.ident).addClass("zIndexDialog");		
+
+	$('.ui-dialog :button').blur();
+ 	$("#dialogo" + this.ident).parent().removeClass("ui-front");
+	$("#dialogo" + this.ident).parent().addClass("zIndexDialog");	
+	
+	calcularHistogramaSimple(this);
+	calcularHistogramaAcumulativo(this);
+	calcularHistogramaAcumuladoNormalizado(this);
+	
+	var brightContrastValues = calcularBrilloContraste(this);
+	this.brillo = brightContrastValues[0];
+	this.contraste = brightContrastValues[1];
+
+	this.entropia = calcularEntropia(this);
+
+	var limitesColor = calcularLimitesColor(this);
+	this.minGris = limitesColor[0];
+	this.maxGris = limitesColor[1];
+	
+	//TODO: Copia canvas, modificar tamaño
+
 }
 
 function calcularBrilloContraste(objetoBoguiActual){
-		calcularHistogramaSimple(objetoBoguiActual);
 		var brillo = 0;
 		var contraste = 0;
 		var total = 0;
@@ -218,10 +217,6 @@ function calcularLimitesColor(objetoBoguiActual){
 
 function reducirImagen(objetoBoguiActual){
 
-	//Hacer un nuevo canvas
-	var canvasCopy = document.createElement("canvas");
-	var copyContext = canvasCopy.getContext("2d");
-
 	// Determinar el ratio de conversion de la imagen
 	var ratio = 1;
 	if(objetoBoguiActual.imagen.width > window.maxWidth)
@@ -229,14 +224,10 @@ function reducirImagen(objetoBoguiActual){
 	else if(objetoBoguiActual.imagen.height > window.maxHeight)
 		ratio = window.maxHeight / objetoBoguiActual.imagen.height;
 
-	//Dibujar la imagen original en el segundo canvas
-	canvasCopy.width = objetoBoguiActual.imagen.width;
-	canvasCopy.height = objetoBoguiActual.imagen.height;
-	copyContext.drawImage(objetoBoguiActual.imagen, 0, 0);
-	//Copiar y cambiar de tamño el segundo canvas en el primer canvas
-	objetoBoguiActual.imgCanvas.width = objetoBoguiActual.imagen.width * ratio;
 	objetoBoguiActual.imgCanvas.height = objetoBoguiActual.imagen.height * ratio;
-	objetoBoguiActual.ctx.drawImage(canvasCopy, 0, 0, canvasCopy.width, canvasCopy.height, 0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+	objetoBoguiActual.imgCanvas.width = objetoBoguiActual.imagen.width * ratio;	
+
+	objetoBoguiActual.ctx.drawImage(objetoBoguiActual.imagen, 0, 0,objetoBoguiActual.imgCanvas.width ,objetoBoguiActual.imgCanvas.height);
 
 }
 
@@ -256,7 +247,6 @@ function calcularHistogramaSimple(objetoBoguiActual){
 }
 
 function calcularHistogramaAcumulativo(objetoBoguiActual){
-	calcularHistogramaSimple(objetoBoguiActual);
 	//Inicializar Variables
 	for(i = 0; i < objetoBoguiActual.histograma.length; i++) {
 		objetoBoguiActual.histogramaAcumulativo[i] = 0; 
@@ -270,29 +260,23 @@ function calcularHistogramaAcumulativo(objetoBoguiActual){
 }
 
 function calcularEntropia(objetoBoguiActual){
-	if(typeof objetoBoguiActual == 'undefined'){
-		mostrarError("No se puede ejecutar el comando sin una imagen seleccionada"); 
-	}else{
-
-		calcularHistogramaSimple(objetoBoguiActual);
-		var total = 0;
-		var entropia = 0;
-	 	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
-	 		total += objetoBoguiActual.histograma[i];
-	 	}
-	 	//console.log(Math.log(0.5)/Math.LN2);
-
-	    for (i = 0; i < objetoBoguiActual.histograma.length; i++){
-
-			probabilidad = objetoBoguiActual.histograma[i] / total;
-
-			if(probabilidad != 0){
-			    entropia += probabilidad * (Math.log(probabilidad)/Math.LN2); //TODO: Comprobar logaritmo en base 2 Probar binarizando
-
-			}
-		}		
-		return -entropia;			
+	var total = 0;
+	var entropia = 0;
+	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
+		total += objetoBoguiActual.histograma[i];
 	}
+	//console.log(Math.log(0.5)/Math.LN2);
+
+	for (i = 0; i < objetoBoguiActual.histograma.length; i++){
+
+		probabilidad = objetoBoguiActual.histograma[i] / total;
+
+		if(probabilidad != 0){
+			entropia += probabilidad * (Math.log(probabilidad)/Math.LN2); //TODO: Comprobar logaritmo en base 2 Probar binarizando
+
+		}
+	}		
+	return -entropia;
 }
 
 function evitarNombresRepetidos(nombre){

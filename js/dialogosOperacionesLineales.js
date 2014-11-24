@@ -1,8 +1,7 @@
 function ajusteBrilloContrasteDialog(objetoBogui){
 	var dialog, form;
-	var valores = calcularBrilloContraste(objetoBogui);
-	var oldBrillo = valores[0];
-	var oldContraste = valores[1];
+	var oldBrillo = objetoBogui.brillo;
+	var oldContraste = objetoBogui.contraste;
 
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({

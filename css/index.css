@@ -210,6 +210,14 @@ footer{
 	top: 0;
 }
 
+.capaCanvasReg {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 1;
+}
+
+
 .izq{
 	width:25%;
 	float:left;
@@ -223,7 +231,12 @@ footer{
 }
 
 table tbody tr td {
-	min-width: 136px;
+	width: 137px;
+}
+
+table tbody tr td input {
+	width:100%;
+	margin: 0;
 }
 
 .informacion{

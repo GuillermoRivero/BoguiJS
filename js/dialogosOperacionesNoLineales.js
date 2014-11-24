@@ -426,7 +426,7 @@ function correccionGammaDialog(objetoBogui){
 function especificarHistogramaDialog(objetoBogui){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
-		title: "Especificaci&oactue;n histograma:",
+		title: "Especificaci&oacute;n histograma:",
 		height: 170,
 		width: 350,
 		modal: true,
@@ -460,9 +460,8 @@ function especificarHistogramaDialog(objetoBogui){
 
 function mapaCambiosDialog(objetoBogui){
 	var dialog, form;
-	var valores = calcularBrilloContraste(objetoBogui);
-	var oldBrillo = valores[0];
-	var oldContraste = valores[1];
+	var oldBrillo = objetoBogui.brillo;
+	var oldContraste = objetoBogui.contraste;
 	
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
@@ -531,9 +530,8 @@ function mapaCambiosDialog(objetoBogui){
 
 function imagenDiferenciaDialog(objetoBogui){
 	var dialog, form;
-	var valores = calcularBrilloContraste(objetoBogui);
-	var oldBrillo = valores[0];
-	var oldContraste = valores[1];
+	var oldBrillo = objetoBogui.brillo;
+	var oldContraste = objetoBogui.contraste;
 
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({

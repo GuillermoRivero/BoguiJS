@@ -68,8 +68,8 @@ function especificarHistograma(objetoBoguiActual, objetoBoguiOrigen){
 	var indiceDestino = 0;
 	var funcionTransferencia = new Array(256);
 
-	histogramaOrigenAcumuladoNormalizadoFuente = calcularHistogramaAcumuladoNormalizado(objetoBoguiActual);
-	histogramaOrigenAcumuladoNormalizadoDestino = calcularHistogramaAcumuladoNormalizado(objetoBoguiOrigen);
+	histogramaOrigenAcumuladoNormalizadoFuente = objetoBoguiActual.histogramaAcumulativoNormalizado;
+	histogramaOrigenAcumuladoNormalizadoDestino = objetoBoguiOrigen.histogramaAcumulativoNormalizado;
 
 	while(indiceFuente < funcionTransferencia.length){
 		if(histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] > histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente]){
@@ -82,18 +82,19 @@ function especificarHistograma(objetoBoguiActual, objetoBoguiOrigen){
 		if(indiceDestino == 255){
 			indiceFuente++;
 		}
+
 	}
 
 	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
 }
 
-//Ecualizar histograma
+//Ecualizar histograma //TODO: CHECK, CAMBIAR CONSTRUCTOR EN LUGAR DE APLICAR Y
 function ecualizarHistograma(objetoBoguiActual){
 
 	ancho = objetoBoguiActual.imgCanvas.width;
 	alto = objetoBoguiActual.imgCanvas.height;
 
-	var histogramaAcumuladoNormalizado = calcularHistogramaAcumuladoNormalizado(objetoBoguiActual);
+	var histogramaAcumuladoNormalizado = objetoBoguiActual.histogramaAcumulativoNormalizado;
 
 	var funcionTransferencia = new Array(256);
 
@@ -107,8 +108,6 @@ function ecualizarHistograma(objetoBoguiActual){
 
 
 function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
-	//calcular primero histograma origen
-	calcularHistogramaSimple(objetoBoguiActual);
 	var histograma = objetoBoguiActual.histograma;
 	//normalizacion
 	var numeroPixeles = 0;
@@ -120,12 +119,11 @@ function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
 		histogramaNormalizado[i] = histograma[i]/numeroPixeles;
 	}
 	//Histograma origen acumulado normalizado
-	var histogramaAcumuladoNormalizado = new Array(256);
-	histogramaAcumuladoNormalizado[0] = histogramaNormalizado[0];
+	objetoBoguiActual.histogramaAcumulativoNormalizado[0] = histogramaNormalizado[0];
 	for(i = 1; i < histograma.length; i++){
-		histogramaAcumuladoNormalizado[i] = histogramaNormalizado[i] + histogramaAcumuladoNormalizado[i-1]
+		objetoBoguiActual.histogramaAcumulativoNormalizado[i] = histogramaNormalizado[i] + objetoBoguiActual.histogramaAcumulativoNormalizado[i-1]
 	}
-	return histogramaAcumuladoNormalizado;
+
 }
 
 //Correccion gamma

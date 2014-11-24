@@ -102,4 +102,8 @@ $(function() {
 	$("#histogramSize").click(function() {
 		cambiarDimensionHistogramasDialog();
 	});		
+	
+		
+	$("#"+herramientaActual ).addClass( "ui-state-hover" );
+
 });

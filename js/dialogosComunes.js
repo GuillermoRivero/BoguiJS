@@ -14,21 +14,18 @@ function informacionDialog(objetoBoguiActual){
 			dialogClass: "no-close",
 			dialogClass: "informacion",
 			resizable: false 		
-		}).append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Entrop&iacute;a:</label></td><td><span id=\"entropiaValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&iacute;nimo de gris:</label></td><td><span id=\"minGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&aacute;ximo de gris:</label></td><td><span id=\"maxGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Tama&ntilde;o:</label></td><td><span id=\"sizeValue"+ objetoBoguiActual.ident +"\"></span></td></tr></tbody></table>");
-		
-		dialog.on("dialogclose",function(e){			
+		}).on("dialogclose",function(e){			
 			$(this).dialog( "close" );
 			$(this).remove();	
-		});
+		}).append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Entrop&iacute;a:</label></td><td><span id=\"entropiaValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&iacute;nimo de gris:</label></td><td><span id=\"minGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&aacute;ximo de gris:</label></td><td><span id=\"maxGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Tama&ntilde;o:</label></td><td><span id=\"sizeValue"+ objetoBoguiActual.ident +"\"></span></td></tr></tbody></table>");
 		
-
 		$("#nameValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.nombre);
 		$("#modoValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.modo);
-		$("#brilloValue"+ objetoBoguiActual.ident).html(calcularBrilloContraste(objetoBoguiActual)[0]);
-		$("#contrasteValue"+ objetoBoguiActual.ident).html(calcularBrilloContraste(objetoBoguiActual)[1]);
-		$("#entropiaValue"+ objetoBoguiActual.ident).html(calcularEntropia(objetoBoguiActual));
-		$("#minGris"+ objetoBoguiActual.ident).html(calcularLimitesColor(objetoBoguiActual)[0]);
-		$("#maxGris"+ objetoBoguiActual.ident).html(calcularLimitesColor(objetoBoguiActual)[1]);
+		$("#brilloValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.brillo);
+		$("#contrasteValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.contraste);
+		$("#entropiaValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.entropia);
+		$("#minGris"+ objetoBoguiActual.ident).html(objetoBoguiActual.minGris);
+		$("#maxGris"+ objetoBoguiActual.ident).html(objetoBoguiActual.maxGris);
 		$("#formatoValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.formato);
 		$("#sizeValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.imgCanvas.width+"X"+objetoBoguiActual.imgCanvas.height);	
 	}
@@ -69,7 +66,6 @@ function savedConfigurationDialog(){
 function histogramaSimpleDialog(objetoBoguiActual){
 	var dialog,idObjeto;
 	idObjeto = "dialogoHistogramaSimple" + objetoBoguiActual.ident;
-	calcularHistogramaSimple(objetoBoguiActual);
 	if(!$( "#"+idObjeto ).length){
 		//Histograma Simple
 		$("body").append("<div id=\"" +idObjeto+"\"></div>");
@@ -145,7 +141,6 @@ function histogramaSimpleDialog(objetoBoguiActual){
 function histogramaAcumulativoDialog(objetoBoguiActual){
 	var dialog,idObjeto;
 	idObjeto = "dialogoHistogramaAcumulativo" + objetoBoguiActual.ident;
-	calcularHistogramaAcumulativo(objetoBoguiActual);
 	//Histograma acumulativo
 	if(!$( "#"+idObjeto ).length){
 		$("body").append("<div id=\"" +idObjeto+"\"></div>");
@@ -244,9 +239,7 @@ function cambiarDimensionImagenesDialog(){
 		},
 		dialogClass: 'no-close',
 		resizable: false
-	});
-
-	dialog.append("<form><fieldset><p><label for=\"altoSpinner\">Altura de las im&aacute;genes:</label><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></p><div id=\"altoSlider\"></div><p><label for=\"anchoSpinner\">Ancho de las im&aacute;genes:</label><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></p><div id=\"anchoSlider\"></div></fieldset></form>");
+	}).append("<form><fieldset><p><label for=\"altoSpinner\">Altura de las im&aacute;genes:</label><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></p><div id=\"altoSlider\"></div><p><label for=\"anchoSpinner\">Ancho de las im&aacute;genes:</label><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></p><div id=\"anchoSlider\"></div></fieldset></form>");
 
 	var altoSpinner = $( "#altoSpinner" ).spinner({
 		min: 100,
@@ -334,9 +327,7 @@ function cambiarDimensionHistogramasDialog(){
 		},
 		dialogClass: 'no-close',
 		resizable: false
-	});
-
-	dialog.append("<form><fieldset><p><label for=\"altoSpinner\">Altura de los histogramas:</label><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></p><div id=\"altoSlider\"></div><p><label for=\"anchoSpinner\">Ancho de los histogramas:</label><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></p><div id=\"anchoSlider\"></div></fieldset></form>");
+	}).append("<form><fieldset><p><label for=\"altoSpinner\">Altura de los histogramas:</label><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></p><div id=\"altoSlider\"></div><p><label for=\"anchoSpinner\">Ancho de los histogramas:</label><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></p><div id=\"anchoSlider\"></div></fieldset></form>");
 
 	var altoSpinner = $( "#altoSpinner" ).spinner({
 		min: 100,

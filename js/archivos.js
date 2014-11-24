@@ -38,7 +38,7 @@ function readImage(file) {
     reader.onload = function(_file) {
         image.src    = _file.target.result;              // url.createObjectURL(file);
         image.onload = function() {
-                objetosBogui.push(new Bogui(image, numeroObjetos, file.name));
+				objetosBogui.push(new Bogui(image, numeroObjetos,file.name));
                 cambiarFoco(numeroObjetos);
                 numeroObjetos++;
         };
