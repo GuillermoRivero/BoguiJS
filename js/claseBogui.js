@@ -175,9 +175,17 @@ function Bogui(img, id, name) {
 	var limitesColor = calcularLimitesColor(this);
 	this.minGris = limitesColor[0];
 	this.maxGris = limitesColor[1];
-	
-	//TODO: Copia canvas, modificar tamaño
+}
 
+function cambiarDimensionDialog(){
+    canvasContainer.height(this.imgCanvas.height);
+	canvasContainer.width(this.imgCanvas.width);	
+	
+	this.regCanvas.height = this.imgCanvas.height;
+	this.regCanvas.width = this.imgCanvas.width ;	
+
+	//Ajustar tamaño de la ventana
+	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
 }
 
 function calcularBrilloContraste(objetoBoguiActual){
