@@ -177,15 +177,28 @@ function Bogui(img, id, name) {
 	this.maxGris = limitesColor[1];
 }
 
-function cambiarDimensionDialog(){
-    canvasContainer.height(this.imgCanvas.height);
-	canvasContainer.width(this.imgCanvas.width);	
-	
-	this.regCanvas.height = this.imgCanvas.height;
-	this.regCanvas.width = this.imgCanvas.width ;	
+function actualizarCanvas(objetoBoguiActual, canvas){
+
+	objetoBoguiActual.imgCanvas.height = canvas.height;
+	objetoBoguiActual.imgCanvas.width = canvas.width;
+	objetoBoguiActual.ctx = objetoBoguiActual.imgCanvas.getContext("2d");
+
+	$("#canvas"+ objetoBoguiActual.ident).addClass("capaCanvas");
+
+	objetoBoguiActual.regCanvas.width = canvas.width;
+	objetoBoguiActual.regCanvas.height = canvas.height;
+	objetoBoguiActual.regctx = objetoBoguiActual.regCanvas.getContext("2d");	
+
+	cambiarDimensionDialog(objetoBoguiActual);
+}
+
+function cambiarDimensionDialog(objetoBoguiActual){
+	var canvasContainer = $("#canvasContainer"+objetoBoguiActual.ident);
+    canvasContainer.height(objetoBoguiActual.imgCanvas.height);
+	canvasContainer.width(objetoBoguiActual.imgCanvas.width);	
 
 	//Ajustar tamaño de la ventana
-	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
+	objetoBoguiActual.dialogo.dialog("option", "width", objetoBoguiActual.imgCanvas.width + 24); 
 }
 
 function calcularBrilloContraste(objetoBoguiActual){

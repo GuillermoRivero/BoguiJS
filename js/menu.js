@@ -7,15 +7,28 @@ $(document).ready(function() {
 		$("#fileSelector").click();
 	});	
 	
-	/*$("#openImageFromURL").click(function() {	
-		abrirImagenURLDialog(); //TODO: Descomentar cuadno se arregle el metodo
+	/*
+	$("#openImageFromURL").click(function() {	
+		//abrirImagenURLDialog(); //TODO: Descomentar cuadno se arregle el metodo
+		
 	});
-
+	
 	$("#openImageFromWebCam").click(function() {
 		abrirImagenWebCamDialog();		
 	});*/
 	
 	//Descargar
+
+	
+	$("#openImageAs").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			errorDialog("Debe seleccionar una imagen para descargar");
+		}else{
+			//transpuesta(objetosBogui[objetoActual]);
+			rotarBasico(objetosBogui[objetoActual], 180);
+		}
+	});	
+
 	$("#saveImage").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("Debe seleccionar una imagen para descargar");
