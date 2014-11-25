@@ -19,11 +19,8 @@ function espejoHorizontal(objetoBoguiActual){
                 }
         }
  
-        objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-        objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-        objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageDataAux, 0, 0);
-        cambiarFoco(numeroObjetos);
-        numeroObjetos++;
+        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageDataAux);
+        addBogui(nuevoObjeto);  
  
  
 }
@@ -50,11 +47,8 @@ function espejoVertical(objetoBoguiActual){
                 }
         }
  
-        objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-        objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-        objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageDataAux, 0, 0);
-        cambiarFoco(numeroObjetos);
-        numeroObjetos++;       
+        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageDataAux);
+        addBogui(nuevoObjeto);       
  
 }
 
@@ -89,13 +83,8 @@ function transpuesta(objetoBoguiActual){
                 }
         }
 
-        objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre + objetoBoguiActual.formato));
-        var nuevoObjetoBogui = objetosBogui[obtenerPosArray(numeroObjetos)];
-        actualizarCanvas(nuevoObjetoBogui, canvasAux);
-        nuevoObjetoBogui.ctx.putImageData(imageDataAux,0,0);
-        cambiarFoco(numeroObjetos);
-        numeroObjetos++;1
-        
+        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, canvasAux, imageDataAux);
+        addBogui(nuevoObjeto);
 }
 
 function rotarBasico(objetoBoguiActual, grados){
@@ -218,12 +207,8 @@ function rotarBasico(objetoBoguiActual, grados){
         }
         
 
-        objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre + objetoBoguiActual.formato));
-        var nuevoObjetoBogui = objetosBogui[obtenerPosArray(numeroObjetos)];
-        actualizarCanvas(nuevoObjetoBogui, canvasAux);
-        nuevoObjetoBogui.ctx.putImageData(imageDataAux,0,0);
-        cambiarFoco(numeroObjetos);
-        numeroObjetos++;1
+        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, canvasAux, imageDataAux);
+        addBogui(nuevoObjeto);
         
 }
 
@@ -281,7 +266,7 @@ function escalar(objetoBoguiActual, pixelX, pixelY, modo){
 
                                 var pixelCercanoY = {};
 
-                                if(pesoY < 0.5){
+                                if(pesoY > 0.5){
                                     pixelCercanoY['pixel'] = "arriba";
                                     pixelCercanoY['valor'] = pesoY;
                                          
@@ -290,14 +275,6 @@ function escalar(objetoBoguiActual, pixelX, pixelY, modo){
                                     pixelCercanoY['valor'] = 1-pesoY;      
                                 }
                                 
-                                if(pixelOriginalY == 0){
-                                        pixelCercanoY['pixel'] = "abajo";
-                                        pixelCercanoY['valor'] = 1-pesoY;  
-                                }
-                                if(pixelOriginalX == 0){
-                                        pixelCercanoX['pixel'] = "derecha";
-                                        pixelCercanoX['valor'] = 1-pesoX;  
-                                }
                                 if(pixelOriginalY == objetoBoguiActual.imgCanvas.height-1){
                                         pixelCercanoY['pixel'] = "arriba";
                                         pixelCercanoY['valor'] = pesoY; 
@@ -315,19 +292,22 @@ function escalar(objetoBoguiActual, pixelX, pixelY, modo){
 
                                 switch(pixelCercano){
                                         case "arriba":
-                                        color = pixelData[((pixelOriginalY-1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)];
+                                        color = pixelData[((pixelOriginalY) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)];
+                                        alfa = pixelData[((pixelOriginalY) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)+3];
                                         break;
                                         case "abajo":
                                         color = pixelData[((pixelOriginalY+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)];
+                                        alfa = pixelData[((pixelOriginalY+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)+3];
                                         break;
                                         case "izquierda":
-                                        color = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX-1) * bytesPerPixel)];
+                                        color = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX) * bytesPerPixel)];
+                                        alfa = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX) * bytesPerPixel)+3];
                                         break;
                                         case "derecha":
                                         color = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX+1) * bytesPerPixel)];
+                                        alfa = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX+1) * bytesPerPixel)+3];
                                         break;
                                 }
-                                //TODO:Arreglar error que hace que no se seleccionen los pixeles correctos.
                         break;
 
                         case "media":
@@ -338,35 +318,34 @@ function escalar(objetoBoguiActual, pixelX, pixelY, modo){
                                 alfa = 0;
 
 
-                                if(pixelOriginalY > 0){
-                                        var colorArriba = pixelData[((pixelOriginalY-1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)];
-                                        var alfaArriba = pixelData[(((pixelOriginalY-1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel))+3];
-                                        alfa += (alfaArriba * ((1-pesoY)/2));
-                                        media += (colorArriba * ((1-pesoY)/2));
-                                        numeroColores++;
-                                }
+                                
+                                var colorArriba = pixelData[((pixelOriginalY) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)];
+                                var alfaArriba = pixelData[(((pixelOriginalY) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel))+3];
+                                alfa += (alfaArriba * ((1-pesoY)));
+                                media += (colorArriba * ((1-pesoY)));
+                                numeroColores += (1-pesoY);
+                                
                                 if(pixelOriginalY < objetoBoguiActual.imgCanvas.height-1){
                                         var colorAbajo = pixelData[((pixelOriginalY+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel)];
                                         var alfaAbajo = pixelData[(((pixelOriginalY+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (pixelOriginalX * bytesPerPixel))+3];
-                                        alfa += (alfaAbajo * ((pesoY)/2));
-                                        media += (colorAbajo * ((pesoY)/2));
-                                        numeroColores++;
+                                        alfa += (alfaAbajo * ((pesoY)));
+                                        media += (colorAbajo * ((pesoY)));
+                                        numeroColores += (pesoY);
                                 }
-                                if(pixelOriginalX > 0){
-                                        var colorIzquierda = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX-1) * bytesPerPixel)];
-                                        var alfaIzquierda = pixelData[((pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX-1) * bytesPerPixel))+3];
-                                        alfa += (alfaIzquierda * (1-pesoX/2));
-                                        media += (colorIzquierda * (1-pesoX/2));
-                                        numeroColores++;
-                                }
+                                
+                                var colorIzquierda = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX) * bytesPerPixel)];
+                                var alfaIzquierda = pixelData[((pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX) * bytesPerPixel))+3];
+                                alfa += (alfaIzquierda * (1-pesoX));
+                                media += (colorIzquierda * (1-pesoX));
+                                numeroColores += (1-pesoX);
+                                
                                 if(pixelOriginalX < objetoBoguiActual.imgCanvas.width-1){
                                         var colorDerecha = pixelData[(pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX+1) * bytesPerPixel)];
                                         var alfaDerecha = pixelData[((pixelOriginalY * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((pixelOriginalX+1) * bytesPerPixel))+3];
-                                        alfa += (alfaDerecha * ((pesoX)/2));
-                                        media += (colorDerecha * ((pesoX)/2));
-                                        numeroColores++;
+                                        alfa += (alfaDerecha * ((pesoX)));
+                                        media += (colorDerecha * ((pesoX)));
+                                        numeroColores += (pesoX);
                                 }
-                                //TODO: Corregir error que hace que las imagenes se vean mas oscuras de lo que deben
                                 color =  media/numeroColores;
                                 alfa = alfa/numeroColores;
 
@@ -379,16 +358,12 @@ function escalar(objetoBoguiActual, pixelX, pixelY, modo){
                         pixelDataAux[startIdxAux] = color;
                         pixelDataAux[startIdxAux+1] = color;
                         pixelDataAux[startIdxAux+2] = color;
-                        pixelDataAux[startIdxAux+3] = 255;
+                        pixelDataAux[startIdxAux+3] = alfa;
 
                 }
         }
 
-        objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre + objetoBoguiActual.formato));
-        var nuevoObjetoBogui = objetosBogui[obtenerPosArray(numeroObjetos)];
-        actualizarCanvas(nuevoObjetoBogui, canvasAux);
-        nuevoObjetoBogui.ctx.putImageData(imageDataAux,0,0);
-        cambiarFoco(numeroObjetos);
-        numeroObjetos++;1
+        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, canvasAux, imageDataAux);
+        addBogui(nuevoObjeto);
         
 }

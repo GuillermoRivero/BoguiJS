@@ -116,7 +116,7 @@ function imageCrossSectionDialog(){
 			Ok:function(ui) {
 				var cantidadSuavizado =  $( this ).find( '#sliderSuavizado' ).slider( "value" );
 				var umbral = $( this ).find( '#sliderUmbral' ).slider( "value" );
-				var pixeles = pixelesICS(objetosBogui[objetoActual]);//objetoBoguiActual);//TODO: aplicar umbral y cantidad de suavizado
+				var pixeles = pixelesICS(objetosBogui[objetoActual]);
 				graficaICSDialog(objetosBogui[objetoActual], pixeles, cantidadSuavizado, umbral);
 				$(this).dialog( "close" );
 				$(this).remove();
@@ -201,7 +201,7 @@ function imageCrossSectionDialog(){
 	dialog.dialog({ resizable: false });
 	dialog.dialog();	
 }
-function graficaICSDialog(objetoBoguiActual, pixeles, cantidadSuavizado, umbral){ //TODO: Pasar umbral
+function graficaICSDialog(objetoBoguiActual, pixeles, cantidadSuavizado, umbral){ 
 
 	var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
 	var pixelData = imageData.data;
@@ -232,11 +232,9 @@ function graficaICSDialog(objetoBoguiActual, pixeles, cantidadSuavizado, umbral)
 	var i = 0;
 
 	while(i < grafica.length-1){
-		console.log("i " + i);
 		puntos = [];
 
 		for(j = i-cantidadSuavizado; j <= i+cantidadSuavizado; j++){
-			console.log("j " + j);
 			if( (j > 0) && (j < grafica.length)){
 				puntos.push(grafica[j]);
 			}

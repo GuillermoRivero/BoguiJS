@@ -19,7 +19,6 @@ $(document).ready(function() {
 	
 	//Descargar
 
-	
 	$("#openImageAs").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("Debe seleccionar una imagen para descargar");
@@ -28,7 +27,7 @@ $(document).ready(function() {
 			//rotarBasico(objetosBogui[0], 0);
 			//rotarBasico(objetosBogui[0], 180);
 			//rotarBasico(objetosBogui[0], 270);
-			escalar(objetosBogui[0], objetosBogui[0].imgCanvas.width*1.5, objetosBogui[0].imgCanvas.height *1.5, "media");
+			escalar(objetosBogui[0], objetosBogui[0].imgCanvas.width*3, objetosBogui[0].imgCanvas.height *3, "vmp");
 		}
 	});	
 

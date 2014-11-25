@@ -17,11 +17,8 @@ function imagenDiferencia(objetoBoguiActual, objetoBoguiResta){
 		}
 	}
 
-	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData1, 0, 0);
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;
+	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData2);
+    addBogui(nuevoObjeto);
 
 }
 
@@ -53,11 +50,8 @@ function mapaCambios(objetoBoguiActual, objetoBoguiResta, umbral){
 		}
 	}
 	
-	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-	objetosBogui[obtenerPosArray(numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData1, 0, 0);
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;
+	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData2);
+    addBogui(nuevoObjeto);
 	
 }
 
@@ -285,29 +279,10 @@ function simulacionDigital(objetoBoguiActual, desplazamiento, bits){
 			pixelData[startIdx+2] = (rango*lugar) + redondear;
 		}
 	}
-	/*
-	for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
-		for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++) {
-			var contadorColor = 0;
-			var startIdx = (y * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (x * bytesPerPixel);
+	
+	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData);
+    addBogui(nuevoObjeto);
 
-			for(avance = 0; avance < pixelData[startIdx]; avance += rango){
-				contadorColor++;
-			}
-			
-			
-			pixelData[startIdx] = (rango*contadorColor)-rango;
-			pixelData[startIdx+1] = (rango*contadorColor)-rango;
-			pixelData[startIdx+2] = (rango*contadorColor)-rango;
-		}
-	}
-	*/
-
-	objetosBogui.push(new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato));
-	objetosBogui[ obtenerPosArray( numeroObjetos)].imgCanvas = objetoBoguiActual.imgCanvas;
-	objetosBogui[obtenerPosArray( numeroObjetos)].ctx.putImageData(imageData, 0, 0);
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;
 }
 
 //Otros metodos

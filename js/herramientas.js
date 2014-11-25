@@ -159,7 +159,6 @@ function dibujarLineaICS(objetoBoguiActual, estado){
 		objetoBoguiActual.regctx.mouseYfin = aux;
 	}
 
-	//objetoBoguiActual.regctx.rect(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini, objetoBoguiActual.mouseXfin - objetoBoguiActual.mouseXini , objetoBoguiActual.mouseYfin - objetoBoguiActual.mouseYini);
 	objetoBoguiActual.regCanvas.width = objetoBoguiActual.regCanvas.width;
 	objetoBoguiActual.regctx.beginPath();
 	objetoBoguiActual.regctx.moveTo(objetoBoguiActual.mouseXini, objetoBoguiActual.mouseYini);

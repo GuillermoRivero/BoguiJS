@@ -37,11 +37,15 @@ function Bogui(img, id, name) {
 		$(this).dialog( "close" );
 		$(this).remove();	
  	}).on( "dialogfocus", function( e, ui ) {
+ 		console.log("HOLAAA");
 		var exp = /dialogo(\d+)/i
 		var res = exp.exec(e.target.id);
 		var idActual = res[1];
 		cambiarFoco(idActual);
 	} );
+
+
+ 	
 
 	//Creamos el contenedor de los canvas y añadimos la imagen
 	var contenido = $("<div id=\"canvasContainer"+this.ident+"\"><canvas id=\"canvas"+this.ident+"\" ></canvas><canvas id=\"canvasreg"+this.ident+"\"></canvas></div><div id=\"position"+this.ident+"\" class=\"imageInfo\"><span id=\"colorBlock"+this.ident+"\" class=\"colorBlock\"> </span><span id=\"coordinates"+this.ident+"\"></span></div><div style=\"clear:both\"></div>");
@@ -53,10 +57,6 @@ function Bogui(img, id, name) {
 	
 	this.imgCanvas = $("#canvas"+this.ident)[0];
 	this.ctx = this.imgCanvas.getContext('2d');
-	
-	//Reducir imagen y ponerla en blanco y negro
-	reducirImagen(this);
-	RGBA2BW(this);
 	
 	this.regCanvas = $("#canvasreg"+this.ident)[0];
 	this.regctx = this.regCanvas.getContext("2d");
@@ -160,21 +160,26 @@ function Bogui(img, id, name) {
 
 	$('.ui-dialog :button').blur();
  	$("#dialogo" + this.ident).parent().removeClass("ui-front");
-	$("#dialogo" + this.ident).parent().addClass("zIndexDialog");	
+	$("#dialogo" + this.ident).parent().addClass("zIndexDialog");
 	
-	calcularHistogramaSimple(this);
-	calcularHistogramaAcumulativo(this);
-	calcularHistogramaAcumuladoNormalizado(this);
+
+	actualizarAtributos(this);	
+}
+
+function actualizarAtributos(objetoBoguiActual){
+	calcularHistogramaSimple(objetoBoguiActual);
+	calcularHistogramaAcumulativo(objetoBoguiActual);
+	calcularHistogramaAcumuladoNormalizado(objetoBoguiActual);
 	
-	var brightContrastValues = calcularBrilloContraste(this);
-	this.brillo = brightContrastValues[0];
-	this.contraste = brightContrastValues[1];
+	var brightContrastValues = calcularBrilloContraste(objetoBoguiActual);
+	objetoBoguiActual.brillo = brightContrastValues[0];
+	objetoBoguiActual.contraste = brightContrastValues[1];
 
-	this.entropia = calcularEntropia(this);
+	objetoBoguiActual.entropia = calcularEntropia(objetoBoguiActual);
 
-	var limitesColor = calcularLimitesColor(this);
-	this.minGris = limitesColor[0];
-	this.maxGris = limitesColor[1];
+	var limitesColor = calcularLimitesColor(objetoBoguiActual);
+	objetoBoguiActual.minGris = limitesColor[0];
+	objetoBoguiActual.maxGris = limitesColor[1];
 }
 
 function actualizarCanvas(objetoBoguiActual, canvas){
@@ -199,6 +204,12 @@ function cambiarDimensionDialog(objetoBoguiActual){
 
 	//Ajustar tamaño de la ventana
 	objetoBoguiActual.dialogo.dialog("option", "width", objetoBoguiActual.imgCanvas.width + 24); 
+	/*objetoBoguiActual.dialogo.on( "dialogfocus", function( e, ui ) {
+		var exp = /dialogo(\d+)/i
+		var res = exp.exec(e.target.id);
+		var idActual = res[1];
+		cambiarFoco(idActual);
+	} );*/
 }
 
 function calcularBrilloContraste(objetoBoguiActual){
@@ -250,6 +261,8 @@ function reducirImagen(objetoBoguiActual){
 
 	objetoBoguiActual.ctx.drawImage(objetoBoguiActual.imagen, 0, 0,objetoBoguiActual.imgCanvas.width ,objetoBoguiActual.imgCanvas.height);
 
+	cambiarDimensionDialog(objetoBoguiActual);
+	RGBA2BW(objetoBoguiActual);
 }
 
 function calcularHistogramaSimple(objetoBoguiActual){
@@ -420,12 +433,23 @@ function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 		}
 	}
 
-	objetoNuevo = new Bogui(objetoBoguiActual.imagen, numeroObjetos,objetoBoguiActual.nombre+objetoBoguiActual.formato);
-	objetoNuevo.imgCanvas = objetoBoguiActual.imgCanvas;
-	objetoNuevo.ctx.putImageData(imageData, 0, 0);
-	addBogui(objetoNuevo);
-	
+	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData);
+	addBogui(nuevoObjeto);
 }
+
+function createBoguiFromCanvas(objetoBoguiActual, canvas, imageData){
+
+	objetoNuevo = new Bogui(objetoBoguiActual.imagen, numeroObjetos, objetoBoguiActual.nombre+objetoBoguiActual.formato);
+	var nuevoObjetoBogui = objetosBogui[obtenerPosArray(numeroObjetos)];
+    actualizarCanvas(objetoNuevo, canvas);
+    objetoNuevo.ctx.putImageData(imageData,0,0);
+    //ESTO ES UNA MIERDA HECHO POR GUILLERMO - BY BORIS
+    actualizarAtributos(objetoNuevo);
+    cambiarFoco(numeroObjetos);
+    numeroObjetos++;
+    return objetoNuevo;
+}
+
 
 function addBogui(objetoBoguiActual){
 	objetosBogui.push(objetoBoguiActual);	
