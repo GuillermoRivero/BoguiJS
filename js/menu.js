@@ -17,8 +17,6 @@ $(document).ready(function() {
 		abrirImagenWebCamDialog();		
 	});*/
 	
-	//Descargar
-
 	$("#openImageAs").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("Debe seleccionar una imagen para descargar");
@@ -33,6 +31,7 @@ $(document).ready(function() {
 		}
 	});	
 
+	//Descargar
 	$("#saveImage").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("Debe seleccionar una imagen para descargar");
@@ -40,7 +39,7 @@ $(document).ready(function() {
 			descargarImagen(objetosBogui[objetoActual], window.formatoDescarga);
 		}	
 	});		
-	//Boton descarga
+	//Descargar como
 	$("#saveImageAsButton").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("Debe seleccionar una imagen para descargar");
@@ -173,3 +172,11 @@ $(document).ready(function() {
 		}
 	});	 	
 });	 
+
+function changeZIndex(){
+	$("#dialog").css("z-index",110);
+}
+
+function resetZIndex(){
+	$("#dialog").css("z-index",90);
+}

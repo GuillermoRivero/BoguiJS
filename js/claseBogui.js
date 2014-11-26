@@ -154,9 +154,7 @@ function Bogui(img, id, name) {
     });
 
 	$('.ui-dialog :button').blur();
- 	/*$("#dialogo" + this.ident).parent().removeClass("ui-front");
-	$("#dialogo" + this.ident).parent().addClass("zIndexDialog");
-	$("#dialogo" + this.ident).parent().attr("id", "barraDialogo"+this.ident);*/
+	$("#dialogo" + this.ident).parent().css("z-index",90)
 }
 
 

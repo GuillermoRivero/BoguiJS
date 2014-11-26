@@ -32,9 +32,9 @@ function informacionDialog(objetoBoguiActual){
 }
 
 function errorDialog(mensaje){
-	if(!$( "#dialog-message").length){
-		$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>"+mensaje+"</p></div></div>");
-		$("#dialog-message").dialog({
+	if(!$( "#dialog").length){
+		$("body").append("<div id=\"dialog\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>"+mensaje+"</p></div></div>");
+		$("#dialog").dialog({
 			title: "Error",
 			modal: true,
 			buttons: {
