@@ -367,3 +367,80 @@ function escalar(objetoBoguiActual, pixelX, pixelY, modo){
         addBogui(nuevoObjeto);
         
 }
+
+function calcularNuevosPixelesRotacion(antiguoPixelX, antiguoPixelY, puntoAnclajeX, puntoAnclajeY, angulo){ //Pasar el angulo en radianes
+        var nuevoPixelX = puntoAnclajeX + ((antiguoPixelX-puntoAnclajeX)*Math.cos(angulo)) - ((antiguoPixelY - puntoAnclajeY)*Math.sin(angulo));
+        var nuevoPixelY = puntoAnclajeY + ((antiguoPixelX-puntoAnclajeX)*Math.sin(angulo)) + ((antiguoPixelY - puntoAnclajeY)*Math.cos(angulo));
+
+        return [nuevoPixelX, nuevoPixelY];
+}
+
+function rotar(objetoBoguiActual, puntoAnclajeX, puntoAnclajeY, angulo){ //Pasar el angulo en radianes
+
+        var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+        var canvasAux = $('<canvas/>')[0]; 
+
+        var posiblesExtremosX = [];
+        var posiblesExtremosY = [];
+
+        var aux_UL = calcularNuevosPixelesRotacion(0, 0, puntoAnclajeX, puntoAnclajeY, angulo);
+        var aux_UR = calcularNuevosPixelesRotacion(objetoBoguiActual.imgCanvas.width-1, 0, puntoAnclajeX, puntoAnclajeY, angulo);
+        var aux_DL = calcularNuevosPixelesRotacion(0, objetoBoguiActual.imgCanvas.height-1, puntoAnclajeX, puntoAnclajeY, angulo);
+        var aux_DR = calcularNuevosPixelesRotacion(objetoBoguiActual.imgCanvas.width-1, objetoBoguiActual.imgCanvas.height-1, puntoAnclajeX, puntoAnclajeY, angulo);
+
+        posiblesExtremosX.push(aux_UL[0]);
+        posiblesExtremosY.push(aux_UL[1]);
+        posiblesExtremosX.push(aux_UR[0]);
+        posiblesExtremosY.push(aux_UR[1]);
+        posiblesExtremosX.push(aux_DL[0]);
+        posiblesExtremosY.push(aux_DL[1]);
+        posiblesExtremosX.push(aux_DR[0]);
+        posiblesExtremosY.push(aux_DR[1]);
+
+        var maximoX = Math.max.apply(Math, posiblesExtremosX);
+        var maximoY = Math.max.apply(Math, posiblesExtremosY);
+        var minimoX = Math.min.apply(Math, posiblesExtremosX);
+        var minimoY = Math.min.apply(Math, posiblesExtremosY);
+
+        canvasAux.height = maximoY - minimoY + 2; //Sumamos 2 por los posibles errores del parseInt
+        canvasAux.width = maximoX - minimoX + 2; 
+        
+        var desplazamientoY = parseInt(minimoY);
+
+        var desplazamientoX;
+
+        if(minimoX < 0){
+                desplazamientoX = parseInt(minimoX);
+        }else{
+                desplazamientoX = 0;
+        }
+        console.log(desplazamientoY);
+
+        var ctxAux = canvasAux.getContext("2d");
+
+        var imageDataAux = ctxAux.createImageData(canvasAux.width, canvasAux.height);
+        var pixelData = imageData.data;
+        var pixelDataAux = imageDataAux.data;
+
+        var bytesPerPixel = 4;
+
+        for(var y = 0; y < objetoBoguiActual.imgCanvas.height; y++) { 
+                for(var x = 0; x < objetoBoguiActual.imgCanvas.width; x++){
+
+                        var nuevosPixeles = calcularNuevosPixelesRotacion(x, y, puntoAnclajeX, puntoAnclajeY, angulo);
+                        var startIdxAux = ((parseInt(nuevosPixeles[1])-desplazamientoY) * bytesPerPixel * canvasAux.width) + ((parseInt(nuevosPixeles[0])-desplazamientoX) * bytesPerPixel);
+                        var startIdx = ((y) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((x) * bytesPerPixel);
+
+                        pixelDataAux[startIdxAux] = pixelData[startIdx];
+                        pixelDataAux[startIdxAux+1] = pixelData[startIdx+1];
+                        pixelDataAux[startIdxAux+2] = pixelData[startIdx+2];
+                        pixelDataAux[startIdxAux+3] = pixelData[startIdx+3];
+
+                }
+        }
+
+
+        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, canvasAux, imageDataAux);
+        addBogui(nuevoObjeto);
+        
+}
