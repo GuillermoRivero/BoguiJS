@@ -28,7 +28,8 @@ $(document).ready(function() {
 			//rotarBasico(objetosBogui[0], 180);
 			//rotarBasico(objetosBogui[0], 270);
 			//escalar(objetosBogui[0], objetosBogui[0].imgCanvas.width*3, objetosBogui[0].imgCanvas.height *3, "vmp");
-			rotar(objetosBogui[0], 0, objetosBogui[0].imgCanvas.height-1, (-123*Math.PI/180));
+			rotarInterpolar(objetosBogui[0], 0, objetosBogui[0].imgCanvas.height-1, (20*Math.PI/180));
+			//rotar(objetosBogui[0], 0, objetosBogui[0].imgCanvas.height-1, (20*Math.PI/180));
 		}
 	});	
 

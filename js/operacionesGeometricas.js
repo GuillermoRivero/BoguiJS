@@ -375,6 +375,106 @@ function calcularNuevosPixelesRotacion(antiguoPixelX, antiguoPixelY, puntoAnclaj
         return [nuevoPixelX, nuevoPixelY];
 }
 
+function calcularViejosPixelesRotacion(nuevoPixelX, nuevoPixelY, puntoAnclajeX, puntoAnclajeY, angulo){ //Pasar el angulo en radianes
+        var viejoPixelX = puntoAnclajeX + ((nuevoPixelX-puntoAnclajeX)*Math.cos(angulo)) + ((nuevoPixelY - puntoAnclajeY)*Math.sin(angulo));
+        var viejoPixelY = puntoAnclajeY - ((nuevoPixelX-puntoAnclajeX)*Math.sin(angulo)) + ((nuevoPixelY - puntoAnclajeY)*Math.cos(angulo));
+
+        return [viejoPixelX, viejoPixelY];
+}
+
+function estaContenidoEn(x, y, UL, UR, DL, DR){ //TODO: Comprobar que en todos los casos el pixel x,y se encuentra dentro del recinto formado por las rectas que unen los 4 puntos
+        //Calcular paralelogramo y ver si x e y estan contenidos dentro
+        //Recta superior
+        /*var cY = (UR[1]-UL[1]);
+        var cX = (UR[0]-UL[0]);
+        var constante = (cX*UL[1])-(cY*UL[0]);
+
+        var rectaSuperior = (x*cY) + constante - (cX*y);
+
+
+        if( (rectaSuperior < 0) && () && () && ()    ){
+                return true;
+        }
+        return false;
+        */
+}
+
+
+function rotarInterpolar(objetoBoguiActual, puntoAnclajeX, puntoAnclajeY, angulo){ //Pasar el angulo en radianes
+
+        var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
+        var canvasAux = $('<canvas/>')[0]; 
+
+        var posiblesExtremosX = [];
+        var posiblesExtremosY = [];
+
+        var aux_UL = calcularNuevosPixelesRotacion(0, 0, puntoAnclajeX, puntoAnclajeY, angulo);
+        var aux_UR = calcularNuevosPixelesRotacion(objetoBoguiActual.imgCanvas.width-1, 0, puntoAnclajeX, puntoAnclajeY, angulo);
+        var aux_DL = calcularNuevosPixelesRotacion(0, objetoBoguiActual.imgCanvas.height-1, puntoAnclajeX, puntoAnclajeY, angulo);
+        var aux_DR = calcularNuevosPixelesRotacion(objetoBoguiActual.imgCanvas.width-1, objetoBoguiActual.imgCanvas.height-1, puntoAnclajeX, puntoAnclajeY, angulo);
+
+        posiblesExtremosX.push(aux_UL[0]);
+        posiblesExtremosY.push(aux_UL[1]);
+        posiblesExtremosX.push(aux_UR[0]);
+        posiblesExtremosY.push(aux_UR[1]);
+        posiblesExtremosX.push(aux_DL[0]);
+        posiblesExtremosY.push(aux_DL[1]);
+        posiblesExtremosX.push(aux_DR[0]);
+        posiblesExtremosY.push(aux_DR[1]);
+
+        var maximoX = Math.max.apply(Math, posiblesExtremosX);
+        var maximoY = Math.max.apply(Math, posiblesExtremosY);
+        var minimoX = Math.min.apply(Math, posiblesExtremosX);
+        var minimoY = Math.min.apply(Math, posiblesExtremosY);
+
+        canvasAux.height = maximoY - minimoY + 2; //Sumamos 2 por los posibles errores del parseInt
+        canvasAux.width = maximoX - minimoX + 2; 
+        
+        var desplazamientoY = parseInt(minimoY)+1;
+
+        var desplazamientoX;
+
+        if(minimoX < 0){
+                desplazamientoX = parseInt(minimoX)+1;
+        }else{
+                desplazamientoX = 0;
+        }
+
+        var ctxAux = canvasAux.getContext("2d");
+
+        var imageDataAux = ctxAux.createImageData(canvasAux.width, canvasAux.height);
+        var pixelData = imageData.data;
+        var pixelDataAux = imageDataAux.data;
+
+        var bytesPerPixel = 4;
+        console.log(desplazamientoX + " - ");
+        console.log(desplazamientoY);
+        for(var y = 0; y < canvasAux.height; y++) { 
+                for(var x = 0; x < canvasAux.width; x++){
+
+                        //Si esta contenido 
+                                var viejosPixeles = calcularViejosPixelesRotacion(x+desplazamientoX, y+desplazamientoY, puntoAnclajeX, puntoAnclajeY, angulo);
+                                var viejosPixelesRedondeado = [parseInt(viejosPixeles[0]), parseInt(viejosPixeles[1])];
+                                //TODO: hacer interpolacion para obtener el color mas adecuado
+
+                                var startIdxAux = (y * bytesPerPixel * canvasAux.width) + (x * bytesPerPixel);
+                                var startIdx = ((viejosPixelesRedondeado[1]) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]) * bytesPerPixel);
+                                
+                                pixelDataAux[startIdxAux] = pixelData[startIdx];
+                                pixelDataAux[startIdxAux+1] = pixelData[startIdx+1];
+                                pixelDataAux[startIdxAux+2] = pixelData[startIdx+2];
+                                pixelDataAux[startIdxAux+3] = pixelData[startIdx+3];
+
+                }
+        }
+
+
+        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, canvasAux, imageDataAux);
+        addBogui(nuevoObjeto);
+        
+}
+
+
 function rotar(objetoBoguiActual, puntoAnclajeX, puntoAnclajeY, angulo){ //Pasar el angulo en radianes
 
         var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
