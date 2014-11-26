@@ -84,10 +84,6 @@ footer{
 	border-radius: 10px;
 }
 
-.zIndexDialog{
-	z-index:200;
-}
-
 #camara, #foto{
     width: 320px;
     min-height: 240px;

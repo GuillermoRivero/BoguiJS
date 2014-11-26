@@ -32,19 +32,21 @@ function informacionDialog(objetoBoguiActual){
 }
 
 function errorDialog(mensaje){
-	$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>"+mensaje+"</p></div></div>");
-	$("#dialog-message").dialog({
-		title: "Error",
-		modal: true,
-		buttons: {
-		Ok: function() {
-		  $(this).dialog( "close" );
-		  $(this).remove();
-		}
-		},
-		dialogClass: 'no-close',
-		resizable: false
-	});
+	if(!$( "#dialog-message").length){
+		$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>"+mensaje+"</p></div></div>");
+		$("#dialog-message").dialog({
+			title: "Error",
+			modal: true,
+			buttons: {
+			Ok: function() {
+			  $(this).dialog( "close" );
+			  $(this).remove();
+			}
+			},
+			dialogClass: 'no-close',
+			resizable: false
+		});
+	}
 }
 
 function savedConfigurationDialog(){
