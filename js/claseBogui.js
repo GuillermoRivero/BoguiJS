@@ -29,26 +29,22 @@ function Bogui(img, id, name) {
 	this.dialogo = $( "#"+idObjeto ).dialog({
 		title: this.nombre,
 		resizable: false
-	}).on("dialogclose",function(e){			
+	}).on("dialogclose",function(event){			
 		var exp = /dialogo(\d+)/i
-		var res = exp.exec(e.target.id);
+		var res = exp.exec(event.target.id);
 		var idActual = res[1];
 		borrarObjetoBogui(idActual);
 		$(this).dialog( "close" );
 		$(this).remove();	
- 	}).on( "dialogfocus", function( e, ui ) {
- 		console.log("HOLAAA");
+ 	}).on("dialogfocus",function(event){
 		var exp = /dialogo(\d+)/i
-		var res = exp.exec(e.target.id);
+		var res = exp.exec(event.target.id);
 		var idActual = res[1];
 		cambiarFoco(idActual);
-	} );
-
-
- 	
+	});
 
 	//Creamos el contenedor de los canvas y añadimos la imagen
-	var contenido = $("<div id=\"canvasContainer"+this.ident+"\"><canvas id=\"canvas"+this.ident+"\" ></canvas><canvas id=\"canvasreg"+this.ident+"\"></canvas></div><div id=\"position"+this.ident+"\" class=\"imageInfo\"><span id=\"colorBlock"+this.ident+"\" class=\"colorBlock\"> </span><span id=\"coordinates"+this.ident+"\"></span></div><div style=\"clear:both\"></div>");
+	var contenido = $("<div id=\"canvasContainer"+this.ident+"\"><canvas id=\"canvas"+this.ident+"\" ></canvas><canvas id=\"canvasreg"+this.ident+"\"></canvas></div><div id=\"position"+this.ident+"\" class=\"imageInfo\"><span id=\"colorBlock"+this.ident+"\" class=\"colorBlock\"> </span><span id=\"coordinates"+this.ident+"\"></span></div>");
 	//CSS
 	this.dialogo.append(contenido);
 	
@@ -72,7 +68,6 @@ function Bogui(img, id, name) {
 
 	//Ajustar tamaño de la ventana
 	this.dialogo.dialog("option", "width", this.imgCanvas.width + 24); 
-	this.dialogo.css("overflow","hidden");
 	
 	//Listeners del canvas
 	$(this.regCanvas).mousedown(function(e){
@@ -159,12 +154,11 @@ function Bogui(img, id, name) {
     });
 
 	$('.ui-dialog :button').blur();
- 	$("#dialogo" + this.ident).parent().removeClass("ui-front");
+ 	/*$("#dialogo" + this.ident).parent().removeClass("ui-front");
 	$("#dialogo" + this.ident).parent().addClass("zIndexDialog");
-	
-
-	actualizarAtributos(this);	
+	$("#dialogo" + this.ident).parent().attr("id", "barraDialogo"+this.ident);*/
 }
+
 
 function actualizarAtributos(objetoBoguiActual){
 	calcularHistogramaSimple(objetoBoguiActual);
@@ -204,12 +198,6 @@ function cambiarDimensionDialog(objetoBoguiActual){
 
 	//Ajustar tamaño de la ventana
 	objetoBoguiActual.dialogo.dialog("option", "width", objetoBoguiActual.imgCanvas.width + 24); 
-	/*objetoBoguiActual.dialogo.on( "dialogfocus", function( e, ui ) {
-		var exp = /dialogo(\d+)/i
-		var res = exp.exec(e.target.id);
-		var idActual = res[1];
-		cambiarFoco(idActual);
-	} );*/
 }
 
 function calcularBrilloContraste(objetoBoguiActual){
@@ -258,7 +246,9 @@ function reducirImagen(objetoBoguiActual){
 
 	objetoBoguiActual.imgCanvas.height = objetoBoguiActual.imagen.height * ratio;
 	objetoBoguiActual.imgCanvas.width = objetoBoguiActual.imagen.width * ratio;	
-
+	objetoBoguiActual.regCanvas.height = objetoBoguiActual.imagen.height * ratio;
+	objetoBoguiActual.regCanvas.width = objetoBoguiActual.imagen.width * ratio;	
+	
 	objetoBoguiActual.ctx.drawImage(objetoBoguiActual.imagen, 0, 0,objetoBoguiActual.imgCanvas.width ,objetoBoguiActual.imgCanvas.height);
 
 	cambiarDimensionDialog(objetoBoguiActual);
@@ -438,12 +428,9 @@ function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 }
 
 function createBoguiFromCanvas(objetoBoguiActual, canvas, imageData){
-
 	objetoNuevo = new Bogui(objetoBoguiActual.imagen, numeroObjetos, objetoBoguiActual.nombre+objetoBoguiActual.formato);
-	var nuevoObjetoBogui = objetosBogui[obtenerPosArray(numeroObjetos)];
     actualizarCanvas(objetoNuevo, canvas);
     objetoNuevo.ctx.putImageData(imageData,0,0);
-    //ESTO ES UNA MIERDA HECHO POR GUILLERMO - BY BORIS
     actualizarAtributos(objetoNuevo);
     cambiarFoco(numeroObjetos);
     numeroObjetos++;

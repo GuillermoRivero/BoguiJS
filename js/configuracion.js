@@ -10,7 +10,7 @@ var herramientaActual = "puntero";
 //TODO:	COLORES PARA EL CSS??? 
 
 // Atajo para $( document ).ready()
-$(function() {
+$(document).ready(function() {
 	if (window.localStorage) { //Si el navegador soporta localStorage
 		if(localStorage.getItem("modoImagen") !== null ){ //Comprobamos si hemos guardado la configuracion personalizada
 			//Actualizamos las variables

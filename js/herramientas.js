@@ -126,20 +126,35 @@ function recortar(objetoBoguiActual){
 		}else{
 			var canvasCopy = document.createElement("canvas");
 			var copyContext = canvasCopy.getContext("2d");
+			var iniX,finX,iniY,finY;
+			if(objetoBoguiActual.mouseXini > objetoBoguiActual.mouseXfin){
+				iniX = objetoBoguiActual.mouseXfin;
+				finX = objetoBoguiActual.mouseXini ;
+			}else{
+				iniX = objetoBoguiActual.mouseXini;
+				finX = objetoBoguiActual.mouseXfin;			
+			}
+			
+			if(objetoBoguiActual.mouseYini > objetoBoguiActual.mouseYfin){
+				iniY = objetoBoguiActual.mouseYfin;
+				finY = objetoBoguiActual.mouseYini ;
+			}else{
+				iniY = objetoBoguiActual.mouseYini;
+				finY = objetoBoguiActual.mouseYfin;			
+			}
+			
+			var width =  finX - iniX;
+			var height = finY - iniY;
+			
+			var imageData = objetoBoguiActual.ctx.getImageData( iniX , iniY,  width, height);
 
-			var imageData = objetoBoguiActual.ctx.getImageData( objetoBoguiActual.mouseXini,  objetoBoguiActual.mouseYini,  objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini ,  objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini);
-
-			canvasCopy.width = objetoBoguiActual.mouseXfin -  objetoBoguiActual.mouseXini;
-			canvasCopy.height = objetoBoguiActual.mouseYfin -  objetoBoguiActual.mouseYini;
+			canvasCopy.width = width;
+			canvasCopy.height = height;
 
 			copyContext.putImageData(imageData, 0,0);
 
-			var savedData = new Image();
-			savedData.src = canvasCopy.toDataURL("image/png", 1);
-			//Cargar la matriz de datos en el canvas
-			objetosBogui.push(new Bogui(savedData, numeroObjetos, objetoBoguiActual.nombre+objetoBoguiActual.formato));
-			cambiarFoco(numeroObjetos);
-			numeroObjetos++;
+			var nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, canvasCopy, imageData);
+			addBogui(nuevoObjeto);  
 		}
 	}
 }

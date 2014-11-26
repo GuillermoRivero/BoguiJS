@@ -41,7 +41,8 @@ function readImage(file) {
         		nuevoObjeto = new Bogui(image, numeroObjetos,file.name);
 				objetosBogui.push(nuevoObjeto);
 				reducirImagen(nuevoObjeto);
-				actualizarAtributos(nuevoObjeto);
+				actualizarAtributos(nuevoObjeto);	
+				$("#coordinates"+ nuevoObjeto.ident).html("x= - y= - HEX= - RGB= - ");				
                 cambiarFoco(numeroObjetos);
                 numeroObjetos++;
         };
