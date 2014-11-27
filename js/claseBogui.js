@@ -121,7 +121,7 @@ function Bogui(img, id, name) {
 
         var exp = /canvasreg(\d+)/i
 		var res = exp.exec(e.target.id);
-		var idActual = res[1];
+		var idActual = parseInt(res[1]);
 
 		switch(window.herramientaActual){
 			case "roi":
@@ -154,7 +154,7 @@ function Bogui(img, id, name) {
     });
 
 	$('.ui-dialog :button').blur();
-	$("#dialogo" + this.ident).parent().css("z-index",90)
+	$("#dialogo" + this.ident).parent().css("z-index",90);
 }
 
 
@@ -280,6 +280,30 @@ function calcularHistogramaAcumulativo(objetoBoguiActual){
 		objetoBoguiActual.histogramaAcumulativo[k] = objetoBoguiActual.histograma[k] + objetoBoguiActual.histogramaAcumulativo[k-1]; 
 	}
 }
+
+function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
+	var histograma = objetoBoguiActual.histograma;
+	//normalizacion
+	var numeroPixeles = 0;
+	for(i = 0; i < histograma.length; i++){
+		numeroPixeles = numeroPixeles + histograma[i];
+	}
+	var histogramaNormalizado = new Array(256);
+	for(i = 0; i < histograma.length; i++){
+		if(histograma[i] == 0){
+			histogramaNormalizado[i] = 0;
+		}else{
+			histogramaNormalizado[i] = histograma[i]/numeroPixeles;
+		}
+	}
+	//Histograma origen acumulado normalizado
+	objetoBoguiActual.histogramaAcumulativoNormalizado[0] = histogramaNormalizado[0];
+	for(i = 1; i < histograma.length; i++){
+		objetoBoguiActual.histogramaAcumulativoNormalizado[i] = histogramaNormalizado[i] + objetoBoguiActual.histogramaAcumulativoNormalizado[i-1]
+	}
+
+}
+
 
 function calcularEntropia(objetoBoguiActual){
 	var total = 0;
@@ -421,23 +445,19 @@ function aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia){
 		}
 	}
 
-	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData);
-	addBogui(nuevoObjeto);
+	createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData);
 }
 
 function createBoguiFromCanvas(objetoBoguiActual, canvas, imageData){
+
 	objetoNuevo = new Bogui(objetoBoguiActual.imagen, numeroObjetos, objetoBoguiActual.nombre+objetoBoguiActual.formato);
     actualizarCanvas(objetoNuevo, canvas);
     objetoNuevo.ctx.putImageData(imageData,0,0);
     actualizarAtributos(objetoNuevo);
-    cambiarFoco(numeroObjetos);
-    numeroObjetos++;
-    return objetoNuevo;
+   
+	$("#coordinates"+ objetoNuevo.ident).html("x= - y= - HEX= - RGB= - ");		
+    objetosBogui.push(objetoNuevo);	
+	cambiarFoco(numeroObjetos);		
+	numeroObjetos++;	
 }
 
-
-function addBogui(objetoBoguiActual){
-	objetosBogui.push(objetoBoguiActual);	
-	cambiarFoco(numeroObjetos);
-	numeroObjetos++;
-}

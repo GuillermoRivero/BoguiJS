@@ -32,26 +32,24 @@ function informacionDialog(objetoBoguiActual){
 }
 
 function errorDialog(mensaje){
-	if(!$( "#dialog").length){
-		$("body").append("<div id=\"dialog\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>"+mensaje+"</p></div></div>");
-		$("#dialog").dialog({
-			title: "Error",
-			modal: true,
-			buttons: {
-			Ok: function() {
-			  $(this).dialog( "close" );
-			  $(this).remove();
-			}
-			},
-			dialogClass: 'no-close',
-			resizable: false
-		});
-	}
+	$("body").append("<div id=\"dialogError\"><div class=\"izq\"><img src=\"../images/error.png\" alt=\"Error\"></div><div class=\"dcha\"><p>"+mensaje+"</p></div></div>");
+	$("#dialogError").dialog({
+		title: "Error",
+		modal: true,
+		buttons: {
+		Ok: function() {
+		  $(this).dialog( "close" );
+		  $(this).remove();
+		}
+		},
+		dialogClass: 'no-close',
+		resizable: false
+	});
 }
 
 function savedConfigurationDialog(){
-	$("body").append("<div id=\"dialog-message\"><div class=\"izq\"><img src=\"../images/saved.png\" alt=\"Configuración Guardada!\"></div><div class=\"dcha\"><p>Tu configuraci&oacute;n ha sido guardada.</p></div></div>");
-	$("#dialog-message").dialog({
+	$("body").append("<div id=\"dialog\"><div class=\"izq\"><img src=\"../images/saved.png\" alt=\"Configuración Guardada!\"></div><div class=\"dcha\"><p>Tu configuraci&oacute;n ha sido guardada.</p></div></div>");
+	$("#dialog").dialog({
 		title: "Configuración guardada",
 		modal: true,
 		buttons: {
@@ -406,7 +404,7 @@ function configuracionActualDialog(){
 		dialogClass: "no-close",
 		dialogClass: "informacion",
 		resizable: false 		
-	}).append("<table><tbody>	<tr><td><label>Modo de imagen:</label></td><td><span id=\"modoImagenConfig\"></span></td></tr><tr><td><label>Formato de descarga:</label></td><td><span id=\"formatoDescargaConfig\"></span></td></tr><tr><td><label>Tamaño imágenes:</label></td><td><span id=\"imageSizeConfig\"></span></td></tr><tr><td><label>Tamaño histogramas:</label></td><td><span id=\"histogramSizeConfig\"></span></td></tr></tbody></table>");
+	}).append("<table><tbody><tr><td><label>Modo de imagen:</label></td><td><span id=\"modoImagenConfig\"></span></td></tr><tr><td><label>Formato de descarga:</label></td><td><span id=\"formatoDescargaConfig\"></span></td></tr><tr><td><label>Tamaño imágenes:</label></td><td><span id=\"imageSizeConfig\"></span></td></tr><tr><td><label>Tamaño histogramas:</label></td><td><span id=\"histogramSizeConfig\"></span></td></tr></tbody></table>");
 
 
 	$("#modoImagenConfig").html(window.modoImagen);
@@ -418,8 +416,8 @@ function configuracionActualDialog(){
 
 function guardarComoDialog(objetoBoguiActual){
 	var dialog, form,content;
-	$("body").append("<div id=\"dialog-message\"></div>");
-	dialog = $( "#dialog-message" ).dialog({
+	$("body").append("<div id=\"dialog\"></div>");
+	dialog = $( "#dialog" ).dialog({
 		title: "Guardar imagen como",
 		modal: true,
 		buttons: {

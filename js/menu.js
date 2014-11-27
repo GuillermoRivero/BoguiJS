@@ -112,7 +112,12 @@ $(document).ready(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
 		}else{
-			especificarHistogramaDialog(objetosBogui[objetoActual]);
+			if(objetosBogui.length < 2){
+				errorDialog("Debe tener 2 imagenes para usar esta funci&oacute;n")
+			}else{
+				especificarHistogramaDialog();
+			}
+			
 		}
 	});	
 	

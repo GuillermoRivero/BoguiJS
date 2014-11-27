@@ -17,8 +17,7 @@ function imagenDiferencia(objetoBoguiActual, objetoBoguiResta){
 		}
 	}
 
-	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData2);
-    addBogui(nuevoObjeto);
+	createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData1);
 
 }
 
@@ -45,14 +44,11 @@ function mapaCambios(objetoBoguiActual, objetoBoguiResta, umbral){
 				pixelData1[startIdx] = 255;
 				pixelData1[startIdx+1] = 0;
 				pixelData1[startIdx+2] = 0;
-				//pixelData1[startIdx+3] = 100; //TODO: Mala visibilidad, cambiar a un color
 			}
 		}
 	}
 	
-	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData2);
-    addBogui(nuevoObjeto);
-	
+	createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData1);
 }
 
 //Especificar histograma
@@ -76,7 +72,7 @@ function especificarHistograma(objetoBoguiActual, objetoBoguiOrigen){
 		if(indiceDestino == 255){
 			indiceFuente++;
 		}
-
+		console.log(indiceFuente + "|" + histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente]+ "|"+indiceDestino+"|"+ histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] +"|"+ funcionTransferencia.length);
 	}
 
 	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
@@ -97,26 +93,6 @@ function ecualizarHistograma(objetoBoguiActual){
 	}
 
 	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
-
-}
-
-
-function calcularHistogramaAcumuladoNormalizado(objetoBoguiActual){
-	var histograma = objetoBoguiActual.histograma;
-	//normalizacion
-	var numeroPixeles = 0;
-	for(i = 0; i < histograma.length; i++){
-		numeroPixeles = numeroPixeles + histograma[i];
-	}
-	var histogramaNormalizado = new Array(256);
-	for(i = 0; i < histograma.length; i++){
-		histogramaNormalizado[i] = histograma[i]/numeroPixeles;
-	}
-	//Histograma origen acumulado normalizado
-	objetoBoguiActual.histogramaAcumulativoNormalizado[0] = histogramaNormalizado[0];
-	for(i = 1; i < histograma.length; i++){
-		objetoBoguiActual.histogramaAcumulativoNormalizado[i] = histogramaNormalizado[i] + objetoBoguiActual.histogramaAcumulativoNormalizado[i-1]
-	}
 
 }
 
@@ -209,8 +185,7 @@ function pixelesICS(objetoBoguiActual){
 	return pixeles;
 }
 
-//TODO: Acabar simulacionDigital
-
+//Simulacion digital
 function simulacionDigital(objetoBoguiActual, desplazamiento, bits){
 
 
@@ -280,8 +255,7 @@ function simulacionDigital(objetoBoguiActual, desplazamiento, bits){
 		}
 	}
 	
-	nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData);
-    addBogui(nuevoObjeto);
+	createBoguiFromCanvas(objetoBoguiActual, objetoBoguiActual.imgCanvas, imageData);
 
 }
 
