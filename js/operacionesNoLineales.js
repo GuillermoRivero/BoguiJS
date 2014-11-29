@@ -62,19 +62,18 @@ function especificarHistograma(objetoBoguiActual, objetoBoguiOrigen){
 	histogramaOrigenAcumuladoNormalizadoDestino = objetoBoguiOrigen.histogramaAcumulativoNormalizado;
 
 	while(indiceFuente < funcionTransferencia.length){
-		if(histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] > histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente]){
-			funcionTransferencia[indiceFuente] = indiceDestino;
-			indiceFuente++;
-		}else{
-			funcionTransferencia[indiceFuente] = funcionTransferencia[indiceFuente-1];
-			indiceDestino++;
-		}
 		if(indiceDestino == 255){
 			indiceFuente++;
+		}else{
+			if(histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] > histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente]){
+				funcionTransferencia[indiceFuente] = indiceDestino;
+				indiceFuente++;
+			}else{
+				funcionTransferencia[indiceFuente] = funcionTransferencia[indiceFuente-1];
+				indiceDestino++;
+			}
 		}
-		console.log(indiceFuente + "|" + histogramaOrigenAcumuladoNormalizadoFuente[indiceFuente]+ "|"+indiceDestino+"|"+ histogramaOrigenAcumuladoNormalizadoDestino[indiceDestino] +"|"+ funcionTransferencia.length);
 	}
-
 	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
 }
 
@@ -89,7 +88,7 @@ function ecualizarHistograma(objetoBoguiActual){
 	var funcionTransferencia = new Array(256);
 
 	for (i = 0; i < 256; i++){
-		funcionTransferencia[i]=(255/*/(ancho*alto)*/)*histogramaAcumuladoNormalizado[i];
+		funcionTransferencia[i]=(255)*histogramaAcumuladoNormalizado[i];
 	}
 
 	aplicarFuncionTransferencia(objetoBoguiActual, funcionTransferencia);
