@@ -363,8 +363,8 @@ function escalar(objetoBoguiActual, pixelX, pixelY, modo){
                 }
         }
 
-        nuevoObjeto = createBoguiFromCanvas(objetoBoguiActual, canvasAux, imageDataAux);
-        addBogui(nuevoObjeto);
+        createBoguiFromCanvas(objetoBoguiActual, canvasAux, imageDataAux);
+        
         
 }
 

@@ -175,7 +175,42 @@ $(document).ready(function() {
 		}else{
 				simularDigitalizacionDialog(objetosBogui[objetoActual]);
 		}
-	});	 	
+	});
+
+	$("#espejoHorizontal").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+				espejoHorizontal(objetosBogui[objetoActual]);
+		}
+	});
+
+	$("#espejoVertical").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+				espejoVertical(objetosBogui[objetoActual]);
+		}
+	});
+
+	$("#transpuesta").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+				transpuesta(objetosBogui[objetoActual]);
+		}
+	});
+
+	$("#zoom").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			zoomDialog(objetosBogui[objetoActual]);
+		}
+	});	
+
+
+
 });	 
 
 function changeZIndex(){
