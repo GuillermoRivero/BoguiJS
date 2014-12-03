@@ -7,6 +7,11 @@ var altoHistograma = 470;
 var anchoHistograma = 500;
 var herramientaActual = "puntero";
 
+var zoomMethods = {
+    "vmp" : "Vecino más próximo",
+    "media" : "Bilineal"
+}
+	
 //TODO:	COLORES PARA EL CSS??? 
 
 // Atajo para $( document ).ready()
@@ -31,30 +36,45 @@ $(document).ready(function() {
 	$("#PAL").click(function() {
 		$("#"+modoImagen).toggleClass('checked');
 		modoImagen = "PAL";
+		if (window.localStorage) { 
+			localStorage.setItem("modoImagen","PAL");
+		}
 		$("#"+modoImagen).toggleClass('checked');
 	});		
 	
 	$("#NTSC").click(function() {
 		$("#"+modoImagen).toggleClass('checked');
 		modoImagen = "NTSC";
+		if (window.localStorage) { 
+			localStorage.setItem("modoImagen","NTSC");
+		}
 		$("#"+modoImagen).toggleClass('checked');
 	});		
 	
 	$("#WEBP").click(function() {
 		$("#"+formatoDescarga).toggleClass('checked');
 		formatoDescarga = "WEBP";
+		if (window.localStorage) { 
+			localStorage.setItem("formatoDescarga","WEBP");
+		}
 		$("#"+formatoDescarga).toggleClass('checked');
 	});		
 	
 	$("#JPEG").click(function() {
 		$("#"+formatoDescarga).toggleClass('checked');
 		formatoDescarga = "JPEG";
+		if (window.localStorage) { 
+			localStorage.setItem("formatoDescarga","JPEG");
+		}		
 		$("#"+formatoDescarga).toggleClass('checked');
 	});	
 	
 	$("#PNG").click(function() {
 		$("#"+formatoDescarga).toggleClass('checked');
 		formatoDescarga = "PNG";
+		if (window.localStorage) { 
+			localStorage.setItem("formatoDescarga","PNG");
+		}
 		$("#"+formatoDescarga).toggleClass('checked');
 	});			
 

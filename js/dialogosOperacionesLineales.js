@@ -6,8 +6,7 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Ajuste lineal de brillo y contraste:",
-		height: 250,
-		width: 350,
+		width: 'auto',
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -26,7 +25,7 @@ function ajusteBrilloContrasteDialog(objetoBogui){
 		resizable: false
 	});
 
-	dialog.append("<form><fieldset><p><label for=\"brilloSpinner\">Brillo:</label><input id=\"brilloSpinner\" name=\"brilloValue\" type=\"text\"></p><div id=\"brilloSlider\"></div><p><label for=\"contrasteSpinner\">Contraste:</label><input id=\"contrasteSpinner\" name=\"contrasteValue\" type=\"text\"></p><div id=\"contrasteSlider\"></div></fieldset></form>");
+	dialog.append("<form><fieldset><table><tr><td><label for=\"brilloSpinner\">Brillo:</label></td><td><input id=\"brilloSpinner\" name=\"brilloValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"brilloSlider\"></div></td></tr><tr><td><label for=\"contrasteSpinner\">Contraste:</label></td><td><input id=\"contrasteSpinner\" name=\"contrasteValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"contrasteSlider\"></div></td></tr></tbody></table></fieldset></form>");
 
 	var brilloSpinner = $( "#brilloSpinner" ).spinner({
 		min: -255,
@@ -112,8 +111,7 @@ function transformacionLinealTramosDialog(){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Transformacion lineal por tramos:",
-		height: 200,
-		width: 350,
+		width: 'auto',
 		modal: true,
 		buttons: {
 			Ok:function() {
@@ -224,13 +222,13 @@ function transformacionLinealPuntosDialog(numTramos){
 		resizable: false
 	});
 	
-	var tramos = "<form class=\"quarter floatleft\"><fieldset><table><tbody>";
+	var tramos = "<form class=\"quarter floatleft\"><h3>Puntos:</h3><ol>";
 	
 	for(i=0; i <= numTramos; i++){
-			tramos = tramos + "<tr><td><label>Punto "+(i+1)+":</label></td><td><input id=\"a"+i+"\" name=\"a"+i+"\" type=\"text\"></td><td><input id=\"b"+i+"\" name=\"b"+i+"\" type=\"text\"></td></tr>";
+			tramos = tramos + "<li><input id=\"a"+i+"\" name=\"a"+i+"\" type=\"text\"><input id=\"b"+i+"\" name=\"b"+i+"\" type=\"text\"></li>";
 	}
 	
-	dialog.append(tramos+"</tbody></table></form>");;
+	dialog.append(tramos+"</ol></form>");;
 	dialog.append("<div id=\"graficaTramos\" class=\"threequarter floatleft\"></div>");
 
 	$('#graficaTramos').highcharts({
@@ -287,7 +285,7 @@ function transformacionLinealPuntosDialog(numTramos){
 				$(this).blur();
 
 			}
-		});	
+		}).width(60);	
 		 
 		var tramoBSpinner = $( "#b"+i ).spinner({
 			min: 0,
@@ -309,7 +307,7 @@ function transformacionLinealPuntosDialog(numTramos){
 				$(this).blur();
 
 			}
-		});			 
+		}).width(60);				 
 		 
 	}
 

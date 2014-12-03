@@ -3,6 +3,7 @@ $(document).ready(function() {
 	//Archivo
 	//TODO: Abrir Imagen Como
 	//Abrir archivo
+		
 	$("#fileMenu").click(function() {
 		$("#fileSelector").click();
 	});	
@@ -18,17 +19,7 @@ $(document).ready(function() {
 	});*/
 	
 	$("#openImageAs").click(function() {
-		if(typeof objetosBogui[objetoActual] == 'undefined'){
-			errorDialog("Debe seleccionar una imagen para descargar");
-		}else{
-			//transpuesta(objetosBogui[objetoActual]);
-			//rotarBasico(objetosBogui[0], 0);
-			//rotarBasico(objetosBogui[0], 180);
-			//rotarBasico(objetosBogui[0], 270);
-			//escalar(objetosBogui[0], objetosBogui[0].imgCanvas.width*3, objetosBogui[0].imgCanvas.height *3, "vmp");
-			rotarInterpolar(objetosBogui[0], 0, objetosBogui[0].imgCanvas.height-1, (20*Math.PI/180));
-			//rotar(objetosBogui[0], 0, objetosBogui[0].imgCanvas.height-1, (20*Math.PI/180));
-		}
+		abrirComoDialog();
 	});	
 
 	//Descargar
@@ -177,6 +168,8 @@ $(document).ready(function() {
 		}
 	});
 
+	//Operaciones Geometricas
+	//Espejo Horizontal
 	$("#espejoHorizontal").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
@@ -185,6 +178,7 @@ $(document).ready(function() {
 		}
 	});
 
+	//Espejo Vertical
 	$("#espejoVertical").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
@@ -193,6 +187,7 @@ $(document).ready(function() {
 		}
 	});
 
+	//Transpuesta
 	$("#transpuesta").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
@@ -200,7 +195,17 @@ $(document).ready(function() {
 				transpuesta(objetosBogui[objetoActual]);
 		}
 	});
-
+	
+	//Rotacion
+	$("#rotacion").click(function() {
+		if(typeof objetosBogui[objetoActual] == 'undefined'){
+			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
+		}else{
+			rotacionDialog(objetosBogui[objetoActual]);
+		}
+	});	
+	
+	//Zoom
 	$("#zoom").click(function() {
 		if(typeof objetosBogui[objetoActual] == 'undefined'){
 			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
@@ -212,11 +217,3 @@ $(document).ready(function() {
 
 
 });	 
-
-function changeZIndex(){
-	$("#dialog").css("z-index",110);
-}
-
-function resetZIndex(){
-	$("#dialog").css("z-index",90);
-}

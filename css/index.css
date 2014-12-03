@@ -3,18 +3,17 @@
 html,body{
     margin: 0;
     height: 100%;
-	min-width: 1024px;	
+	width: 100%;	
 	font-family:Arial, Helvetica, sans-serif;
 }
-select{
-	width: 137px;
-}
+
+
 table tbody tr{
 	margin: 5px auto;
 }
 
 header{
-	padding: 10px;
+	padding: 0.38em;
 	margin: 0 auto;
 }
 
@@ -25,11 +24,6 @@ label{
 img{
 	height:100%;
 }
-/*
-table tbody tr td input{
-	width: 35px;
-	margin: 0 5px;
-}*/
 
 fieldset{
 	border:none;
@@ -41,10 +35,10 @@ footer{
 	bottom:0;
 	left: 0;
 	background-color: #e6e6e6;
-	font-size: 12px;
+	font-size: 0.8em;
 	font-weight: 500;	
-	width:100%;
 }
+
 
 #dropzone{
 	min-width: 1024px;
@@ -64,10 +58,7 @@ footer{
 }
 
 #workspace{
-	position:absolute; bottom:0px; top:121px ;	min-width: 1024px; width:100%;
-	border-style: dashed;
-	border-width: 2px;
-	border-color: transparent;	
+	position:absolute; bottom:0px; top:83px ; width:100%;
 }
 
 #dropContent{
@@ -82,6 +73,7 @@ footer{
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
+	text-align:center;
 }
 
 #camara, #foto{
@@ -225,27 +217,20 @@ footer{
 	float:left;
 }
 
-table tbody tr td {
-	width: 137px;
+table{
+	table-layout: fixed;
 }
 
 table tbody tr td input {
 	width:100%;
 	margin: 0;
 }
-
-.informacion{
-	max-width:550px;
-}
-
 .saveImageAs table tbody tr td input {
 	width:100%;
 	margin: 0;
 }
 
-.saveImageAs table tbody tr td select {
-	width:100%;
+.tablaPuntos tbody tr td {
+	width:57px;
 }
-.saveImageAs table tbody tr td {
-	width: 137px;
-}
+

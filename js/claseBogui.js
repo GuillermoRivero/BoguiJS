@@ -25,8 +25,7 @@ function Bogui(img, id, name) {
     //Creamos dialogo
 	var dialog, form,idObjeto,content;
 	idObjeto = "dialogo" + this.ident;
-	$("#workspace").append("<div id=\""+idObjeto+"\"></div>");	
-	this.dialogo = $( "#"+idObjeto ).dialog({
+	this.dialogo = $("<div id=\""+idObjeto+"\"></div>").dialog({
 		title: this.nombre,
 		resizable: false
 	}).on("dialogclose",function(event){			
@@ -43,6 +42,14 @@ function Bogui(img, id, name) {
 		cambiarFoco(idActual);
 	});
 
+    this.dialogo.parent().find('a').find('span').attr('class', 'ui-icon ui-icon-minus');
+    this.dialogo.parent().draggable({
+        containment: '#workspace',
+        opacity: 0.70
+    });
+
+    $('#workspace').append(this.dialogo.parent());
+	
 	//Creamos el contenedor de los canvas y añadimos la imagen
 	var contenido = $("<div id=\"canvasContainer"+this.ident+"\"><canvas id=\"canvas"+this.ident+"\" ></canvas><canvas id=\"canvasreg"+this.ident+"\"></canvas></div><div id=\"position"+this.ident+"\" class=\"imageInfo\"><span id=\"colorBlock"+this.ident+"\" class=\"colorBlock\"> </span><span id=\"coordinates"+this.ident+"\"></span></div>");
 	//CSS
@@ -155,6 +162,7 @@ function Bogui(img, id, name) {
 
 	$('.ui-dialog :button').blur();
 	$("#dialogo" + this.ident).parent().css("z-index",90);
+	$("#dialogo").draggable({ containment: "parent" });
 }
 
 

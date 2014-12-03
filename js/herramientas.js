@@ -66,6 +66,10 @@ $(document).ready(function() {
 	});	
 	
 	//Boton abrir archivo
+	$("#openImageAs").click(function() {
+		abrirComoDialog();
+	});	
+	
 	$("#fileButton").click(function() {
 		$("#fileSelector").click();
 	});	
@@ -91,6 +95,7 @@ $(document).ready(function() {
 		}
 	});	 
 });	 
+
 
 //Region de interes
 function resetearRegionInteres(){

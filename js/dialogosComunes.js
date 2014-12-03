@@ -12,7 +12,6 @@ function informacionDialog(objetoBoguiActual){
 				}
 			},
 			dialogClass: "no-close",
-			dialogClass: "informacion",
 			resizable: false 		
 		}).on("dialogclose",function(e){			
 			$(this).dialog( "close" );
@@ -71,8 +70,7 @@ function histogramaSimpleDialog(objetoBoguiActual){
 		$("body").append("<div id=\"" +idObjeto+"\"></div>");
 		dialog = $( "#"+idObjeto).dialog({
 			title: "Histograma: " + objetoBoguiActual.nombre,
-			width: window.anchoHistograma,
-			height: window.altoHistograma,
+			width: 'auto',
 			resizable: false
 		}).on("dialogclose",function(e){			
 			$(this).dialog( "close" );
@@ -82,8 +80,8 @@ function histogramaSimpleDialog(objetoBoguiActual){
 		dialog.highcharts({
 			chart: {
 				type: 'column',
-			width: window.anchoHistograma - 50,
-			height: window.altoHistograma - 70
+			width: window.anchoHistograma,
+			height: window.altoHistograma
 			},
 			title: {
 				text: 'Histograma'
@@ -146,8 +144,7 @@ function histogramaAcumulativoDialog(objetoBoguiActual){
 		$("body").append("<div id=\"" +idObjeto+"\"></div>");
 		dialog = $( "#"+idObjeto).dialog({
 			title: "Histograma acumulativo: " + objetoBoguiActual.nombre,
-			width: window.anchoHistograma,
-			height: window.altoHistograma,
+			width: 'auto',
 			resizable: false
 		}).on("dialogclose",function(e){			
 			$(this).dialog( "close" );
@@ -157,8 +154,8 @@ function histogramaAcumulativoDialog(objetoBoguiActual){
 		dialog.highcharts({
 			chart: {
 				type: 'column',
-				width: window.anchoHistograma - 50,
-				height: window.altoHistograma - 70
+				width: window.anchoHistograma,
+				height: window.altoHistograma
 			},
 			title: {
 				text: 'Histograma Acumulativo'
@@ -217,8 +214,7 @@ function cambiarDimensionImagenesDialog(){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Configuración del tamaño de las imágenes",
-		height: 250,
-		width: 420,
+		width: 'auto',
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -239,7 +235,99 @@ function cambiarDimensionImagenesDialog(){
 		},
 		dialogClass: 'no-close',
 		resizable: false
-	}).append("<form><fieldset><p><label for=\"altoSpinner\">Altura de las im&aacute;genes:</label><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></p><div id=\"altoSlider\"></div><p><label for=\"anchoSpinner\">Ancho de las im&aacute;genes:</label><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></p><div id=\"anchoSlider\"></div></fieldset></form>");
+	}).append("<form><fieldset><table><tbody><tr><td><label for=\"altoSpinner\">Altura de las im&aacute;genes:</label></td><td><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"altoSlider\"></div></td><tr><td><label for=\"anchoSpinner\">Ancho de las im&aacute;genes:</label></td><td><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"anchoSlider\"></div></td></tr></tbody></table></fieldset></form>");
+
+	var altoSpinner = $( "#altoSpinner" ).spinner({
+		min: 100,
+		max: 500,
+		step: 10,
+		start: window.maxHeight,
+		stop: (function (event, ui) {
+			$( "#altoSlider" ).slider( "value", $(this).spinner('value') );
+		}),
+		spin: (function(event, ui ){
+			$( "#altoSlider" ).slider( "value", ui.value );
+		})
+	}).bind("keydown", function (event) {
+		event.preventDefault();
+	}).focus(function () {
+		$(this).blur();
+	});
+
+	$( "#altoSlider" ).slider({
+		range: "min",
+		value: window.maxHeight,
+		min: 100,
+		autofocus: "autofocus",
+		max: 500,
+		slide: function( event, ui ) {
+			altoSpinner.spinner( "value", ui.value );
+		}
+	});
+	altoSpinner.spinner( "value", $( "#altoSlider" ).slider( "value" ));
+
+	var anchoSpinner = $( "#anchoSpinner" ).spinner({
+		min: 100,
+		max: 500,
+		step: 10,
+		start: window.maxWidth,
+		stop: (function (event, ui) {
+			$( "#anchoSlider" ).slider( "value", $(this).spinner('value') );
+		}),
+		spin: (function(event, ui ){
+			$( "#anchoSlider" ).slider( "value", ui.value );
+		})
+	}).bind("keydown", function (event) {
+		event.preventDefault();
+	}).focus(function () {
+		$(this).blur();
+	});
+
+	$( "#anchoSlider" ).slider({
+		range: "min",
+		value: window.maxWidth,
+		min: 0,
+		autofocus: "autofocus",
+		max: 500,
+		slide: function( event, ui ) {
+			anchoSpinner.spinner( "value", ui.value );
+		}
+	});
+	anchoSpinner.spinner( "value", $( "#anchoSlider" ).slider( "value" ));
+
+}
+
+
+function abrirComoDialog(){
+	var dialog, form;
+	$("body").append("<div id=\"dialog\"></div>");
+	dialog = $( "#dialog" ).dialog({
+		title: "Configuración del tamaño de las imágenes",
+		width: 'auto',
+		modal: true,
+		buttons: {
+			"Cargar imágenes":function(ui) {
+				var oldHeight = window.maxHeight;
+				var oldWidth = window.maxWidth;
+				window.maxHeight =  $( this ).find( '#altoSlider' ).slider( "value" );
+				window.maxWidth = $( this ).find( '#anchoSlider' ).slider( "value" );
+				
+				$("#fileSelector").click();
+				
+				window.maxHeight =  oldHeight;
+				window.maxWidth = oldWidth;
+				
+				$(this).dialog( "close" );
+				$(this).remove();
+			},
+			Cancel: function() {
+				$(this).dialog( "close" );
+				$(this).remove();
+			}
+		},
+		dialogClass: 'no-close',
+		resizable: false
+	}).append("<form><fieldset><table><tbody><tr><td><label for=\"altoSpinner\">Altura de las im&aacute;genes:</label></td><td><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"altoSlider\"></div></td><tr><td><label for=\"anchoSpinner\">Ancho de las im&aacute;genes:</label></td><td><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"anchoSlider\"></div></td></tr></tbody></table></fieldset></form>");
 
 	var altoSpinner = $( "#altoSpinner" ).spinner({
 		min: 100,
@@ -306,8 +394,7 @@ function cambiarDimensionHistogramasDialog(){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Configuración del tamaño de los histogramas",
-		height: 250,
-		width: 420,
+		width: 'auto',
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -327,11 +414,11 @@ function cambiarDimensionHistogramasDialog(){
 		},
 		dialogClass: 'no-close',
 		resizable: false
-	}).append("<form><fieldset><p><label for=\"altoSpinner\">Altura de los histogramas:</label><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></p><div id=\"altoSlider\"></div><p><label for=\"anchoSpinner\">Ancho de los histogramas:</label><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></p><div id=\"anchoSlider\"></div></fieldset></form>");
+	}).append("<form><fieldset><table><tbody><tr><td><label for=\"altoSpinner\">Altura de los histogramas:</label></td><td><input id=\"altoSpinner\" name=\"altoValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"altoSlider\"></div></td><tr><td><label for=\"anchoSpinner\">Ancho de los histogramas:</label></td><td><input id=\"anchoSpinner\" name=\"anchoValue\" type=\"text\"></td></tr><tr><td colspan=\"2\"><div id=\"anchoSlider\"></div></td></tr></tbody></table></fieldset></form>");
 
 	var altoSpinner = $( "#altoSpinner" ).spinner({
 		min: 100,
-		max: 500,
+		max: 800,
 		step: 10,
 		start: window.altoHistograma,
 		stop: (function (event, ui) {
@@ -351,7 +438,7 @@ function cambiarDimensionHistogramasDialog(){
 		value: window.altoHistograma,
 		min: 100,
 		autofocus: "autofocus",
-		max: 500,
+		max: 800,
 		slide: function( event, ui ) {
 			altoSpinner.spinner( "value", ui.value );
 		}
@@ -360,7 +447,7 @@ function cambiarDimensionHistogramasDialog(){
 
 	var anchoSpinner = $( "#anchoSpinner" ).spinner({
 		min: 100,
-		max: 500,
+		max: 800,
 		step: 10,
 		start: window.anchoHistograma,
 		stop: (function (event, ui) {
@@ -380,7 +467,7 @@ function cambiarDimensionHistogramasDialog(){
 		value: window.anchoHistograma,
 		min: 0,
 		autofocus: "autofocus",
-		max: 500,
+		max: 800,
 		slide: function( event, ui ) {
 			anchoSpinner.spinner( "value", ui.value );
 		}
@@ -394,6 +481,7 @@ function configuracionActualDialog(){
 	$("body").append("<div id=\"dialog-message\"></div>");
 	dialog = $( "#dialog-message" ).dialog({
 		title: "Configuración actual",
+		width: 'auto',	
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -402,7 +490,6 @@ function configuracionActualDialog(){
 			}
 		},
 		dialogClass: "no-close",
-		dialogClass: "informacion",
 		resizable: false 		
 	}).append("<table><tbody><tr><td><label>Modo de imagen:</label></td><td><span id=\"modoImagenConfig\"></span></td></tr><tr><td><label>Formato de descarga:</label></td><td><span id=\"formatoDescargaConfig\"></span></td></tr><tr><td><label>Tamaño imágenes:</label></td><td><span id=\"imageSizeConfig\"></span></td></tr><tr><td><label>Tamaño histogramas:</label></td><td><span id=\"histogramSizeConfig\"></span></td></tr></tbody></table>");
 
@@ -430,10 +517,15 @@ function guardarComoDialog(objetoBoguiActual){
 			}
 		},
 		dialogClass: "no-close",
-		dialogClass: "saveImageAs",
 		resizable: false 		
 	}).append("<table><tbody><tr><td><label>Nombre:</label></td><td><input id=\"nombreText\" type=\"text\"></td></tr><tr><td><label>Formato de descarga:</label></td><td><select id=\"formatoDescargaSelect\"><option value = \"PNG\">PNG</option><option value = \"WEBP\">WEBP</option><option value = \"JPEG\">JPEG</option></select></td></tr></tbody></table>");
-	 $("#formatoDescargaSelect").val(window.formatoDescarga);
+	
+	$('#nombreText').addClass("ui-widget ui-widget-content ui-corner-all");
+	
+	$("#formatoDescargaSelect").selectmenu();	
+	$("#formatoDescargaSelect").val(window.formatoDescarga);
+	$("#formatoDescargaSelect").selectmenu("refresh");	 
+	$("#formatoDescargaSelect-button").css("width","100%");
 }
 
 /*

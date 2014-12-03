@@ -10,6 +10,7 @@ function simularDigitalizacionDialog(objetoBoguiActual){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Simular digitalizacion:",
+		width: 'auto',
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -106,6 +107,7 @@ function imageCrossSectionDialog(){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
 		title: "Perfil (Image-Cross Section):",
+		width: 'auto',
 		modal: true,
 		buttons: {
 			Ok:function(ui) {
@@ -205,8 +207,7 @@ function graficaICSDialog(objetoBoguiActual, pixeles, cantidadSuavizado, umbral)
 		$("#workspace").append("<div id=\"" +idObjeto+"\"></div>");
 		dialog = $( "#"+idObjeto).dialog({
 			title: "Image-Cross Section: " + objetoBoguiActual.nombre,
-			width: window.anchoHistograma,
-			height: window.altoHistograma,		
+			width: 'auto'		,
 			resizable: false
 		}).on("dialogclose",function(e){			
 			$(this).dialog( "close" );
@@ -278,8 +279,8 @@ function graficaICSDialog(objetoBoguiActual, pixeles, cantidadSuavizado, umbral)
 		contenedorICS.highcharts({
 			chart: {
 				type: 'column',
-			width: window.anchoHistograma - 50,
-			height: window.altoHistograma - 70
+				width: window.anchoHistograma,
+				height: window.altoHistograma
 			},
 			title: {
 				text: 'Image-Cross Section'
@@ -406,7 +407,7 @@ function correccionGammaDialog(objetoBogui){
 			 if (!val.match(/^(\d*(\.\d*)?)((\.|\/)(\d*(\.\d*)?))?$/)) val = 1; //we want only number, no alpha
 		 this.value = (val < min) ? min : val;
 	 });	
-	 
+	$("#gammaText").addClass("ui-widget ui-widget-content ui-corner-all") 
 	$("#gammaText").val("1")
 
 }
@@ -415,8 +416,9 @@ function correccionGammaDialog(objetoBogui){
 function especificarHistogramaDialog(){
 	$("body").append("<div id=\"dialog\"></div>");
 	dialog = $( "#dialog" ).dialog({
-		title: "Especificacion histograma:",
+		title: "Especificación histograma:",
 		modal: true,
+		width: 'auto',
 		buttons: {
 			Ok:function(ui) {
 				var objetoOrigen = $("#imagenesOrigen").val();
@@ -450,8 +452,8 @@ function especificarHistogramaDialog(){
 	contenido = contenido +	selectValues + "</select></td></tr><tr><td><label for=\"imagenesReferencia\">Imagen referencia: </label></td><td><select id = \"imagenesReferencia\">"+selectValues+"</select></td></tr></tbody></table></fieldset></form>";
 	dialog.append(contenido);		
 	
-	$("#imagenesOrigen").selectmenu();
-	$("#imagenesReferencia").selectmenu();	
+	$("#imagenesOrigen").selectmenu({width: 150,});
+	$("#imagenesReferencia").selectmenu({width: 150,});	
 	$("#imagenesOrigen").val(objetoActual);
 	$("#imagenesOrigen").selectmenu("refresh");
 }
@@ -501,8 +503,8 @@ function mapaCambiosDialog(objetoBogui){
 	
 	dialog.append(contenido);		
 	
-	$("#imagenesOrigen").selectmenu();
-	$("#imagenesReferencia").selectmenu();	
+	$("#imagenesOrigen").selectmenu({width: 150,});
+	$("#imagenesReferencia").selectmenu({width: 150,});	
 	$("#imagenesOrigen").val(objetoActual);
 	$("#imagenesOrigen").selectmenu("refresh");
 	
@@ -581,8 +583,8 @@ function imagenDiferenciaDialog(objetoBogui){
 	
 	dialog.append(contenido);		
 	
-	$("#imagenesOrigen").selectmenu();
-	$("#imagenesReferencia").selectmenu();	
+	$("#imagenesOrigen").selectmenu({width: 150,});
+	$("#imagenesReferencia").selectmenu({width: 150,});	
 	$("#imagenesOrigen").val(objetoActual);
 	$("#imagenesOrigen").selectmenu("refresh");
 }

@@ -44,6 +44,12 @@ $(document).ready(function() {
 function centerDropContent(){
 	var dropContainer = $('#workspace');
 	var dropContent = $('#dropContent');
-	dropContent.css("left", (dropContainer.width()-(dropContent.width()+48))/2); //48 == padding izquierdo+derecho
-	dropContent.css("top", (dropContainer.height()-(dropContent.height()+48))/2); //48 == padding arriba+abajo
+	var workspace = $('#workspace');
+	var footer = $('#footer');
+	dropContent.css("left", (dropContainer.width()-dropContent.outerWidth())/2); //48 == padding izquierdo+derecho
+	dropContent.css("top", (dropContainer.height()-dropContent.outerHeight())/2); //48 == padding arriba+abajo
+	footer.css("bottom", 0);
+	footer.css("left", 0);
+	workspace.css("top",$('#bars').outerHeight() );
+	
 }
