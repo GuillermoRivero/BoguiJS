@@ -78,7 +78,7 @@ $(document).ready(function() {
 		$("#"+formatoDescarga).toggleClass('checked');
 	});			
 
-	$("#saveConfig,  #saveConfigButton").click(function() {
+	/*$("#saveConfig,  #saveConfigButton").click(function() {
 		if (window.localStorage) { //Si el navegador soporta localStorage
 			localStorage.setItem("modoImagen",modoImagen);
 			localStorage.setItem("formatoDescarga",formatoDescarga);
@@ -90,7 +90,7 @@ $(document).ready(function() {
 		}else{
 			errorDialog("Tu navegador no soporta Local Storage");
 		}
-	});		
+	});		*/
 	
 
 	$("#defaultConfig").click(function() {

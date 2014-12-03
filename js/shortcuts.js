@@ -33,3 +33,8 @@ $(document).on('keydown', null, 'alt+i', function(){
 $(document).on('keydown', null, 'alt+o', function(){
 	$("#fileButton").click();
 });
+
+/*
+$(document).on('keydown', null, 'shift+c', function(){
+	$("#saveConfigButton").click();
+});*/
