@@ -109,10 +109,30 @@ function rotacionDialog(objetoBogui){
 		title: "Zoom:",
 		modal: true,
 		buttons: {
-			Ok:function(ui) {				
-				var radiansAngle = $( this ).find( '#anguloSlider' ).slider( "value" ) * (Math.PI/180)
+			Ok:function(ui) {	
+				var angulo = $( this ).find( '#anguloSlider' ).slider( "value" );		
+				var radiansAngle = angulo * (Math.PI/180);
 				
-				//AQUI VA LA ROTACION
+				switch(angulo){
+					case -270:
+					case 90:
+						console.log("exacto");
+						rotarBasico(objetoBogui, 90);
+						break;
+					case -180:
+					case 180:
+					console.log("exacto");
+						rotarBasico(objetoBogui, 180);
+						break;
+					case -90:
+					case 270:
+					console.log("exacto");
+						rotarBasico(objetoBogui, 270);
+						break;
+					default:
+						rotarInterpolar(objetoBogui, 0, 0, radiansAngle);
+				}
+				
 
 				$(this).dialog( "close" );
 				$(this).remove();
@@ -130,7 +150,7 @@ function rotacionDialog(objetoBogui){
 		event.preventDefault();
 	});		
 	
-	var contenido = "<form><fieldset><table><tbody><tr><td><label for=\"anguloSpinner\">&Aacute;ngulo:</label></td><td><input id=\"anguloSpinner\" name=\"anguloValue\" type=\"text\"></td></tr><tr ><td colspan=\"2\"><div id=\"anguloSlider\"></div></td></tr></table></fieldset></form>";
+	var contenido = "<form><fieldset><table><tbody><tr><td><label for=\"anguloSpinner\">&Aacute;ngulo:</label></td><td><input id=\"anguloSpinner\" name=\"anguloValue\" type=\"text\"></td></tr><tr ><td colspan=\"2\"><div id=\"anguloSlider\"></div></td></tr><tr><td><label for=\"anclajeXSpinner\">Anclaje X:</label></td><td><input id=\"anclajeXSpinner\" name=\"anclajeXValue\" type=\"text\"></td></tr><tr><td><label for=\"anclajeYSpinner\">Anclaje Y:</label></td><td><input id=\"anclajeYSpinner\" name=\"anclajeYValue\" type=\"text\"></td></tr></table></fieldset></form>";
 	
 	dialog.append(contenido);		
 	
@@ -162,6 +182,36 @@ function rotacionDialog(objetoBogui){
 			anguloSpinner.spinner( "value", ui.value );
 		}
 	});
-	anguloSpinner.spinner( "value", $( "#anguloSlider" ).slider( "value" ));	
+	anguloSpinner.spinner( "value", $( "#anguloSlider" ).slider( "value" ));
 
+	var anclajeXSpinner = $( "#anclajeXSpinner" ).spinner({
+		min: -1000,
+		max: 1000,
+		step: 1
+	}).on('input', function () {
+		var val = this.value,
+		$this = $(this),
+		max = $this.spinner('option', 'max'),
+		min = $this.spinner('option', 'min');
+		if (!val.match(/^-?\d*$/)) val = 0; //we want only number, no alpha
+		this.value = val > max ? max : val < min ? min : val;
+	});
+
+	anclajeXSpinner.spinner( "value", 0);
+
+	var anclajeYSpinner = $( "#anclajeYSpinner" ).spinner({
+		min: -1000,
+		max: 1000,
+		value: 0,
+		step: 1
+	}).on('input', function () {
+		var val = this.value,
+		$this = $(this),
+		max = $this.spinner('option', 'max'),
+		min = $this.spinner('option', 'min');
+		if (!val.match(/^-?\d*$/)) val = 0; //we want only number, no alpha
+		this.value = val > max ? max : val < min ? min : val;
+	});		
+
+	anclajeYSpinner.spinner( "value", 0);
 }

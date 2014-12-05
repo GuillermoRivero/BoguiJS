@@ -272,7 +272,9 @@ function calcularHistogramaSimple(objetoBoguiActual){
 	
 	//Rellenar histograma Simple
    	for(j = 0; j < pixelData.length; j += 4) {
-		objetoBoguiActual.histograma[pixelData[j]]++; 
+   		if(pixelData[j+3]!= 0){ //Evitar pixeles con alfa
+   			objetoBoguiActual.histograma[pixelData[j]]++; 
+   		}
 	}
 }
 

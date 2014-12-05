@@ -33,15 +33,12 @@ $(document).ready(function() {
 	
 	//Boton region de interes
 	$("#roi").click(function() {
-		if(typeof objetosBogui[objetoActual] == 'undefined'){
-			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
-		}else{
-			resetearRegionInteres();
-			$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
-		    window.herramientaActual = "roi";
-			$(this).addClass( "ui-state-hover" );
+		resetearRegionInteres();
+		$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
+	    window.herramientaActual = "roi";
+		$(this).addClass( "ui-state-hover" );
 
-		}
+		
 	});	
 	
 	//Boton puntero
@@ -85,14 +82,11 @@ $(document).ready(function() {
 	
 	//Boton image-cross section
 	$("#ics").click(function() {
-		if(typeof objetosBogui[objetoActual] == 'undefined'){
-			errorDialog("No se puede ejecutar el comando sin una imagen seleccionada"); 
-		}else{
-			resetearRegionInteres();//TODO: cambiar nombre a esta funcion, a reducirImg en claseBogui
-			$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
-		    window.herramientaActual = "ics";
-			$(this).addClass( "ui-state-hover" );
-		}
+		resetearRegionInteres();//TODO: cambiar nombre a esta funcion, a reducirImg en claseBogui
+		$("#"+window.herramientaActual ).removeClass( "ui-state-hover" );			
+	    window.herramientaActual = "ics";
+		$(this).addClass( "ui-state-hover" );
+		
 	});	 
 });	 
 
