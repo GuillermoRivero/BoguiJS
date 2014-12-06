@@ -112,6 +112,7 @@ function rotacionDialog(objetoBogui){
 			Ok:function(ui) {	
 				var angulo = $( this ).find( '#anguloSlider' ).slider( "value" );		
 				var radiansAngle = angulo * (Math.PI/180);
+				var metodo = $("#metodosInterpolacion").val();
 				
 				switch(angulo){
 					case -270:
@@ -130,7 +131,8 @@ function rotacionDialog(objetoBogui){
 						rotarBasico(objetoBogui, 270);
 						break;
 					default:
-						rotarInterpolar(objetoBogui, 0, 0, radiansAngle);
+						console.log(metodo);
+						rotarInterpolar(objetoBogui, 0, 0, radiansAngle, metodo);
 				}
 				
 
@@ -150,7 +152,13 @@ function rotacionDialog(objetoBogui){
 		event.preventDefault();
 	});		
 	
-	var contenido = "<form><fieldset><table><tbody><tr><td><label for=\"anguloSpinner\">&Aacute;ngulo:</label></td><td><input id=\"anguloSpinner\" name=\"anguloValue\" type=\"text\"></td></tr><tr ><td colspan=\"2\"><div id=\"anguloSlider\"></div></td></tr><tr><td><label for=\"anclajeXSpinner\">Anclaje X:</label></td><td><input id=\"anclajeXSpinner\" name=\"anclajeXValue\" type=\"text\"></td></tr><tr><td><label for=\"anclajeYSpinner\">Anclaje Y:</label></td><td><input id=\"anclajeYSpinner\" name=\"anclajeYValue\" type=\"text\"></td></tr></table></fieldset></form>";
+
+	var contenido = "<form><fieldset><table><tbody><tr><td><label for=\"metodosInterpolacion\">M&eacute;todo de interpolaci&oacute;n: </label></td><td><select id = \"metodosInterpolacion\">";
+	var selectValues = "";
+	Object.keys(window.zoomMethods).forEach(function (element) { //TODO: Cambiar por angle metods
+		selectValues = selectValues + "<option value = \""+element+"\">"+zoomMethods[element]+"</option>";
+	});	
+	contenido = contenido +	selectValues + "</select><tr><td><label for=\"anguloSpinner\">&Aacute;ngulo:</label></td><td><input id=\"anguloSpinner\" name=\"anguloValue\" type=\"text\"></td></tr><tr ><td colspan=\"2\"><div id=\"anguloSlider\"></div></td></tr><tr><td><label for=\"anclajeXSpinner\">Anclaje X:</label></td><td><input id=\"anclajeXSpinner\" name=\"anclajeXValue\" type=\"text\"></td></tr><tr><td><label for=\"anclajeYSpinner\">Anclaje Y:</label></td><td><input id=\"anclajeYSpinner\" name=\"anclajeYValue\" type=\"text\"></td></tr></table></fieldset></form>";
 	
 	dialog.append(contenido);		
 	
@@ -214,4 +222,5 @@ function rotacionDialog(objetoBogui){
 	});		
 
 	anclajeYSpinner.spinner( "value", 0);
+	$("#metodosInterpolacion").selectmenu();
 }

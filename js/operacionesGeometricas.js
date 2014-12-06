@@ -88,10 +88,6 @@ function rotarBasico(objetoBoguiActual, grados){
         var canvasAux = $('<canvas/>')[0];      
            
         var ctxAux;
-        
-
-        //var imageDataAux = ctxAux.getImageData(0,0,canvasAux.width, canvasAux.height);
-        
 
         switch(grados){
                 case 90:
@@ -400,7 +396,7 @@ function estaContenidoEn(x, y, UL, UR, DL, DR){ //TODO: Comprobar que en todos l
 }
 
 
-function rotarInterpolar(objetoBoguiActual, puntoAnclajeX, puntoAnclajeY, angulo){ //Pasar el angulo en radianes
+function rotarInterpolar(objetoBoguiActual, puntoAnclajeX, puntoAnclajeY, angulo, modo){ //Pasar el angulo en radianes
 
         var imageData = objetoBoguiActual.ctx.getImageData(0, 0, objetoBoguiActual.imgCanvas.width, objetoBoguiActual.imgCanvas.height);
         var canvasAux = $('<canvas/>')[0]; 
@@ -457,15 +453,127 @@ function rotarInterpolar(objetoBoguiActual, puntoAnclajeX, puntoAnclajeY, angulo
                                 var viejosPixeles = calcularViejosPixelesRotacion(x+desplazamientoX, y+desplazamientoY, puntoAnclajeX, puntoAnclajeY, angulo);
                                 var viejosPixelesRedondeado = [parseInt(viejosPixeles[0]), parseInt(viejosPixeles[1])];
 
-                                //TODO: hacer interpolacion para obtener el color mas adecuado
+                                var pesoX = viejosPixeles[0] - viejosPixelesRedondeado[0];
+		                        var pesoY = viejosPixeles[1] - viejosPixelesRedondeado[1];
+		                        var color = 100;
+		                        var alfa = 255;
 
+
+                                switch(modo){
+
+		                        case "vmp":
+		                                //VECINO MAS PROXIMO
+		                                var pixelCercanoX = {};
+		                                var pixelCercano;
+
+		                                if(pesoX < 0.5){
+		                                    pixelCercanoX['pixel'] = "izquierda";
+		                                    pixelCercanoX['valor'] = pesoX;
+		                                         
+		                                }else{
+		                                    pixelCercanoX['pixel'] = "derecha";
+		                                    pixelCercanoX['valor'] = 1-pesoX;      
+		                                }
+
+		                                var pixelCercanoY = {};
+
+		                                if(pesoY > 0.5){
+		                                    pixelCercanoY['pixel'] = "arriba";
+		                                    pixelCercanoY['valor'] = pesoY;
+		                                         
+		                                }else{
+		                                    pixelCercanoY['pixel'] = "abajo";
+		                                    pixelCercanoY['valor'] = 1-pesoY;      
+		                                }
+		                                
+		                                if(viejosPixelesRedondeado[1] == objetoBoguiActual.imgCanvas.height-1){
+		                                        pixelCercanoY['pixel'] = "arriba";
+		                                        pixelCercanoY['valor'] = pesoY; 
+		                                }
+		                                if(viejosPixelesRedondeado[0] == objetoBoguiActual.imgCanvas.width-1){
+		                                        pixelCercanoX['pixel'] = "izquierda";
+		                                        pixelCercanoX['valor'] = pesoX; 
+		                                }
+										
+		                                if(pixelCercanoY.valor < pixelCercanoX.valor){
+		                                        pixelCercano = pixelCercanoY.pixel;
+		                                }else{
+		                                        pixelCercano = pixelCercanoX.pixel;     
+		                                }
+
+		                                switch(pixelCercano){
+		                                        case "arriba":
+		                                        color = pixelData[((viejosPixelesRedondeado[1]) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0]* bytesPerPixel)];
+		                                        alfa = pixelData[((viejosPixelesRedondeado[1]) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0] * bytesPerPixel)+3];
+		                                        break;
+		                                        case "abajo":
+		                                        color = pixelData[((viejosPixelesRedondeado[1]+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0] * bytesPerPixel)];
+		                                        alfa = pixelData[((viejosPixelesRedondeado[1]+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0] * bytesPerPixel)+3];
+		                                        break;
+		                                        case "izquierda":
+		                                        color = pixelData[(viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]) * bytesPerPixel)];
+		                                        alfa = pixelData[(viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]) * bytesPerPixel)+3];
+		                                        break;
+		                                        case "derecha":
+		                                        color = pixelData[(viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]+1) * bytesPerPixel)];
+		                                        alfa = pixelData[(viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]+1) * bytesPerPixel)+3];
+		                                        break;
+		                                }
+		                        break;
+		                        
+		                        case "media":
+		                        
+		                                //MEDIA DE LOS 4 COLORES
+		                                var media = 0;
+		                                var numeroColores = 0;
+		                                alfa = 0;
+
+
+		                                
+		                                var colorArriba = pixelData[((viejosPixelesRedondeado[1]) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0] * bytesPerPixel)];
+		                                var alfaArriba = pixelData[(((viejosPixelesRedondeado[1]) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0] * bytesPerPixel))+3];
+		                                alfa += (alfaArriba * ((1-pesoY)));
+		                                media += (colorArriba * ((1-pesoY)));
+		                                numeroColores += (1-pesoY);
+		                                
+		                                if(viejosPixelesRedondeado[1] < objetoBoguiActual.imgCanvas.height-1){
+		                                        var colorAbajo = pixelData[((viejosPixelesRedondeado[1]+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0] * bytesPerPixel)];
+		                                        var alfaAbajo = pixelData[(((viejosPixelesRedondeado[1]+1) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + (viejosPixelesRedondeado[0] * bytesPerPixel))+3];
+		                                        alfa += (alfaAbajo * ((pesoY)));
+		                                        media += (colorAbajo * ((pesoY)));
+		                                        numeroColores += (pesoY);
+		                                }
+		                                
+		                                var colorIzquierda = pixelData[(viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]) * bytesPerPixel)];
+		                                var alfaIzquierda = pixelData[((viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]) * bytesPerPixel))+3];
+		                                alfa += (alfaIzquierda * (1-pesoX));
+		                                media += (colorIzquierda * (1-pesoX));
+		                                numeroColores += (1-pesoX);
+		                                
+		                                if(viejosPixelesRedondeado[0] < objetoBoguiActual.imgCanvas.width-1){
+		                                        var colorDerecha = pixelData[(viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]+1) * bytesPerPixel)];
+		                                        var alfaDerecha = pixelData[((viejosPixelesRedondeado[1] * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]+1) * bytesPerPixel))+3];
+		                                        alfa += (alfaDerecha * ((pesoX)));
+		                                        media += (colorDerecha * ((pesoX)));
+		                                        numeroColores += (pesoX);
+		                                }
+		                                color =  media/numeroColores;
+		                                alfa = alfa/numeroColores;
+
+		                                break;
+		                                
+
+		                        }
+						
                                 var startIdxAux = (y * bytesPerPixel * canvasAux.width) + (x * bytesPerPixel);
-                                var startIdx = ((viejosPixelesRedondeado[1]) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]) * bytesPerPixel);
+                                //var startIdx = ((viejosPixelesRedondeado[1]) * bytesPerPixel * objetoBoguiActual.imgCanvas.width) + ((viejosPixelesRedondeado[0]) * bytesPerPixel);
                                 
-                                pixelDataAux[startIdxAux] = pixelData[startIdx];
-                                pixelDataAux[startIdxAux+1] = pixelData[startIdx+1];
-                                pixelDataAux[startIdxAux+2] = pixelData[startIdx+2];
-                                pixelDataAux[startIdxAux+3] = pixelData[startIdx+3];
+
+
+                                pixelDataAux[startIdxAux] = color;
+		                        pixelDataAux[startIdxAux+1] = color;
+		                        pixelDataAux[startIdxAux+2] = color;
+		                        pixelDataAux[startIdxAux+3] = alfa;
                         }
 
                 }
