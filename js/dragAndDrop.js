@@ -51,5 +51,4 @@ function centerDropContent(){
 	footer.css("bottom", 0);
 	footer.css("left", 0);
 	workspace.css("top",$('#bars').outerHeight() );
-	
 }

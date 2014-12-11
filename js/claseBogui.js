@@ -47,7 +47,8 @@ function Bogui(img, id, name) {
         containment: '#workspace',
         opacity: 0.70
     });
-
+	
+	
     $('#workspace').append(this.dialogo.parent());
 	
 	//Creamos el contenedor de los canvas y añadimos la imagen

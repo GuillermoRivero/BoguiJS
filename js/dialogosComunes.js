@@ -2,8 +2,7 @@ function informacionDialog(objetoBoguiActual){
 	var dialog, form,idObjeto,content;
 	idObjeto = "dialogoInformacion"+ objetoBoguiActual.ident;
 	if(!$( "#"+idObjeto ).length){
-		$("body").append("<div id=\""+idObjeto+"\"></div>");
-		dialog = $( "#"+idObjeto ).dialog({
+		dialog = $("<div id=\""+idObjeto+"\"></div>").dialog({
 			title: "Informacion de la imagen: " + objetoBoguiActual.nombre,
 			buttons: {
 				Ok:function(ui) {
@@ -17,6 +16,14 @@ function informacionDialog(objetoBoguiActual){
 			$(this).dialog( "close" );
 			$(this).remove();	
 		}).append("<table><tbody><tr><td><label>Nombre:</label></td><td><span id=\"nameValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Modo de color:</label></td><td><span id=\"modoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Brillo:</label></td><td><span id=\"brilloValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Contraste:</label></td><td><span id=\"contrasteValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Entrop&iacute;a:</label></td><td><span id=\"entropiaValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&iacute;nimo de gris:</label></td><td><span id=\"minGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Valor m&aacute;ximo de gris:</label></td><td><span id=\"maxGris"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Formato:</label></td><td><span id=\"formatoValue"+ objetoBoguiActual.ident +"\"></span></td></tr><tr><td><label>Tama&ntilde;o:</label></td><td><span id=\"sizeValue"+ objetoBoguiActual.ident +"\"></span></td></tr></tbody></table>");
+
+		dialog.parent().find('a').find('span').attr('class', 'ui-icon ui-icon-minus');
+		dialog.parent().draggable({
+			containment: '#workspace',
+			opacity: 0.70
+		});
+
+		$('#workspace').append(dialog.parent());	
 		
 		$("#nameValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.nombre);
 		$("#modoValue"+ objetoBoguiActual.ident).html(objetoBoguiActual.modo);
@@ -67,8 +74,7 @@ function histogramaSimpleDialog(objetoBoguiActual){
 	idObjeto = "dialogoHistogramaSimple" + objetoBoguiActual.ident;
 	if(!$( "#"+idObjeto ).length){
 		//Histograma Simple
-		$("body").append("<div id=\"" +idObjeto+"\"></div>");
-		dialog = $( "#"+idObjeto).dialog({
+		dialog = $("<div id=\""+idObjeto+"\"></div>").dialog({
 			title: "Histograma: " + objetoBoguiActual.nombre,
 			width: 'auto',
 			resizable: false
@@ -76,6 +82,14 @@ function histogramaSimpleDialog(objetoBoguiActual){
 			$(this).dialog( "close" );
 			$(this).remove();	
 		});
+		
+		dialog.parent().find('a').find('span').attr('class', 'ui-icon ui-icon-minus');
+		dialog.parent().draggable({
+			containment: '#workspace',
+			opacity: 0.70
+		});
+
+		$('#workspace').append(dialog.parent());	
 		
 		dialog.highcharts({
 			chart: {
@@ -141,8 +155,7 @@ function histogramaAcumulativoDialog(objetoBoguiActual){
 	idObjeto = "dialogoHistogramaAcumulativo" + objetoBoguiActual.ident;
 	//Histograma acumulativo
 	if(!$( "#"+idObjeto ).length){
-		$("body").append("<div id=\"" +idObjeto+"\"></div>");
-		dialog = $( "#"+idObjeto).dialog({
+		dialog = $("<div id=\""+idObjeto+"\"></div>").dialog({
 			title: "Histograma acumulativo: " + objetoBoguiActual.nombre,
 			width: 'auto',
 			resizable: false
@@ -150,7 +163,14 @@ function histogramaAcumulativoDialog(objetoBoguiActual){
 			$(this).dialog( "close" );
 			$(this).remove();	
 		});
+		
+		dialog.parent().find('a').find('span').attr('class', 'ui-icon ui-icon-minus');
+		dialog.parent().draggable({
+			containment: '#workspace',
+			opacity: 0.70
+		});
 
+		$('#workspace').append(dialog.parent());
 		dialog.highcharts({
 			chart: {
 				type: 'column',

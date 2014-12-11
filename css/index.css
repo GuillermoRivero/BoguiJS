@@ -58,7 +58,7 @@ footer{
 }
 
 #workspace{
-	position:absolute; bottom:0px; top:83px ; width:100%;
+	position:absolute; bottom:0px; top:83px ; width:100%; overflow:hidden;
 }
 
 #dropContent{
